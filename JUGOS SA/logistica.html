@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Logístico - Jugos S.A.</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        .header {
+            background: #1B5E4E;
+            padding: 20px 25px;
+            border-bottom: 2px solid #2ECC71;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+
+        .header .fecha {
+            font-size: 0.95em;
+            margin-top: 5px;
+            color: #b0b0b0;
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .kpi-card {
+            background: #1B5E4E;
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            border-left: 4px solid #2ECC71;
+        }
+
+        .kpi-title {
+            font-size: 0.85em;
+            color: #b0b0b0;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: 600;
+        
+            color: #2ECC71;}
+
+        .kpi-value {
+            font-size: 2em;
+            color: #e0e0e0;
+            font-weight: 700;
+        }
+
+        .kpi-subtitle {
+            font-size: 0.85em;
+            color: #808080;
+            margin-top: 5px;
+        }
+
+        .charts-container {
+            padding: 0 20px 20px 20px;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-full {
+            grid-column: 1 / -1;
+        }
+
+        .chart-box {
+            background: #1B5E4E;
+            border-radius: 4px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        iframe {
+            width: 100%;
+            border: none;
+            display: block;
+            overflow: hidden !important;
+        }
+
+        /* Alturas específicas por gráfico */
+        #grafico-1 {
+            height: 1021px;  /* Temporal (3 subgráficos) - reducido por toggle */
+        }
+
+        #grafico-2 {
+            height: 517px;   /* Distancia */
+        }
+
+        #grafico-3 {
+            height: 517px;   /* Especie/Variedad */
+        }
+
+        #grafico-4 {
+            height: 517px;   /* Origen */
+        }
+
+        #grafico-5 {
+            height: 517px;   /* Tipo de Camión */
+        }
+
+        #grafico-6 {
+            height: 517px;   /* Productor */
+        }
+
+        .footer {
+            background: #0d333d;
+            color: #b0b0b0;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.85em;
+            border-top: 2px solid #2ECC71;
+            margin-top: 30px;
+        }
+
+        .footer-title {
+            color: #e0e0e0;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .footer-subtitle {
+            color: #808080;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .footer-contact {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .footer-contact-item {
+            color: #b0b0b0;
+        }
+
+        .footer-contact-item a {
+            color: #2ECC71;
+            text-decoration: none;
+        }
+
+        .footer-contact-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Estilos para el control de ajuste automático */
+        .chart-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            display: inline-block;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #555;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #2ECC71;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .chart-control-label {
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+
+        .chart-control input:checked ~ .chart-control-label {
+            color: #2ECC71;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>JUGOS S.A. - Análisis Logístico y Operacional</h1>
+        <div class="fecha">Actualizado: 05/02/2026 18:58:12</div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpis">
+        <div class="kpi-card">
+            <div class="kpi-title">Cantidad de kg de fruta procesada</div>
+            <div class="kpi-value">180.693.798</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-title">Total de cantidad de bins ingresados</div>
+            <div class="kpi-value">390.242</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-title">Promedio de kilogramos por bin</div>
+            <div class="kpi-value">463,0</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-title">Cantidad de Ingresos Registrados</div>
+            <div class="kpi-value">14.704</div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-container">
+        <!-- Fila 1: Temporal (full width) -->
+        <div class="chart-row">
+            <div class="chart-box chart-full">
+                <iframe id="grafico-1" src="temp_logistica1.html?v=1770328692.802065"></iframe>
+            </div>
+        </div>
+
+        <!-- Fila 2: Distancia y Especie -->
+        <div class="chart-row">
+            <div class="chart-box">
+                <iframe id="grafico-2" src="temp_logistica2.html?v=1770328692.802069"></iframe>
+            </div>
+            <div class="chart-box">
+                <iframe id="grafico-3" src="temp_logistica3.html?v=1770328692.802072"></iframe>
+            </div>
+        </div>
+
+        <!-- Fila 3: Origen y Camión -->
+        <div class="chart-row">
+            <div class="chart-box">
+                <iframe id="grafico-4" src="temp_logistica4.html?v=1770328692.802073"></iframe>
+            </div>
+            <div class="chart-box">
+                <iframe id="grafico-5" src="temp_logistica5.html?v=1770328692.802074"></iframe>
+            </div>
+        </div>
+
+        <!-- Fila 4: Productor (full width) -->
+        <div class="chart-row">
+            <div class="chart-box chart-full">
+                <iframe id="grafico-6" src="temp_logistica6.html?v=1770328692.802076"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-title">Desarrollado por Gaspar Giannitrapani</div>
+        <div class="footer-subtitle">Técnico Superior en Ciencia de Datos</div>
+        <div class="footer-contact">
+            <div class="footer-contact-item">
+                <a href="mailto:giannitrapanigaspar@gmail.com">giannitrapanigaspar@gmail.com</a>
+            </div>
+            <div class="footer-contact-item">+54 9 298 470-4091</div>
+            <div class="footer-contact-item">
+                <a href="https://www.linkedin.com/in/giannitrapanigaspar" target="_blank">linkedin.com/in/giannitrapanigaspar</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-fullscreen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F11') {
+                e.preventDefault();
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

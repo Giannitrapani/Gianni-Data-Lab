@@ -1,0 +1,291 @@
+================================================================================
+GUÍA PARA USUARIOS SIN PERMISOS DE ADMINISTRADOR
+SISTEMA JUGOS S.A.
+================================================================================
+
+Si estás en una PC de empresa donde NO tienes permisos de administrador,
+esta guía te mostrará cómo hacer funcionar el sistema de todas formas.
+
+================================================================================
+PASO 1: EJECUTAR DIAGNÓSTICO
+================================================================================
+
+ANTES de hacer nada, ejecuta:
+   DIAGNOSTICO.bat
+
+Este script te dirá:
+   - Si Python está instalado correctamente
+   - Si hay drivers ODBC disponibles
+   - Si son compatibles entre sí
+   - Qué solución necesitas aplicar
+
+Anota los resultados para seguir los pasos correctos.
+
+
+================================================================================
+ESCENARIO A: "TODO ESTÁ BIEN" (MEJOR CASO)
+================================================================================
+
+Si el diagnóstico dice: "TODO ESTA CONFIGURADO CORRECTAMENTE"
+
+→ ¡Perfecto! Simplemente ejecuta:
+   INICIAR_SISTEMA.bat
+
+Y el sistema funcionará completamente.
+
+
+================================================================================
+ESCENARIO B: "INCOMPATIBILIDAD Python x64 vs ODBC x32"
+================================================================================
+
+Este es el escenario MÁS COMÚN en empresas con Office 32 bits.
+
+PROBLEMA:
+   - Office 32 bits instalado → Driver ODBC x32
+   - Python 64 bits instalado → NO puede usar driver x32
+   - Resultado: NO puede leer Access
+
+SOLUCIÓN SIN PERMISOS DE ADMINISTRADOR:
+   Usar Python Portable 32 bits (NO requiere instalación)
+
+PASOS DETALLADOS:
+
+   1. Descarga WinPython 32 bits
+      ────────────────────────────
+      Sitio: https://winpython.github.io/
+      Descarga: WinPython32-3.x.x.x (versión más reciente 32 bits)
+
+      NOTA: Si no tienes acceso a internet en esa PC:
+            - Descárgalo en tu PC
+            - Cópialo al pendrive junto con el sistema
+
+
+   2. Extrae WinPython en la carpeta del proyecto
+      ──────────────────────────────────────────────
+      Extrae el archivo descargado para que quede:
+
+      JUGOS-CLAUDE\
+      ├── WPy32-xxxxx\          ← Carpeta de WinPython
+      ├── datos_fuente\
+      ├── datos_csv\
+      ├── INICIAR_SISTEMA.bat
+      └── (resto de archivos)
+
+
+   3. Instala las librerías necesarias
+      ─────────────────────────────────
+      Abre CMD en la carpeta JUGOS-CLAUDE y ejecuta:
+
+      WPy32-xxxxx\python.exe -m pip install pandas pyodbc plotly
+
+      (Reemplaza "xxxxx" con la versión que descargaste)
+
+      Esto NO requiere permisos de administrador.
+
+
+   4. Modifica INICIAR_SISTEMA.bat
+      ────────────────────────────────
+      Abre INICIAR_SISTEMA.bat con Bloc de notas
+
+      Busca esta línea:
+         set PYTHON_CMD=C:\Python32\python.exe
+
+      Cámbiala por:
+         set PYTHON_CMD=%~dp0WPy32-xxxxx\python.exe
+
+      (Reemplaza "xxxxx" con tu versión)
+
+      Guarda el archivo.
+
+
+   5. Ejecuta el sistema
+      ───────────────────
+      Ahora ejecuta:
+         INICIAR_SISTEMA.bat
+
+      ¡Ya debería funcionar!
+
+
+================================================================================
+ESCENARIO C: "NO HAY DRIVER ODBC DE ACCESS"
+================================================================================
+
+Muy raro, pero puede pasar si Access/Office no está instalado.
+
+SOLUCIÓN A - MODO CSV MANUAL (Sin leer Access):
+   ────────────────────────────────────────────
+   El sistema puede funcionar SIN conectarse a Access:
+
+   1. Abre Access manualmente
+   2. Exporta cada tabla a CSV:
+      - TBL_Lbascular_formato_final.csv
+      - TBL_basculae_formato_final.csv
+      - IngresosConKm.csv
+      - LProveedor.csv
+      - Lvariedad.csv
+      - LTipo_Camion.csv
+
+   3. Copia los CSV a la carpeta: datos_csv\
+
+   4. El sistema usará estos CSV automáticamente
+
+   5. Actualiza manualmente los CSV cuando necesites datos nuevos
+
+SOLUCIÓN B - Pedir al administrador:
+   ──────────────────────────────────
+   Si necesitas actualizaciones automáticas, pide al admin que instale:
+   - AccessDatabaseEngine_X64.exe (si Python es x64)
+   O
+   - Office completo (incluye driver ODBC automáticamente)
+
+
+================================================================================
+ESCENARIO D: "PYTHON NO ESTÁ INSTALADO"
+================================================================================
+
+Si Python no está instalado en la PC de la empresa:
+
+OPCIÓN 1 - Python Portable (RECOMENDADO - Sin admin):
+   ───────────────────────────────────────────────────
+   1. Descarga WinPython (32 o 64 bits, según ODBC disponible)
+   2. Sigue los pasos del ESCENARIO B
+
+
+OPCIÓN 2 - Pedir al administrador:
+   ────────────────────────────────
+   Pide que instale Python oficial desde python.org
+
+
+================================================================================
+VERIFICAR QUE TODO FUNCIONA
+================================================================================
+
+Después de aplicar cualquier solución:
+
+   1. Ejecuta nuevamente:
+      DIAGNOSTICO.bat
+
+   2. Verifica que diga: "TODO ESTA CONFIGURADO CORRECTAMENTE"
+
+   3. Ejecuta:
+      INICIAR_SISTEMA.bat
+
+   4. El dashboard debería abrirse sin errores
+
+
+================================================================================
+TABLA DE COMPATIBILIDAD
+================================================================================
+
+   Python    ODBC      ¿Compatible?    ¿Qué hacer?
+   ------    ----      -------------   -----------
+   x64       x64       ✓ SÍ            Todo bien
+   x64       x32       ✗ NO            Usar Python x32 portable
+   x32       x32       ✓ SÍ            Todo bien
+   x32       x64       ✗ NO            Usar Python x64 portable
+
+
+================================================================================
+PREGUNTAS FRECUENTES
+================================================================================
+
+P: ¿Necesito permisos de administrador?
+R: NO. Con Python Portable puedes ejecutar todo sin admin.
+
+P: ¿Puedo copiar esto a un pendrive?
+R: SÍ. Copia toda la carpeta JUGOS-CLAUDE (incluyendo WinPython si lo usas)
+   al pendrive y ejecútalo desde allí.
+
+P: ¿Funciona en red?
+R: SÍ. Puedes colocar el sistema en una carpeta de red compartida.
+
+P: ¿El Access debe estar abierto?
+R: NO. De hecho, es mejor que esté cerrado. Si alguien lo tiene abierto
+   en modo exclusivo, el sistema no podrá leerlo.
+
+P: ¿Se modifica la base de datos Access?
+R: NO. El sistema SOLO lee, nunca escribe en Access. Es 100% seguro.
+
+P: ¿Qué pasa si actualizo el Access mientras el sistema está corriendo?
+R: Ningún problema. El servicio de actualización automática detectará
+   los cambios cada hora y actualizará los dashboards.
+
+P: ¿Puedo usar Python instalado "normalmente" si ya lo tengo?
+R: SÍ, si es compatible con el driver ODBC (mismo x32 o x64).
+   El diagnóstico te dirá si es compatible.
+
+
+================================================================================
+SOLUCIÓN DE PROBLEMAS
+================================================================================
+
+ERROR: "No se pudo conectar a Access"
+   → Verifica que Access esté cerrado
+   → Verifica la ruta en config.json
+   → Ejecuta DIAGNOSTICO.bat
+
+ERROR: "pyodbc no está instalado"
+   → Ejecuta: python -m pip install pyodbc
+   → O usa Python Portable con pyodbc incluido
+
+ERROR: "No se encontró Python"
+   → Verifica que Python esté en el PATH
+   → O usa Python Portable y modifica INICIAR_SISTEMA.bat
+
+ERROR: Ventana de Python se cierra inmediatamente
+   → Abre CMD manualmente
+   → Navega a la carpeta del sistema
+   → Ejecuta: python diagnostico_completo.py
+   → Lee el error completo
+
+
+================================================================================
+ARCHIVOS ÚTILES
+================================================================================
+
+Para diagnosticar:
+   DIAGNOSTICO.bat              - Detecta problemas
+   VERIFICAR_ODBC.bat          - Lista drivers ODBC
+
+Para configurar:
+   CONFIGURAR_RUTA_RED.bat     - Configura ruta de Access en red
+
+Para ejecutar:
+   INICIAR_SISTEMA.bat         - Inicia todo
+   DETENER_SERVICIO.bat        - Detiene actualizaciones
+
+Para información:
+   INSTRUCCIONES.txt           - Manual completo
+   GUIA_SIN_ADMIN.txt          - Esta guía
+
+
+================================================================================
+CONTACTO
+================================================================================
+
+Si después de seguir esta guía aún tienes problemas:
+   1. Ejecuta DIAGNOSTICO.bat
+   2. Toma captura de pantalla de los resultados
+   3. Toma captura de cualquier mensaje de error
+   4. Contacta al desarrollador con las capturas
+
+
+================================================================================
+RESUMEN RÁPIDO - SOLUCIÓN MÁS COMÚN
+================================================================================
+
+En la mayoría de empresas (Office 32 bits + usuario sin admin):
+
+   1. Descarga WinPython 32 bits portable
+   2. Extrae en la carpeta del proyecto
+   3. Instala librerías: pandas, pyodbc, plotly
+   4. Modifica INICIAR_SISTEMA.bat para usar ese Python
+   5. Ejecuta INICIAR_SISTEMA.bat
+
+¡Listo! No necesitas admin para nada.
+
+
+================================================================================
+VERSIÓN: 2.0 - Enero 2026
+SISTEMA: JUGOS S.A.
+================================================================================

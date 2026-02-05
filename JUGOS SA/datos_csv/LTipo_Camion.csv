@@ -1,0 +1,14 @@
+codigo,nombre,apocope,color,maxbruto
+B,Batea,Batea,8454143.0,70000.0
+C,Chasis,Chasis,16777088.0,22000.0
+D,Chasis volcador,chasis volcador,12189695.0,700000.0
+E,Equipo,Equipo,8454016.0,700000.0
+F,Equipo volcador,equipo volcador,33023.0,1500000.0
+G,Tanque,Tanque,12615680.0,2900000.0
+H,Balancin,Balancin,8404992.0,35000.0
+I,Tractor,Tractor,0.0,10000.0
+J,Especial,Especial,0.0,60000.0
+K,Contratado,Contratado,8454143.0,60000.0
+T,Tanque tarif difer.,Tanque tf,4227072.0,70000.0
+X,Generico,Generico,16711935.0,1300000.0
+Y,Chasis volcador especial,ch Volc Especia,0.0,30000.0

@@ -1,0 +1,143 @@
+================================================================================
+SISTEMA DE DASHBOARDS - JUGOS S.A.
+INSTRUCCIONES PARA USUARIO FINAL (SIMPLIFICADAS)
+================================================================================
+
+¡BIENVENIDO! Este sistema es MUY SIMPLE de usar.
+
+
+================================================================================
+PRIMER USO - CONFIGURACIÓN INICIAL
+================================================================================
+
+1. Copia la carpeta completa a tu PC o red
+2. Crea un acceso directo en el escritorio:
+   - Clic derecho en: INICIAR_SISTEMA.bat
+   - "Enviar a" → "Escritorio (crear acceso directo)"
+3. Renombra el acceso directo: "Dashboard JUGOS S.A."
+4. ¡Listo! Ya está configurado
+
+
+================================================================================
+USO DIARIO - LO ÚNICO QUE NECESITAS SABER
+================================================================================
+
+ABRIR EL SISTEMA:
+   → Doble clic en el acceso directo del escritorio
+   → Espera 10 segundos
+   → Se abre el navegador con el dashboard
+   → ¡Usa el sistema normalmente!
+
+CERRAR EL SISTEMA:
+   → Clic en la "X" del navegador (cerrar)
+   → ¡Listo! Todo se detiene automáticamente
+
+
+================================================================================
+EDITAR DATOS EN ACCESS
+================================================================================
+
+Si necesitas actualizar datos en Access:
+
+1. CIERRA el navegador (X roja)
+2. Abre Access
+3. Edita lo que necesites
+4. Guarda y cierra Access
+5. Abre el sistema de nuevo (doble clic en acceso directo)
+6. ¡Los cambios estarán ahí!
+
+
+================================================================================
+ACTUALIZACIÓN AUTOMÁTICA (SIN HACER NADA)
+================================================================================
+
+El sistema se actualiza SOLO cada 1 hora:
+   - No necesitas cerrar nada
+   - No necesitas hacer clic en nada
+   - El navegador se refresca automáticamente
+   - Los datos se actualizan solos
+
+
+================================================================================
+PESTAÑAS DISPONIBLES
+================================================================================
+
+El dashboard tiene 3 pestañas en la parte superior:
+
+[Stock Global]    - Ver estado general de bins
+[Proveedores]     - Analizar proveedores individuales
+[Logística]       - Análisis de transporte y distancias
+
+
+================================================================================
+PROBLEMAS COMUNES
+================================================================================
+
+PROBLEMA: No veo los cambios que hice en Access
+SOLUCIÓN:
+   1. Cierra el navegador
+   2. Abre el sistema de nuevo
+   3. Los cambios deberían estar
+
+PROBLEMA: El sistema tarda en abrir
+SOLUCIÓN:
+   Es normal. Espera 10-15 segundos mientras:
+   - Lee los datos de Access
+   - Genera los gráficos
+   - Abre el navegador
+
+PROBLEMA: Aparece error al abrir
+SOLUCIÓN:
+   - Verifica que Access esté en: datos_fuente\VerDatosGaspar-local.accdb
+   - Si persiste, contacta a soporte técnico
+
+
+================================================================================
+CONSEJOS
+================================================================================
+
+✓ Puedes dejar el sistema abierto todo el día
+✓ Se actualiza solo cada hora automáticamente
+✓ Al cerrar, todo se detiene sin dejar procesos
+✓ Es seguro: solo LEE Access, nunca modifica datos
+✓ Funciona sin internet
+
+
+================================================================================
+RESUMEN RÁPIDO
+================================================================================
+
+   ABRIR:  Doble clic en acceso directo
+   USAR:   Navega por las pestañas
+   CERRAR: X roja del navegador
+
+¡Eso es todo! No necesitas saber más.
+
+
+================================================================================
+SOPORTE TÉCNICO
+================================================================================
+
+Si necesitas ayuda adicional:
+   - Contacta al área de IT
+   - Menciona: "Dashboard JUGOS S.A."
+
+
+================================================================================
+NOTAS IMPORTANTES
+================================================================================
+
+- NO cierres las ventanas minimizadas de Python
+  (Se cierran solas al cerrar el navegador)
+
+- NO ejecutes otros archivos .bat del sistema
+  (Solo usa: INICIAR_SISTEMA.bat)
+
+- NO modifiques archivos del sistema
+  (Solo edita Access cuando necesites)
+
+
+================================================================================
+VERSIÓN: 3.0 - Con Cierre Automático
+FECHA: Enero 2026
+================================================================================

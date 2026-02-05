@@ -1,0 +1,745 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proveedores - Jugos S.A.</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: #1B5E4E;
+            padding: 20px 25px;
+            border-bottom: 2px solid #2ECC71;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            color: #e0e0e0;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header .fecha {
+            font-size: 0.95em;
+            margin-top: 5px;
+            color: #b0b0b0;
+        }
+
+        .header-right {
+            flex: 0 0 400px;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            font-size: 1em;
+            border: 2px solid #2C6E5D;
+            border-radius: 4px;
+            background: #0d3d2f;
+            color: #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: #2ECC71;
+            background: #1a1a1a;
+        }
+
+        #searchInput::placeholder {
+            color: #808080;
+        }
+
+        #clearSearch {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #b0b0b0;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px;
+            display: none;
+        }
+
+        #clearSearch:hover {
+            color: #2ECC71;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 5px;
+            background: #0d3d2f;
+            border: 2px solid #2ECC71;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .autocomplete-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            color: #e0e0e0;
+            border-bottom: 1px solid #2C6E5D;
+            transition: all 0.2s;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background: #1B5E4E;
+            color: #2ECC71;
+        }
+
+        .autocomplete-item .codigo {
+            font-weight: 600;
+            color: #2ECC71;
+        }
+
+        .autocomplete-item .nombre {
+            margin-left: 5px;
+            color: #e0e0e0;
+        }
+
+        .autocomplete-no-results {
+            padding: 12px 15px;
+            color: #808080;
+            text-align: center;
+            font-style: italic;
+        }
+
+        @media (max-width: 1200px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-right {
+                flex: 1;
+                width: 100%;
+            }
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 15px;
+            padding: 15px;
+            max-width: 1920px;
+            margin: 0 auto;
+            height: calc(100vh - 170px);
+        }
+
+        .grid-container {
+            background: #1B5E4E;
+            border-radius: 4px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        .grid-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #e0e0e0;
+        }
+
+        .proveedores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+        }
+
+        .proveedor-card {
+            padding: 15px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            text-align: center;
+        }
+
+        .proveedor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .proveedor-card.selected {
+            border: 2px solid #0078D4;
+            box-shadow: 0 4px 12px rgba(0,120,212,0.3);
+        }
+
+        .proveedor-card.VERDE {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .proveedor-card.AMARILLO {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .proveedor-card.ROJO {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .proveedor-nombre {
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        .proveedor-deuda {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .panel-derecho {
+            background: #1B5E4E;
+            border-radius: 4px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .gauge-container {
+            margin-bottom: 15px;
+        }
+
+        .detalles-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .detalle-titulo {
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+            grid-column: 1 / -1;
+        }
+
+        .detalle-item {
+            margin-bottom: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #2ECC71;
+        }
+
+        .detalle-item:last-child {
+            border-bottom: none;
+        }
+
+        .detalle-label {
+            font-size: 0.65em;
+            color: #b0b0b0;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+
+        .detalle-valor {
+            font-size: 0.95em;
+            font-weight: 700;
+            color: #e0e0e0;
+        }
+
+        .detalle-subtitulo {
+            font-size: 0.65em;
+            color: #808080;
+            margin-top: 1px;
+        }
+
+        .semaforo-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .semaforo-badge.VERDE {
+            background: #28a745;
+            color: white;
+        }
+
+        .semaforo-badge.AMARILLO {
+            background: #ffc107;
+            color: #e0e0e0;
+        }
+
+        .semaforo-badge.ROJO {
+            background: #dc3545;
+            color: white;
+        }
+
+        .placeholder {
+            text-align: center;
+            padding: 40px;
+            color: #808080;
+        }
+
+        .placeholder-icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            background: #0d333d;
+            color: #b0b0b0;
+            padding: 8px 15px;
+            text-align: center;
+            font-size: 0.7em;
+            border-top: 2px solid #2ECC71;
+        }
+
+        .footer-title {
+            color: #e0e0e0;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .footer-subtitle {
+            color: #808080;
+            font-size: 0.9em;
+            margin-bottom: 4px;
+        }
+
+        .footer-contact {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .footer-contact-item {
+            color: #b0b0b0;
+        }
+
+        .footer-contact-item a {
+            color: #2ECC71;
+            text-decoration: none;
+        }
+
+        .footer-contact-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>JUGOS S.A. - Análisis por Proveedor</h1>
+            <div class="fecha">Actualizado: 05/02/2026 18:58:07</div>
+        </div>
+        <div class="header-right">
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Buscar proveedor (código o nombre)..."
+                    autocomplete="off"
+                >
+                <button id="clearSearch" onclick="limpiarBusqueda()">✕</button>
+                <div id="autocompleteDropdown" class="autocomplete-dropdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Grid de proveedores -->
+        <div class="grid-container">
+            <div class="grid-title">Proveedores (278)</div>
+            <div class="proveedores-grid" id="proveedoresGrid">
+                <!-- Se llenará con JavaScript -->
+            </div>
+        </div>
+
+        <!-- Panel derecho -->
+        <div class="panel-derecho">
+            <!-- Gauge -->
+            <div class="gauge-container">
+                <div id="gaugeChart"></div>
+            </div>
+
+            <!-- Detalles -->
+            <div class="detalles-container" id="detallesContainer">
+                <div class="placeholder">
+                    <div class="placeholder-icon">📊</div>
+                    <p>Selecciona un proveedor para ver sus detalles</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-title">Desarrollado por Gaspar Giannitrapani</div>
+        <div class="footer-subtitle">Técnico Superior en Ciencia de Datos</div>
+        <div class="footer-contact">
+            <div class="footer-contact-item">
+                <a href="mailto:giannitrapanigaspar@gmail.com">giannitrapanigaspar@gmail.com</a>
+            </div>
+            <div class="footer-contact-item">+54 9 298 470-4091</div>
+            <div class="footer-contact-item">
+                <a href="https://www.linkedin.com/in/giannitrapanigaspar" target="_blank">linkedin.com/in/giannitrapanigaspar</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de proveedores
+        const proveedores = [{"proveedor": 30776.0, "nombre": "CIFUENTES JOSE Y RAFAEL                 ", "salidas": 126, "entradas": 0, "deuda": 126, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 31007.0, "nombre": "LA DELICIOSA SA                         ", "salidas": 230, "entradas": 0, "deuda": 230, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 30577.0, "nombre": "FRUVAL SA                               ", "salidas": 66, "entradas": 0, "deuda": 66, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 31019.0, "nombre": "BARTUSCH RODOLFO ERNESTO                ", "salidas": 20, "entradas": 0, "deuda": 20, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 20051.0, "nombre": "CHIRU SRL                               ", "salidas": 8, "entradas": 0, "deuda": 8, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 10074.0, "nombre": "FERNANDEZ JORGE LUIS                    ", "salidas": 72, "entradas": 0, "deuda": 72, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 40449.0, "nombre": "FERNANDEZ JOSE LUIS                     ", "salidas": 68, "entradas": 0, "deuda": 68, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 13668.0, "nombre": "SAGREDO CARLOS Y SAGREDO E.S.CAP        ", "salidas": 31, "entradas": 0, "deuda": 31, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 31100.0, "nombre": "NATALINI FACUNDO A.                     ", "salidas": 120, "entradas": 0, "deuda": 120, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 30461.0, "nombre": "GARCIA CARLOS                           ", "salidas": 24, "entradas": 0, "deuda": 24, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 30210.0, "nombre": "ITALAGRO SA                             ", "salidas": 30, "entradas": 0, "deuda": 30, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 0.0, "nombre": null, "salidas": 66, "entradas": 0, "deuda": 66, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 30784.0, "nombre": "MENCHETTI JOSE SUC DE                   ", "salidas": 24, "entradas": 0, "deuda": 24, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 31130.0, "nombre": "RODRIGUEZ PABLO CESAR                   ", "salidas": 135, "entradas": 0, "deuda": 135, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 30207.0, "nombre": "TEOREMA SRL                             ", "salidas": 39, "entradas": 0, "deuda": 39, "deuda_pct": 100.0, "ratio_dev": 0.0, "dias_sin_dev": 999, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (100.0%)", "orden": 0}, {"proveedor": 40220.0, "nombre": "MINISINI JORGE RAUL                     ", "salidas": 109, "entradas": 39, "deuda": 70, "deuda_pct": 64.2, "ratio_dev": 35.8, "dias_sin_dev": 272, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (64.2%)", "orden": 0}, {"proveedor": 40098.0, "nombre": "AGRICOLA ALTO VALLE S.A                 ", "salidas": 1340, "entradas": 583, "deuda": 757, "deuda_pct": 56.5, "ratio_dev": 43.5, "dias_sin_dev": 91, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (56.5%)", "orden": 0}, {"proveedor": 31032.0, "nombre": "LA GARDENA SA                           ", "salidas": 241, "entradas": 121, "deuda": 120, "deuda_pct": 49.8, "ratio_dev": 50.2, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (49.8%)", "orden": 0}, {"proveedor": 31290.0, "nombre": "BARDAS SUR S.A.S                        ", "salidas": 31, "entradas": 18, "deuda": 13, "deuda_pct": 41.9, "ratio_dev": 58.1, "dias_sin_dev": 325, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (41.9%)", "orden": 0}, {"proveedor": 31128.0, "nombre": "AUKA RIVIERE SA                         ", "salidas": 1173, "entradas": 689, "deuda": 484, "deuda_pct": 41.3, "ratio_dev": 58.7, "dias_sin_dev": 135, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "ROJO", "razon": "Deuda alta (41.3%)", "orden": 0}, {"proveedor": 31271.0, "nombre": "FRUTAS ADAN S.A.S                       ", "salidas": 24, "entradas": 15, "deuda": 9, "deuda_pct": 37.5, "ratio_dev": 62.5, "dias_sin_dev": 182, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (37.5%)", "orden": 1}, {"proveedor": 30775.0, "nombre": "FRUTECO SA                              ", "salidas": 56, "entradas": 36, "deuda": 20, "deuda_pct": 35.7, "ratio_dev": 64.3, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (35.7%)", "orden": 1}, {"proveedor": 30811.0, "nombre": "SUCESION DE MENENDEZ JOSE               ", "salidas": 64, "entradas": 42, "deuda": 22, "deuda_pct": 34.4, "ratio_dev": 65.6, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (34.4%)", "orden": 1}, {"proveedor": 31394.0, "nombre": "ANDURIL S.A.S                           ", "salidas": 978, "entradas": 662, "deuda": 316, "deuda_pct": 32.3, "ratio_dev": 67.7, "dias_sin_dev": 314, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (32.3%)", "orden": 1}, {"proveedor": 30847.0, "nombre": "BENITO HECTOR ARTURO                    ", "salidas": 16, "entradas": 11, "deuda": 5, "deuda_pct": 31.2, "ratio_dev": 68.8, "dias_sin_dev": 372, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (31.2%)", "orden": 1}, {"proveedor": 31292.0, "nombre": "CORTESE JOSE NICOLAS                    ", "salidas": 547, "entradas": 411, "deuda": 136, "deuda_pct": 24.9, "ratio_dev": 75.1, "dias_sin_dev": 314, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (24.9%)", "orden": 1}, {"proveedor": 30594.0, "nombre": "GRECO OMAR HUGO                         ", "salidas": 85, "entradas": 64, "deuda": 21, "deuda_pct": 24.7, "ratio_dev": 75.3, "dias_sin_dev": 325, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (24.7%)", "orden": 1}, {"proveedor": 30483.0, "nombre": "SANCHEZ RICARDO ANTONIO                 ", "salidas": 192, "entradas": 145, "deuda": 47, "deuda_pct": 24.5, "ratio_dev": 75.5, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (24.5%)", "orden": 1}, {"proveedor": 40289.0, "nombre": "VALTIERRA SA                            ", "salidas": 160, "entradas": 121, "deuda": 39, "deuda_pct": 24.4, "ratio_dev": 75.6, "dias_sin_dev": 328, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (24.4%)", "orden": 1}, {"proveedor": 31286.0, "nombre": "GIAMBARTOLOMEI RODOLFO RAUL             ", "salidas": 204, "entradas": 157, "deuda": 47, "deuda_pct": 23.0, "ratio_dev": 77.0, "dias_sin_dev": 328, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (23.0%)", "orden": 1}, {"proveedor": 30025.0, "nombre": "DINASTIA SRL                            ", "salidas": 199, "entradas": 155, "deuda": 44, "deuda_pct": 22.1, "ratio_dev": 77.9, "dias_sin_dev": 313, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (22.1%)", "orden": 1}, {"proveedor": 30069.0, "nombre": "SARALEGUY FRANCISCO JAVIER              ", "salidas": 306, "entradas": 239, "deuda": 67, "deuda_pct": 21.9, "ratio_dev": 78.1, "dias_sin_dev": 309, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (21.9%)", "orden": 1}, {"proveedor": 31039.0, "nombre": "MORALES DANIEL GERARDO                  ", "salidas": 251, "entradas": 199, "deuda": 52, "deuda_pct": 20.7, "ratio_dev": 79.3, "dias_sin_dev": 272, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (20.7%)", "orden": 1}, {"proveedor": 30820.0, "nombre": "NAPOLITANO JUAN CARLOS                  ", "salidas": 248, "entradas": 198, "deuda": 50, "deuda_pct": 20.2, "ratio_dev": 79.8, "dias_sin_dev": 322, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "AMARILLO", "razon": "Deuda moderada (20.2%)", "orden": 1}, {"proveedor": 30913.0, "nombre": "CASSINELLI DANIEL                       ", "salidas": 92, "entradas": 75, "deuda": 17, "deuda_pct": 18.5, "ratio_dev": 81.5, "dias_sin_dev": 148, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (18.5%)", "orden": 2}, {"proveedor": 40069.0, "nombre": "CARBAJO VICENTE                         ", "salidas": 2152, "entradas": 1807, "deuda": 345, "deuda_pct": 16.0, "ratio_dev": 84.0, "dias_sin_dev": 78, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (16.0%)", "orden": 2}, {"proveedor": 30437.0, "nombre": "VICOPISANO SA                           ", "salidas": 302, "entradas": 254, "deuda": 48, "deuda_pct": 15.9, "ratio_dev": 84.1, "dias_sin_dev": 262, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (15.9%)", "orden": 2}, {"proveedor": 30918.0, "nombre": "HUE-CURA SRL                            ", "salidas": 559, "entradas": 471, "deuda": 88, "deuda_pct": 15.7, "ratio_dev": 84.3, "dias_sin_dev": 323, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (15.7%)", "orden": 2}, {"proveedor": 30023.0, "nombre": "SCATTOLO JORGE                          ", "salidas": 482, "entradas": 407, "deuda": 75, "deuda_pct": 15.6, "ratio_dev": 84.4, "dias_sin_dev": 282, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (15.6%)", "orden": 2}, {"proveedor": 31091.0, "nombre": "EST. SOLEDAD SA                         ", "salidas": 196, "entradas": 166, "deuda": 30, "deuda_pct": 15.3, "ratio_dev": 84.7, "dias_sin_dev": 370, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (15.3%)", "orden": 2}, {"proveedor": 30728.0, "nombre": "RIVOLY SRL                              ", "salidas": 1445, "entradas": 1229, "deuda": 216, "deuda_pct": 14.9, "ratio_dev": 85.1, "dias_sin_dev": 57, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (14.9%)", "orden": 2}, {"proveedor": 30416.0, "nombre": "MONTEVER SA                             ", "salidas": 957, "entradas": 816, "deuda": 141, "deuda_pct": 14.7, "ratio_dev": 85.3, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (14.7%)", "orden": 2}, {"proveedor": 30151.0, "nombre": "INVERTEG SA                             ", "salidas": 670, "entradas": 572, "deuda": 98, "deuda_pct": 14.6, "ratio_dev": 85.4, "dias_sin_dev": 251, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (14.6%)", "orden": 2}, {"proveedor": 30198.0, "nombre": "BONADE SA                               ", "salidas": 1747, "entradas": 1504, "deuda": 243, "deuda_pct": 13.9, "ratio_dev": 86.1, "dias_sin_dev": 62, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (13.9%)", "orden": 2}, {"proveedor": 30095.0, "nombre": "JUSTO FERNANDEZ FLORES SACI Y A         ", "salidas": 331, "entradas": 289, "deuda": 42, "deuda_pct": 12.7, "ratio_dev": 87.3, "dias_sin_dev": 199, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (12.7%)", "orden": 2}, {"proveedor": 31388.0, "nombre": "BOROCCI EMILIANO                        ", "salidas": 159, "entradas": 139, "deuda": 20, "deuda_pct": 12.6, "ratio_dev": 87.4, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (12.6%)", "orden": 2}, {"proveedor": 31335.0, "nombre": "CAPESSO SRL                             ", "salidas": 286, "entradas": 250, "deuda": 36, "deuda_pct": 12.6, "ratio_dev": 87.4, "dias_sin_dev": 286, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (12.6%)", "orden": 2}, {"proveedor": 30951.0, "nombre": "ROTTER SACI Y A                         ", "salidas": 96, "entradas": 84, "deuda": 12, "deuda_pct": 12.5, "ratio_dev": 87.5, "dias_sin_dev": 69, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (12.5%)", "orden": 2}, {"proveedor": 31421.0, "nombre": "PASQUINI SEBASTIAN MAXIMILIANO          ", "salidas": 307, "entradas": 269, "deuda": 38, "deuda_pct": 12.4, "ratio_dev": 87.6, "dias_sin_dev": 294, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (12.4%)", "orden": 2}, {"proveedor": 30597.0, "nombre": "LABARRIERE JUAN LUIS                    ", "salidas": 245, "entradas": 216, "deuda": 29, "deuda_pct": 11.8, "ratio_dev": 88.2, "dias_sin_dev": 318, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (11.8%)", "orden": 2}, {"proveedor": 30996.0, "nombre": "FLORES BERNO FRANCISCO                  ", "salidas": 603, "entradas": 533, "deuda": 70, "deuda_pct": 11.6, "ratio_dev": 88.4, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (11.6%)", "orden": 2}, {"proveedor": 31420.0, "nombre": "APIS CAROLINA VALERIA                   ", "salidas": 602, "entradas": 533, "deuda": 69, "deuda_pct": 11.5, "ratio_dev": 88.5, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (11.5%)", "orden": 2}, {"proveedor": 30173.0, "nombre": "RAICES PATAGONICAS SRL                  ", "salidas": 3103, "entradas": 2764, "deuda": 339, "deuda_pct": 10.9, "ratio_dev": 89.1, "dias_sin_dev": 90, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (10.9%)", "orden": 2}, {"proveedor": 30137.0, "nombre": "PERAZZOLO HUGO ALBERTO                  ", "salidas": 232, "entradas": 207, "deuda": 25, "deuda_pct": 10.8, "ratio_dev": 89.2, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (10.8%)", "orden": 2}, {"proveedor": 12421.0, "nombre": "DON CLEMENTE SRL                        ", "salidas": 14334, "entradas": 12815, "deuda": 1519, "deuda_pct": 10.6, "ratio_dev": 89.4, "dias_sin_dev": 57, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (10.6%)", "orden": 2}, {"proveedor": 31133.0, "nombre": "CARPO SA                                ", "salidas": 1797, "entradas": 1618, "deuda": 179, "deuda_pct": 10.0, "ratio_dev": 90.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (10.0%)", "orden": 2}, {"proveedor": 31121.0, "nombre": "GALA KALEY S.R.L                        ", "salidas": 939, "entradas": 846, "deuda": 93, "deuda_pct": 9.9, "ratio_dev": 90.1, "dias_sin_dev": 142, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (9.9%)", "orden": 2}, {"proveedor": 31274.0, "nombre": "PIERDOMINICI HORACIO VICENTE JUAN       ", "salidas": 867, "entradas": 787, "deuda": 80, "deuda_pct": 9.2, "ratio_dev": 90.8, "dias_sin_dev": 279, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (9.2%)", "orden": 2}, {"proveedor": 30357.0, "nombre": "ZUDICH ADRIAN EDUARDO RUBEN             ", "salidas": 1348, "entradas": 1225, "deuda": 123, "deuda_pct": 9.1, "ratio_dev": 90.9, "dias_sin_dev": 62, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (9.1%)", "orden": 2}, {"proveedor": 30009.0, "nombre": "LUCIA GIULIANA SRL*                     ", "salidas": 1163, "entradas": 1060, "deuda": 103, "deuda_pct": 8.9, "ratio_dev": 91.1, "dias_sin_dev": 63, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (8.9%)", "orden": 2}, {"proveedor": 31009.0, "nombre": "BREVI ARNALDO ADALBERTO                 ", "salidas": 2326, "entradas": 2119, "deuda": 207, "deuda_pct": 8.9, "ratio_dev": 91.1, "dias_sin_dev": 156, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (8.9%)", "orden": 2}, {"proveedor": 31389.0, "nombre": "COLETTI ELENA VICTORIA                  ", "salidas": 257, "entradas": 235, "deuda": 22, "deuda_pct": 8.6, "ratio_dev": 91.4, "dias_sin_dev": 294, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (8.6%)", "orden": 2}, {"proveedor": 31235.0, "nombre": "OLLER JUAN O.                           ", "salidas": 399, "entradas": 365, "deuda": 34, "deuda_pct": 8.5, "ratio_dev": 91.5, "dias_sin_dev": 303, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (8.5%)", "orden": 2}, {"proveedor": 12410.0, "nombre": "J.B. FILIPPI S.R.L                      ", "salidas": 1365, "entradas": 1250, "deuda": 115, "deuda_pct": 8.4, "ratio_dev": 91.6, "dias_sin_dev": 64, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (8.4%)", "orden": 2}, {"proveedor": 31299.0, "nombre": "POLI NELSON GABRIEL                     ", "salidas": 265, "entradas": 244, "deuda": 21, "deuda_pct": 7.9, "ratio_dev": 92.1, "dias_sin_dev": 195, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (7.9%)", "orden": 2}, {"proveedor": 31328.0, "nombre": "AGROBAR ORGANICOS S.A.S                 ", "salidas": 1014, "entradas": 935, "deuda": 79, "deuda_pct": 7.8, "ratio_dev": 92.2, "dias_sin_dev": 257, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (7.8%)", "orden": 2}, {"proveedor": 30859.0, "nombre": "FILOCAMO JOSE                           ", "salidas": 166, "entradas": 153, "deuda": 13, "deuda_pct": 7.8, "ratio_dev": 92.2, "dias_sin_dev": 295, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (7.8%)", "orden": 2}, {"proveedor": 31093.0, "nombre": "STANDARD FRUIT ARG/ DOLE                ", "salidas": 3390, "entradas": 3124, "deuda": 266, "deuda_pct": 7.8, "ratio_dev": 92.2, "dias_sin_dev": 57, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (7.8%)", "orden": 2}, {"proveedor": 31289.0, "nombre": "PIPS S.A.S                              ", "salidas": 382, "entradas": 353, "deuda": 29, "deuda_pct": 7.6, "ratio_dev": 92.4, "dias_sin_dev": 93, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (7.6%)", "orden": 2}, {"proveedor": 30796.0, "nombre": "CASSANI ALEJANDRO                       ", "salidas": 250, "entradas": 232, "deuda": 18, "deuda_pct": 7.2, "ratio_dev": 92.8, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (7.2%)", "orden": 2}, {"proveedor": 30018.0, "nombre": "DE AZEVEDO WALTER FERNANDO              ", "salidas": 839, "entradas": 782, "deuda": 57, "deuda_pct": 6.8, "ratio_dev": 93.2, "dias_sin_dev": 190, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (6.8%)", "orden": 2}, {"proveedor": 30427.0, "nombre": "PATAGONIAN FRUITS TRADE SA              ", "salidas": 7609, "entradas": 7095, "deuda": 514, "deuda_pct": 6.8, "ratio_dev": 93.2, "dias_sin_dev": 99, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (6.8%)", "orden": 2}, {"proveedor": 31261.0, "nombre": "ORGANICOS ARGENTINOS SAS                ", "salidas": 4378, "entradas": 4090, "deuda": 288, "deuda_pct": 6.6, "ratio_dev": 93.4, "dias_sin_dev": 120, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (6.6%)", "orden": 2}, {"proveedor": 31301.0, "nombre": "PRIMERA COOP.F.DE GENERAL ROCA          ", "salidas": 2523, "entradas": 2359, "deuda": 164, "deuda_pct": 6.5, "ratio_dev": 93.5, "dias_sin_dev": 232, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (6.5%)", "orden": 2}, {"proveedor": 30229.0, "nombre": "BALEANI HUGO                            ", "salidas": 2844, "entradas": 2660, "deuda": 184, "deuda_pct": 6.5, "ratio_dev": 93.5, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (6.5%)", "orden": 2}, {"proveedor": 30428.0, "nombre": "HACIENDA MARTINEZ S.R.L.                ", "salidas": 6199, "entradas": 5810, "deuda": 389, "deuda_pct": 6.3, "ratio_dev": 93.7, "dias_sin_dev": 63, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (6.3%)", "orden": 2}, {"proveedor": 12445.0, "nombre": "CORRADI LUCAS                           ", "salidas": 565, "entradas": 530, "deuda": 35, "deuda_pct": 6.2, "ratio_dev": 93.8, "dias_sin_dev": 107, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (6.2%)", "orden": 2}, {"proveedor": 11876.0, "nombre": "SUCESION DE AEDO FERNANDEZ ALFONSO      ", "salidas": 32, "entradas": 30, "deuda": 2, "deuda_pct": 6.2, "ratio_dev": 93.8, "dias_sin_dev": 376, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (6.2%)", "orden": 2}, {"proveedor": 30266.0, "nombre": "SURCOSUR S.R.L                          ", "salidas": 3022, "entradas": 2840, "deuda": 182, "deuda_pct": 6.0, "ratio_dev": 94.0, "dias_sin_dev": 61, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (6.0%)", "orden": 2}, {"proveedor": 31054.0, "nombre": "MENCHETTI ROSA MARIA                    ", "salidas": 234, "entradas": 220, "deuda": 14, "deuda_pct": 6.0, "ratio_dev": 94.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (6.0%)", "orden": 2}, {"proveedor": 40110.0, "nombre": "FERNANDEZ SANTIAGO                      ", "salidas": 914, "entradas": 860, "deuda": 54, "deuda_pct": 5.9, "ratio_dev": 94.1, "dias_sin_dev": 303, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (5.9%)", "orden": 2}, {"proveedor": 30880.0, "nombre": "MENDOZA NICOLA ARIEL                    ", "salidas": 409, "entradas": 385, "deuda": 24, "deuda_pct": 5.9, "ratio_dev": 94.1, "dias_sin_dev": 317, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (5.9%)", "orden": 2}, {"proveedor": 30006.0, "nombre": "DELLA PITTIMA GRAZIANO                  ", "salidas": 1584, "entradas": 1492, "deuda": 92, "deuda_pct": 5.8, "ratio_dev": 94.2, "dias_sin_dev": 285, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (5.8%)", "orden": 2}, {"proveedor": 40081.0, "nombre": "DOLE NAT.CO.SA                          ", "salidas": 4650, "entradas": 4402, "deuda": 248, "deuda_pct": 5.3, "ratio_dev": 94.7, "dias_sin_dev": 56, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (5.3%)", "orden": 2}, {"proveedor": 31342.0, "nombre": "AGROP.SANTO AUGUSTO SRL                 ", "salidas": 1181, "entradas": 1118, "deuda": 63, "deuda_pct": 5.3, "ratio_dev": 94.7, "dias_sin_dev": 197, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (5.3%)", "orden": 2}, {"proveedor": 30787.0, "nombre": "LIPPOLIS ROBERTO                        ", "salidas": 600, "entradas": 569, "deuda": 31, "deuda_pct": 5.2, "ratio_dev": 94.8, "dias_sin_dev": 269, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (5.2%)", "orden": 2}, {"proveedor": 31391.0, "nombre": "ENRIQUEZ EDUARDO LUIS                   ", "salidas": 1859, "entradas": 1766, "deuda": 93, "deuda_pct": 5.0, "ratio_dev": 95.0, "dias_sin_dev": 294, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (5.0%)", "orden": 2}, {"proveedor": 30256.0, "nombre": "SILVESTRI DANIEL ANGEL                  ", "salidas": 386, "entradas": 368, "deuda": 18, "deuda_pct": 4.7, "ratio_dev": 95.3, "dias_sin_dev": 288, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (4.7%)", "orden": 2}, {"proveedor": 31126.0, "nombre": "SAGA SRL                                ", "salidas": 1039, "entradas": 990, "deuda": 49, "deuda_pct": 4.7, "ratio_dev": 95.3, "dias_sin_dev": 69, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (4.7%)", "orden": 2}, {"proveedor": 31297.0, "nombre": "DE LA FOURNIERE ALEJANDRO M.F           ", "salidas": 439, "entradas": 419, "deuda": 20, "deuda_pct": 4.6, "ratio_dev": 95.4, "dias_sin_dev": 297, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (4.6%)", "orden": 2}, {"proveedor": 30568.0, "nombre": "ROTTER DOMINGO JUAN                     ", "salidas": 156, "entradas": 149, "deuda": 7, "deuda_pct": 4.5, "ratio_dev": 95.5, "dias_sin_dev": 303, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (4.5%)", "orden": 2}, {"proveedor": 31064.0, "nombre": "COOP.FRUTICOLA Y CONSUMO LA FLOR S.C.L  ", "salidas": 4431, "entradas": 4238, "deuda": 193, "deuda_pct": 4.4, "ratio_dev": 95.6, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (4.4%)", "orden": 2}, {"proveedor": 31269.0, "nombre": "BONA TERRA                              ", "salidas": 1104, "entradas": 1056, "deuda": 48, "deuda_pct": 4.3, "ratio_dev": 95.7, "dias_sin_dev": 63, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (4.3%)", "orden": 2}, {"proveedor": 30849.0, "nombre": "GAGLIANO CARLOS                         ", "salidas": 345, "entradas": 330, "deuda": 15, "deuda_pct": 4.3, "ratio_dev": 95.7, "dias_sin_dev": 283, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (4.3%)", "orden": 2}, {"proveedor": 31029.0, "nombre": "FUSCAGNI MATIAS NICOLAS                 ", "salidas": 1033, "entradas": 993, "deuda": 40, "deuda_pct": 3.9, "ratio_dev": 96.1, "dias_sin_dev": 61, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.9%)", "orden": 2}, {"proveedor": 30387.0, "nombre": "DYNAS SRL                               ", "salidas": 3213, "entradas": 3089, "deuda": 124, "deuda_pct": 3.9, "ratio_dev": 96.1, "dias_sin_dev": 300, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.9%)", "orden": 2}, {"proveedor": 31427.0, "nombre": "YAÑEZ GUSTAVO ANGEL                     ", "salidas": 540, "entradas": 519, "deuda": 21, "deuda_pct": 3.9, "ratio_dev": 96.1, "dias_sin_dev": 286, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.9%)", "orden": 2}, {"proveedor": 30096.0, "nombre": "FRUTIHORTICOLA BELVEDERE SRL            ", "salidas": 5061, "entradas": 4872, "deuda": 189, "deuda_pct": 3.7, "ratio_dev": 96.3, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.7%)", "orden": 2}, {"proveedor": 31096.0, "nombre": "CONTADINI SRL                           ", "salidas": 1290, "entradas": 1244, "deuda": 46, "deuda_pct": 3.6, "ratio_dev": 96.4, "dias_sin_dev": 77, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.6%)", "orden": 2}, {"proveedor": 40126.0, "nombre": "ACUÑA JOSE LUIS                         ", "salidas": 710, "entradas": 685, "deuda": 25, "deuda_pct": 3.5, "ratio_dev": 96.5, "dias_sin_dev": 62, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.5%)", "orden": 2}, {"proveedor": 30400.0, "nombre": "FAVRETTO JUAN Y ADELINO                 ", "salidas": 142, "entradas": 137, "deuda": 5, "deuda_pct": 3.5, "ratio_dev": 96.5, "dias_sin_dev": 287, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.5%)", "orden": 2}, {"proveedor": 30066.0, "nombre": "CELESTINO HNOS S.A.                     ", "salidas": 9330, "entradas": 9012, "deuda": 318, "deuda_pct": 3.4, "ratio_dev": 96.6, "dias_sin_dev": 54, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.4%)", "orden": 2}, {"proveedor": 30063.0, "nombre": "TRES ASES SA                            ", "salidas": 4574, "entradas": 4420, "deuda": 154, "deuda_pct": 3.4, "ratio_dev": 96.6, "dias_sin_dev": 76, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.4%)", "orden": 2}, {"proveedor": 40298.0, "nombre": "GALERA EMETERIO                         ", "salidas": 874, "entradas": 844, "deuda": 30, "deuda_pct": 3.4, "ratio_dev": 96.6, "dias_sin_dev": 247, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.4%)", "orden": 2}, {"proveedor": 30282.0, "nombre": "SCIARDIS NORBERTO Y SCIARDIS OSCAR      ", "salidas": 174, "entradas": 168, "deuda": 6, "deuda_pct": 3.4, "ratio_dev": 96.6, "dias_sin_dev": 295, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.4%)", "orden": 2}, {"proveedor": 30994.0, "nombre": "ALDRIGHETTI RUDI                        ", "salidas": 2073, "entradas": 2004, "deuda": 69, "deuda_pct": 3.3, "ratio_dev": 96.7, "dias_sin_dev": 119, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.3%)", "orden": 2}, {"proveedor": 31136.0, "nombre": "MEZA NELSON                             ", "salidas": 739, "entradas": 716, "deuda": 23, "deuda_pct": 3.1, "ratio_dev": 96.9, "dias_sin_dev": 184, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.1%)", "orden": 2}, {"proveedor": 13450.0, "nombre": "CABEZAS ESTEBAN ADRIAN                  ", "salidas": 12781, "entradas": 12386, "deuda": 395, "deuda_pct": 3.1, "ratio_dev": 96.9, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.1%)", "orden": 2}, {"proveedor": 30656.0, "nombre": "MARTINA SRL                             ", "salidas": 561, "entradas": 544, "deuda": 17, "deuda_pct": 3.0, "ratio_dev": 97.0, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (3.0%)", "orden": 2}, {"proveedor": 31350.0, "nombre": "FAGOTTI FEDERICO                        ", "salidas": 1031, "entradas": 1001, "deuda": 30, "deuda_pct": 2.9, "ratio_dev": 97.1, "dias_sin_dev": 332, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.9%)", "orden": 2}, {"proveedor": 31329.0, "nombre": "SAN MARTIN MARIA LEONOR                 ", "salidas": 6718, "entradas": 6525, "deuda": 193, "deuda_pct": 2.9, "ratio_dev": 97.1, "dias_sin_dev": 160, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.9%)", "orden": 2}, {"proveedor": 40124.0, "nombre": "FIÑANA FRANCISCO SUC.                   ", "salidas": 506, "entradas": 492, "deuda": 14, "deuda_pct": 2.8, "ratio_dev": 97.2, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.8%)", "orden": 2}, {"proveedor": 30792.0, "nombre": "SEGON EDUARDO*                          ", "salidas": 36, "entradas": 35, "deuda": 1, "deuda_pct": 2.8, "ratio_dev": 97.2, "dias_sin_dev": 85, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.8%)", "orden": 2}, {"proveedor": 30646.0, "nombre": "DALSASSO ANDRES                         ", "salidas": 72, "entradas": 70, "deuda": 2, "deuda_pct": 2.8, "ratio_dev": 97.2, "dias_sin_dev": 309, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.8%)", "orden": 2}, {"proveedor": 12426.0, "nombre": "FILIPUZZI CRISTIAN HORACIO              ", "salidas": 221, "entradas": 215, "deuda": 6, "deuda_pct": 2.7, "ratio_dev": 97.3, "dias_sin_dev": 296, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.7%)", "orden": 2}, {"proveedor": 30885.0, "nombre": "SAN FORMERIO SRL                        ", "salidas": 7690, "entradas": 7488, "deuda": 202, "deuda_pct": 2.6, "ratio_dev": 97.4, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.6%)", "orden": 2}, {"proveedor": 30936.0, "nombre": "SIRACUSA LUIS SEBASTIAN                 ", "salidas": 270, "entradas": 263, "deuda": 7, "deuda_pct": 2.6, "ratio_dev": 97.4, "dias_sin_dev": 301, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.6%)", "orden": 2}, {"proveedor": 30927.0, "nombre": "STELZER ARTURO SERGIO                   ", "salidas": 1852, "entradas": 1808, "deuda": 44, "deuda_pct": 2.4, "ratio_dev": 97.6, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.4%)", "orden": 2}, {"proveedor": 31387.0, "nombre": "NONNENMACHER MIGUEL ANGEL               ", "salidas": 1075, "entradas": 1051, "deuda": 24, "deuda_pct": 2.2, "ratio_dev": 97.8, "dias_sin_dev": 321, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.2%)", "orden": 2}, {"proveedor": 30837.0, "nombre": "DEL BEN JUAN CELESTINO                  ", "salidas": 1470, "entradas": 1439, "deuda": 31, "deuda_pct": 2.1, "ratio_dev": 97.9, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.1%)", "orden": 2}, {"proveedor": 31253.0, "nombre": "SANCHEZ GLADYS MABEL                    ", "salidas": 1068, "entradas": 1046, "deuda": 22, "deuda_pct": 2.1, "ratio_dev": 97.9, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (2.1%)", "orden": 2}, {"proveedor": 12464.0, "nombre": "TESTA NANCY                             ", "salidas": 2029, "entradas": 1990, "deuda": 39, "deuda_pct": 1.9, "ratio_dev": 98.1, "dias_sin_dev": 262, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.9%)", "orden": 2}, {"proveedor": 40187.0, "nombre": "BERTOLDI NESTOR                         ", "salidas": 260, "entradas": 255, "deuda": 5, "deuda_pct": 1.9, "ratio_dev": 98.1, "dias_sin_dev": 343, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.9%)", "orden": 2}, {"proveedor": 31424.0, "nombre": "SANTA MARIA HECTOR EDUARDO              ", "salidas": 222, "entradas": 218, "deuda": 4, "deuda_pct": 1.8, "ratio_dev": 98.2, "dias_sin_dev": 322, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.8%)", "orden": 2}, {"proveedor": 20041.0, "nombre": "CECIVE ABEL DINO                        ", "salidas": 1196, "entradas": 1177, "deuda": 19, "deuda_pct": 1.6, "ratio_dev": 98.4, "dias_sin_dev": 244, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.6%)", "orden": 2}, {"proveedor": 30380.0, "nombre": "MARCAL PATAGONICA SA                    ", "salidas": 492, "entradas": 484, "deuda": 8, "deuda_pct": 1.6, "ratio_dev": 98.4, "dias_sin_dev": 135, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.6%)", "orden": 2}, {"proveedor": 31426.0, "nombre": "SUC. DE CALVO RAFAEL F                  ", "salidas": 702, "entradas": 691, "deuda": 11, "deuda_pct": 1.6, "ratio_dev": 98.4, "dias_sin_dev": 307, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.6%)", "orden": 2}, {"proveedor": 31223.0, "nombre": "FRUIT WORLD SA                          ", "salidas": 12106, "entradas": 11929, "deuda": 177, "deuda_pct": 1.5, "ratio_dev": 98.5, "dias_sin_dev": 62, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.5%)", "orden": 2}, {"proveedor": 31129.0, "nombre": "ALVAREZ GRACIELA                        ", "salidas": 66, "entradas": 65, "deuda": 1, "deuda_pct": 1.5, "ratio_dev": 98.5, "dias_sin_dev": 323, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.5%)", "orden": 2}, {"proveedor": 20001.0, "nombre": "MOÑO AZUL SA                            ", "salidas": 11607, "entradas": 11447, "deuda": 160, "deuda_pct": 1.4, "ratio_dev": 98.6, "dias_sin_dev": 76, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.4%)", "orden": 2}, {"proveedor": 35041.0, "nombre": "LAGUNA PATAGONICA S.A.S                 ", "salidas": 2131, "entradas": 2103, "deuda": 28, "deuda_pct": 1.3, "ratio_dev": 98.7, "dias_sin_dev": 54, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.3%)", "orden": 2}, {"proveedor": 31273.0, "nombre": "GLOBAL FRESH                            ", "salidas": 26663, "entradas": 26316, "deuda": 347, "deuda_pct": 1.3, "ratio_dev": 98.7, "dias_sin_dev": 108, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.3%)", "orden": 2}, {"proveedor": 31016.0, "nombre": "LA CONQUISTA SRL                        ", "salidas": 3120, "entradas": 3084, "deuda": 36, "deuda_pct": 1.2, "ratio_dev": 98.8, "dias_sin_dev": 181, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.2%)", "orden": 2}, {"proveedor": 31042.0, "nombre": "MARDAN SA                               ", "salidas": 7130, "entradas": 7055, "deuda": 75, "deuda_pct": 1.1, "ratio_dev": 98.9, "dias_sin_dev": 69, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.1%)", "orden": 2}, {"proveedor": 30016.0, "nombre": "NICOLAU RAUL                            ", "salidas": 1687, "entradas": 1668, "deuda": 19, "deuda_pct": 1.1, "ratio_dev": 98.9, "dias_sin_dev": 274, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.1%)", "orden": 2}, {"proveedor": 31360.0, "nombre": "ALBISU RICARDO OMAR                     ", "salidas": 717, "entradas": 710, "deuda": 7, "deuda_pct": 1.0, "ratio_dev": 99.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.0%)", "orden": 2}, {"proveedor": 40410.0, "nombre": "MOSCHINI ALBERTO A.                     ", "salidas": 7252, "entradas": 7181, "deuda": 71, "deuda_pct": 1.0, "ratio_dev": 99.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (1.0%)", "orden": 2}, {"proveedor": 31305.0, "nombre": "CASTAÑEDA MARIA JUDITH                  ", "salidas": 257, "entradas": 255, "deuda": 2, "deuda_pct": 0.8, "ratio_dev": 99.2, "dias_sin_dev": 303, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.8%)", "orden": 2}, {"proveedor": 13672.0, "nombre": "BIZZOTTO ROBERTO CARLOS                 ", "salidas": 786, "entradas": 780, "deuda": 6, "deuda_pct": 0.8, "ratio_dev": 99.2, "dias_sin_dev": 301, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.8%)", "orden": 2}, {"proveedor": 40071.0, "nombre": "ANDAGRI                                 ", "salidas": 3416, "entradas": 3394, "deuda": 22, "deuda_pct": 0.6, "ratio_dev": 99.4, "dias_sin_dev": 86, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.6%)", "orden": 2}, {"proveedor": 40115.0, "nombre": "CIFUENTES MARCELO                       ", "salidas": 7341, "entradas": 7295, "deuda": 46, "deuda_pct": 0.6, "ratio_dev": 99.4, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.6%)", "orden": 2}, {"proveedor": 12182.0, "nombre": "EVANGELISTA  EDUARDO                    ", "salidas": 319, "entradas": 317, "deuda": 2, "deuda_pct": 0.6, "ratio_dev": 99.4, "dias_sin_dev": 310, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.6%)", "orden": 2}, {"proveedor": 31293.0, "nombre": "DELLA SCHIAVA CARLOS ALBERTO            ", "salidas": 199, "entradas": 198, "deuda": 1, "deuda_pct": 0.5, "ratio_dev": 99.5, "dias_sin_dev": 273, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.5%)", "orden": 2}, {"proveedor": 30729.0, "nombre": "ECO DEL VALLE SRL                       ", "salidas": 949, "entradas": 944, "deuda": 5, "deuda_pct": 0.5, "ratio_dev": 99.5, "dias_sin_dev": 274, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.5%)", "orden": 2}, {"proveedor": 30074.0, "nombre": "KLEPPE SA                               ", "salidas": 26284, "entradas": 26148, "deuda": 136, "deuda_pct": 0.5, "ratio_dev": 99.5, "dias_sin_dev": 233, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.5%)", "orden": 2}, {"proveedor": 30595.0, "nombre": "GRECO OSCAR ALBERTO                     ", "salidas": 195, "entradas": 194, "deuda": 1, "deuda_pct": 0.5, "ratio_dev": 99.5, "dias_sin_dev": 145, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.5%)", "orden": 2}, {"proveedor": 30149.0, "nombre": "LA ARMONIA S.C.A.                       ", "salidas": 2105, "entradas": 2097, "deuda": 8, "deuda_pct": 0.4, "ratio_dev": 99.6, "dias_sin_dev": 154, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.4%)", "orden": 2}, {"proveedor": 31373.0, "nombre": "SANTARELLI  S.A.A.I.y C.                ", "salidas": 1572, "entradas": 1565, "deuda": 7, "deuda_pct": 0.4, "ratio_dev": 99.6, "dias_sin_dev": 295, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.4%)", "orden": 2}, {"proveedor": 30982.0, "nombre": "BASIL SA                                ", "salidas": 2693, "entradas": 2686, "deuda": 7, "deuda_pct": 0.3, "ratio_dev": 99.7, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.3%)", "orden": 2}, {"proveedor": 30073.0, "nombre": "FRUTICOLA MIGUEL SA                     ", "salidas": 1019, "entradas": 1016, "deuda": 3, "deuda_pct": 0.3, "ratio_dev": 99.7, "dias_sin_dev": 253, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.3%)", "orden": 2}, {"proveedor": 30697.0, "nombre": "OGASAWARA SUSUMU Y LIDIA S.H.           ", "salidas": 1026, "entradas": 1023, "deuda": 3, "deuda_pct": 0.3, "ratio_dev": 99.7, "dias_sin_dev": 273, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.3%)", "orden": 2}, {"proveedor": 30051.0, "nombre": "BOSCHI HNOS. SA                         ", "salidas": 8809, "entradas": 8793, "deuda": 16, "deuda_pct": 0.2, "ratio_dev": 99.8, "dias_sin_dev": 54, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.2%)", "orden": 2}, {"proveedor": 30586.0, "nombre": "SEVERINI HNOS                           ", "salidas": 1001, "entradas": 999, "deuda": 2, "deuda_pct": 0.2, "ratio_dev": 99.8, "dias_sin_dev": 295, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.2%)", "orden": 2}, {"proveedor": 31127.0, "nombre": "FRUTPLANET S.A.S                        ", "salidas": 3810, "entradas": 3806, "deuda": 4, "deuda_pct": 0.1, "ratio_dev": 99.9, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.1%)", "orden": 2}, {"proveedor": 40073.0, "nombre": "MENIS SRL                               ", "salidas": 1573, "entradas": 1572, "deuda": 1, "deuda_pct": 0.1, "ratio_dev": 99.9, "dias_sin_dev": 260, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.1%)", "orden": 2}, {"proveedor": 10551.0, "nombre": "MORAGA DANIEL                           ", "salidas": 715, "entradas": 714, "deuda": 1, "deuda_pct": 0.1, "ratio_dev": 99.9, "dias_sin_dev": 313, "ritmo_devolucion": 0.0, "dias_para_saldar": 9999, "ritmo_alerta": "LENTO", "semaforo": "VERDE", "razon": "Deuda baja (0.1%)", "orden": 2}, {"proveedor": 30970.0, "nombre": "PAGONI OSCAR ALBERTO                    ", "salidas": 851, "entradas": 851, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 302, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 40369.0, "nombre": "FUENTES ROLANDO                         ", "salidas": 72, "entradas": 72, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 292, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30827.0, "nombre": "DE BORTOLI Y BAVARESCO                  ", "salidas": 1525, "entradas": 1525, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 275, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 40112.0, "nombre": "FERNANDEZ GONZALEZ JOSE LUIS            ", "salidas": 518, "entradas": 518, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30710.0, "nombre": "ZOILO S.A.                              ", "salidas": 458, "entradas": 458, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30831.0, "nombre": "ZWENGER CARLOS  ORLANDO                 ", "salidas": 704, "entradas": 704, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 233, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30000.0, "nombre": "JUGOS S.A.                              ", "salidas": 0, "entradas": 464, "deuda": -464, "deuda_pct": 0.0, "ratio_dev": 0.0, "dias_sin_dev": 266, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31250.0, "nombre": "VETTO GROSS S.A                         ", "salidas": 135, "entradas": 135, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 377, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31392.0, "nombre": "MUNGAI S.R.L                            ", "salidas": 616, "entradas": 616, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 301, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30015.0, "nombre": "BIOPATAGONIA  SA                        ", "salidas": 168, "entradas": 168, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30654.0, "nombre": "SUC. DE GONZALEZ HERIBERTO              ", "salidas": 525, "entradas": 525, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 301, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30297.0, "nombre": "CECIVE MARCELO E HIJOS SA               ", "salidas": 716, "entradas": 716, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 288, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 3024.0, "nombre": "FAION MARCELO HECTOR                    ", "salidas": 488, "entradas": 488, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 306, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31731.0, "nombre": "LEALI JULIAN ALBERTO                    ", "salidas": 234, "entradas": 234, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 329, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 40078.0, "nombre": "NUÑEZ MIRTA                             ", "salidas": 168, "entradas": 168, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 298, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30247.0, "nombre": "BOROCCI MARTIN                          ", "salidas": 486, "entradas": 486, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 304, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31338.0, "nombre": "ALBISU RAMIREZ JUAN MANUEL              ", "salidas": 706, "entradas": 706, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 288, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31142.0, "nombre": "ROMANO DANIEL                           ", "salidas": 580, "entradas": 580, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 298, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30253.0, "nombre": "BALEANI SRL                             ", "salidas": 1123, "entradas": 1123, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 343, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30810.0, "nombre": "MENDOZA MANUEL                          ", "salidas": 1400, "entradas": 1400, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30749.0, "nombre": "PATAGONIA GLOBAL TRADE SA               ", "salidas": 186, "entradas": 186, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30184.0, "nombre": "ACCATINO JUAN MANUEL                    ", "salidas": 102, "entradas": 102, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 301, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 40080.0, "nombre": "ZAVECOM                                 ", "salidas": 231, "entradas": 231, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30645.0, "nombre": "ALDECOA MARIA LIDA                      ", "salidas": 0, "entradas": 64, "deuda": -64, "deuda_pct": 0.0, "ratio_dev": 0.0, "dias_sin_dev": 54, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 40109.0, "nombre": "SUC GASPARI DINO RAMON                  ", "salidas": 838, "entradas": 838, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 320, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31259.0, "nombre": "PATELLI BRANDON EMMANUEL                ", "salidas": 142, "entradas": 142, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 301, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31340.0, "nombre": "QUINTA LA CELESTE SAS                   ", "salidas": 293, "entradas": 293, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 294, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31092.0, "nombre": "SUC.VANNICOLA RAUL A.                   ", "salidas": 834, "entradas": 834, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 259, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30669.0, "nombre": "SARALEGUY SANDRO SERGIO                 ", "salidas": 487, "entradas": 487, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 254, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30313.0, "nombre": "FRUTA SUR SRL                           ", "salidas": 552, "entradas": 552, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30956.0, "nombre": "FUN LEMU SA                             ", "salidas": 232, "entradas": 232, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30978.0, "nombre": "PEDRESCHI PABLO                         ", "salidas": 57, "entradas": 57, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 14420.0, "nombre": "DALESIO JAVIER ALEJANDRO                ", "salidas": 130, "entradas": 130, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 302, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31086.0, "nombre": "SAYIHUE S.R.L                           ", "salidas": 532, "entradas": 532, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 295, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 12422.0, "nombre": "LUCERO PABLO ALBERTO                    ", "salidas": 90, "entradas": 90, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 358, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31238.0, "nombre": "FRUCTUM                                 ", "salidas": 62, "entradas": 62, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 362, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30625.0, "nombre": "SUC. VICTOR LUIS BERNAL                 ", "salidas": 638, "entradas": 638, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 272, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30606.0, "nombre": "GRUPO PESTRIN SRL                       ", "salidas": 541, "entradas": 541, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31404.0, "nombre": "ARTERO EDUARDO                          ", "salidas": 658, "entradas": 658, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 286, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31406.0, "nombre": "ANGULO OSCAR ALFRESO                    ", "salidas": 116, "entradas": 116, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 286, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30160.0, "nombre": "BECERRA ISABEL                          ", "salidas": 300, "entradas": 300, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 323, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30303.0, "nombre": "BRUNETTI HUGO SUC. DE                   ", "salidas": 232, "entradas": 232, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 262, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30674.0, "nombre": "JM GARCIA SRL                           ", "salidas": 355, "entradas": 355, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 309, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31257.0, "nombre": "AYALA JOSE ALFREDO                      ", "salidas": 465, "entradas": 465, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 282, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 40391.0, "nombre": "DOS RIOS SA                             ", "salidas": 466, "entradas": 466, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 359, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30829.0, "nombre": "CAÑABATE ALBERTO                        ", "salidas": 178, "entradas": 178, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 283, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30803.0, "nombre": "MENENDEZ ROBERTO RUBEN                  ", "salidas": 67, "entradas": 67, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 324, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31332.0, "nombre": "VICENTE SILVIO DANIEL                   ", "salidas": 92, "entradas": 92, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 341, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30744.0, "nombre": "OLLER JUAN ORLANDO Y OLLER CRISTIAN     ", "salidas": 88, "entradas": 88, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30474.0, "nombre": "GROSSI HNOS                             ", "salidas": 275, "entradas": 275, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30042.0, "nombre": "GASPAR ROBERTO HUGO                     ", "salidas": 166, "entradas": 166, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 337, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31375.0, "nombre": "MANSO RIO S.R.L                         ", "salidas": 240, "entradas": 240, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31294.0, "nombre": "MOSCHINI SILVANA ANDREA                 ", "salidas": 1657, "entradas": 1657, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 307, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31354.0, "nombre": "VERDECCHIA OSVALDO                      ", "salidas": 414, "entradas": 414, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30033.0, "nombre": "FERNANDEZ NORMA AGUSTINA                ", "salidas": 147, "entradas": 147, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 290, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31337.0, "nombre": "ALBISU RICARDO Y ALBISU RAMIREZ JUAN MAN", "salidas": 458, "entradas": 458, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 288, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30695.0, "nombre": "FABCIC LUCIANA TANIA                    ", "salidas": 13, "entradas": 13, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31240.0, "nombre": "SEGUINO JAVIER EDUARDO                  ", "salidas": 357, "entradas": 357, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 301, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30942.0, "nombre": "LAVEZINI ROBERTO LUIS                   ", "salidas": 309, "entradas": 309, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 288, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31429.0, "nombre": "FRUCTUS S.A.S                           ", "salidas": 782, "entradas": 782, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 282, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 12450.0, "nombre": "CRIVICICH CLAUDIO OMAR                  ", "salidas": 56, "entradas": 56, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 310, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31430.0, "nombre": "MORAIS JORGE ARIEL                      ", "salidas": 357, "entradas": 357, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 265, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31379.0, "nombre": "ROMANO ELSA                             ", "salidas": 491, "entradas": 491, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30373.0, "nombre": "SUC.GROSSI ROLANDO                      ", "salidas": 230, "entradas": 230, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31403.0, "nombre": "GONZALEZ BARBARIN PABLO FERNANDO        ", "salidas": 134, "entradas": 134, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 345, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 40395.0, "nombre": "DF PATAGONIA S.R.L                      ", "salidas": 205, "entradas": 205, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 281, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31393.0, "nombre": "RAMIREZ ELIZABETH NORMA                 ", "salidas": 288, "entradas": 288, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 304, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31081.0, "nombre": "LASCIALANDA HUGO D.                     ", "salidas": 109, "entradas": 109, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 20009.0, "nombre": "POLANO SACIA                            ", "salidas": 730, "entradas": 730, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 254, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31109.0, "nombre": "MARPAT S.R.L                            ", "salidas": 42, "entradas": 42, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30339.0, "nombre": "MOSCHINI ANTONIO A.                     ", "salidas": 379, "entradas": 379, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 306, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31006.0, "nombre": "STELZER ALICIA MARIA                    ", "salidas": 42, "entradas": 42, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31132.0, "nombre": "PULITA ELIANA GISEL                     ", "salidas": 16, "entradas": 16, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30114.0, "nombre": "MARTINELLI MARCELO ALEJANDRO            ", "salidas": 137, "entradas": 137, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 297, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31070.0, "nombre": "MARCO JUDITH MARTA                      ", "salidas": 169, "entradas": 169, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 311, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31333.0, "nombre": "SUC.SANCHEZ MIGUEL                      ", "salidas": 78, "entradas": 78, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 322, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30890.0, "nombre": "MIELE SA                                ", "salidas": 66, "entradas": 66, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31266.0, "nombre": "STELZER VERONICA                        ", "salidas": 358, "entradas": 358, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 212, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31314.0, "nombre": "GASPAR CARLOS MARIO                     ", "salidas": 66, "entradas": 66, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30090.0, "nombre": "ALBERCHE SRL                            ", "salidas": 519, "entradas": 519, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 312, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 20059.0, "nombre": "MUNGAI LILIANA                          ", "salidas": 268, "entradas": 268, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30005.0, "nombre": "CERES SA                                ", "salidas": 171, "entradas": 171, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 303, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31097.0, "nombre": "MONTEIRO JORGE A                        ", "salidas": 36, "entradas": 36, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 338, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31102.0, "nombre": "ANTIGUA S.A                             ", "salidas": 187, "entradas": 187, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30136.0, "nombre": "GASPAR VIVIANA ESTER                    ", "salidas": 27, "entradas": 27, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 335, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 40105.0, "nombre": "SUC. DE DAVID CAPONI                    ", "salidas": 72, "entradas": 72, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 297, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 40122.0, "nombre": "IOGNA SERGI0 MARCELO                    ", "salidas": 120, "entradas": 120, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 302, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30223.0, "nombre": "ISLA SETENTA SA                         ", "salidas": 168, "entradas": 168, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 301, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30479.0, "nombre": "POLI PABLO GABRIEL                      ", "salidas": 20, "entradas": 20, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31304.0, "nombre": "VANNICOLA JOSE LUIS                     ", "salidas": 114, "entradas": 114, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30786.0, "nombre": "TAVERNINI MIGUEL ANGEL                  ", "salidas": 58, "entradas": 58, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 321, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30794.0, "nombre": "PATELLI CARLOS DANIEL                   ", "salidas": 102, "entradas": 102, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31309.0, "nombre": "LAVEZINI PATRICIA                       ", "salidas": 120, "entradas": 120, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30410.0, "nombre": "CIFUENTES GABRIEL Y ROBERTO SH          ", "salidas": 146, "entradas": 146, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 255, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31034.0, "nombre": "DON MOLIGIO SA                          ", "salidas": 166, "entradas": 166, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 258, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31024.0, "nombre": "BALEANI BLANCA INES                     ", "salidas": 272, "entradas": 272, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 292, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30933.0, "nombre": "GROSSI PABLO FERNANDO                   ", "salidas": 49, "entradas": 49, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 297, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30161.0, "nombre": "CASTRO NELSON                           ", "salidas": 66, "entradas": 66, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31362.0, "nombre": "ROSAUER JUAN ERICH                      ", "salidas": 668, "entradas": 668, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 267, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 11081.0, "nombre": "OGGIANU ERNESTO OSVALDO                 ", "salidas": 15, "entradas": 15, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 286, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30310.0, "nombre": "FRUEMPAC SA                             ", "salidas": 66, "entradas": 66, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 10656.0, "nombre": "JUGOS LUGA S.A.                         ", "salidas": 0, "entradas": 114, "deuda": -114, "deuda_pct": 0.0, "ratio_dev": 0.0, "dias_sin_dev": 86, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30289.0, "nombre": "LOS ALAMOS DE ROSAUER SA                ", "salidas": 57, "entradas": 57, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 264, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30191.0, "nombre": "NATURAL JUICE SA                        ", "salidas": 0, "entradas": 183, "deuda": -183, "deuda_pct": 0.0, "ratio_dev": 0.0, "dias_sin_dev": 149, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 30153.0, "nombre": "PATAGONIA VIVA SRL                      ", "salidas": 20, "entradas": 20, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 239, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 31440.0, "nombre": "ZWENGER S.A.S                           ", "salidas": 4, "entradas": 4, "deuda": 0, "deuda_pct": 0.0, "ratio_dev": 100.0, "dias_sin_dev": 233, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 40058.0, "nombre": "SAENZ BRIONES Y CIA. SA                 ", "salidas": 0, "entradas": 63, "deuda": -63, "deuda_pct": 0.0, "ratio_dev": 0.0, "dias_sin_dev": 79, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (0.0%)", "orden": 2}, {"proveedor": 12471.0, "nombre": "PATAGONIA UNICA S.A                     ", "salidas": 1216, "entradas": 1219, "deuda": -3, "deuda_pct": -0.2, "ratio_dev": 100.2, "dias_sin_dev": 80, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-0.2%)", "orden": 2}, {"proveedor": 30076.0, "nombre": "RUIZ ENRIQUE ANGEL                      ", "salidas": 457, "entradas": 458, "deuda": -1, "deuda_pct": -0.2, "ratio_dev": 100.2, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-0.2%)", "orden": 2}, {"proveedor": 31095.0, "nombre": "SUC.FUENTEALBA LUIS A.                  ", "salidas": 618, "entradas": 620, "deuda": -2, "deuda_pct": -0.3, "ratio_dev": 100.3, "dias_sin_dev": 265, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-0.3%)", "orden": 2}, {"proveedor": 30941.0, "nombre": "ESTABLECIMIENTO IMF SRL                 ", "salidas": 1946, "entradas": 1964, "deuda": -18, "deuda_pct": -0.9, "ratio_dev": 100.9, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-0.9%)", "orden": 2}, {"proveedor": 30052.0, "nombre": "SUC MENCHETTI ALDO FRANCISCO            ", "salidas": 177, "entradas": 179, "deuda": -2, "deuda_pct": -1.1, "ratio_dev": 101.1, "dias_sin_dev": 274, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-1.1%)", "orden": 2}, {"proveedor": 30868.0, "nombre": "MARIO CERVI E HIJOS SA                  ", "salidas": 1640, "entradas": 1688, "deuda": -48, "deuda_pct": -2.9, "ratio_dev": 102.9, "dias_sin_dev": 192, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-2.9%)", "orden": 2}, {"proveedor": 31088.0, "nombre": "ROMEROS MARTIN                          ", "salidas": 154, "entradas": 166, "deuda": -12, "deuda_pct": -7.8, "ratio_dev": 107.8, "dias_sin_dev": 191, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-7.8%)", "orden": 2}, {"proveedor": 30438.0, "nombre": "CASTRO FRANCO GONZALO                   ", "salidas": 4103, "entradas": 4494, "deuda": -391, "deuda_pct": -9.5, "ratio_dev": 109.5, "dias_sin_dev": 63, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-9.5%)", "orden": 2}, {"proveedor": 30292.0, "nombre": "BATTAGLIO ARGENTINA SA                  ", "salidas": 4707, "entradas": 5525, "deuda": -818, "deuda_pct": -17.4, "ratio_dev": 117.4, "dias_sin_dev": 54, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-17.4%)", "orden": 2}, {"proveedor": 40077.0, "nombre": "NICOLETTI SABRINA                       ", "salidas": 63, "entradas": 75, "deuda": -12, "deuda_pct": -19.0, "ratio_dev": 119.0, "dias_sin_dev": 136, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-19.0%)", "orden": 2}, {"proveedor": 31383.0, "nombre": "MEHDI CARLOS MARTIN                     ", "salidas": 1089, "entradas": 1757, "deuda": -668, "deuda_pct": -61.3, "ratio_dev": 161.3, "dias_sin_dev": 63, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-61.3%)", "orden": 2}, {"proveedor": 30854.0, "nombre": "NATALINI RICARDO RUBEN                  ", "salidas": 212, "entradas": 375, "deuda": -163, "deuda_pct": -76.9, "ratio_dev": 176.9, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-76.9%)", "orden": 2}, {"proveedor": 50103.0, "nombre": "FUNBAPA                                 ", "salidas": 141, "entradas": 335, "deuda": -194, "deuda_pct": -137.6, "ratio_dev": 237.6, "dias_sin_dev": 55, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-137.6%)", "orden": 2}, {"proveedor": 40378.0, "nombre": "COSTA DEL RIO                           ", "salidas": 133, "entradas": 412, "deuda": -279, "deuda_pct": -209.8, "ratio_dev": 309.8, "dias_sin_dev": 246, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-209.8%)", "orden": 2}, {"proveedor": 30723.0, "nombre": "COOP.DE COM.Y TRANSF.JULIA Y ECHARREN   ", "salidas": 65, "entradas": 3959, "deuda": -3894, "deuda_pct": -5990.8, "ratio_dev": 6090.8, "dias_sin_dev": 246, "ritmo_devolucion": 0.0, "dias_para_saldar": 0, "ritmo_alerta": "RÁPIDO", "semaforo": "VERDE", "razon": "Deuda baja (-5990.8%)", "orden": 2}];
+
+        let proveedorSeleccionado = null;
+
+        // Renderizar grid de proveedores
+        function renderizarGrid() {
+            const grid = document.getElementById('proveedoresGrid');
+            grid.innerHTML = '';
+
+            proveedores.forEach((prov, index) => {
+                const card = document.createElement('div');
+                card.className = `proveedor-card ${prov.semaforo}`;
+                card.innerHTML = `
+                    <div class="proveedor-nombre">${prov.nombre}</div>
+                    <div class="proveedor-deuda">${prov.deuda_pct}%</div>
+                `;
+                card.onclick = () => seleccionarProveedor(index);
+                grid.appendChild(card);
+            });
+        }
+
+        // Seleccionar proveedor
+        function seleccionarProveedor(index) {
+            proveedorSeleccionado = proveedores[index];
+
+            // Actualizar selección visual
+            document.querySelectorAll('.proveedor-card').forEach((card, i) => {
+                if (i === index) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            });
+
+            // Actualizar gauge
+            actualizarGauge(proveedorSeleccionado.deuda_pct, proveedorSeleccionado.semaforo);
+
+            // Actualizar detalles
+            actualizarDetalles(proveedorSeleccionado);
+        }
+
+        // Actualizar gauge
+        function actualizarGauge(valor, semaforo) {
+            const data = [{
+                type: "indicator",
+                mode: "gauge+number",
+                value: valor,
+                number: {
+                    suffix: "%",
+                    font: { size: 36, color: "#333" },
+                    y: 0.45
+                },
+                gauge: {
+                    axis: {
+                        range: [0, 100],
+                        tickwidth: 2,
+                        tickcolor: "#333",
+                        tickmode: "linear",
+                        tick0: 0,
+                        dtick: 20,
+                        visible: true
+                    },
+                    bar: {
+                        color: "rgb(27, 61, 166)",
+                        thickness: 0.15,
+                        line: { color: "rgb(27, 61, 166)", width: 0 }
+                    },
+                    bgcolor: "rgb(190, 190, 190)",
+                    borderwidth: 3,
+                    bordercolor: "#333",
+                    steps: [
+                        { range: [0, 20], color: "rgb(0, 126, 91)" },
+                        { range: [20, 40], color: "rgb(255, 234, 0)" },
+                        { range: [40, 100], color: "rgb(150, 0, 0)" }
+                    ],
+                    shape: "angular"
+                }
+            }];
+
+            const layout = {
+                margin: { t: 40, r: 40, l: 40, b: 30 },
+                font: { family: "Segoe UI", size: 14 },
+                paper_bgcolor: "rgb(190, 190, 190)",
+                height: 280,
+                showlegend: false
+            };
+
+            const config = { displayModeBar: false };
+
+            Plotly.newPlot('gaugeChart', data, layout, config);
+        }
+
+        // Actualizar detalles
+        function actualizarDetalles(prov) {
+            const container = document.getElementById('detallesContainer');
+
+            container.innerHTML = `
+                <div class="detalle-titulo">${prov.nombre}</div>
+
+                <div class="detalle-item">
+                    <div class="detalle-label">Estado</div>
+                    <div><span class="semaforo-badge ${prov.semaforo}">${prov.semaforo}</span></div>
+                    <div class="detalle-subtitulo">${prov.razon}</div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="detalle-label">Código Proveedor</div>
+                    <div class="detalle-valor">${prov.proveedor}</div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="detalle-label">Bins Pedidos</div>
+                    <div class="detalle-valor">${prov.salidas.toLocaleString()}</div>
+                    <div class="detalle-subtitulo">Total de salidas</div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="detalle-label">Bins Devueltos</div>
+                    <div class="detalle-valor">${prov.entradas.toLocaleString()}</div>
+                    <div class="detalle-subtitulo">Total de entradas</div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="detalle-label">Bins Pendientes</div>
+                    <div class="detalle-valor" style="color: ${prov.deuda > 0 ? '#dc3545' : '#28a745'}">${prov.deuda.toLocaleString()}</div>
+                    <div class="detalle-subtitulo">Deuda actual</div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="detalle-label">% Bins sin Devolver</div>
+                    <div class="detalle-valor" style="color: ${prov.deuda_pct > 40 ? '#dc3545' : prov.deuda_pct > 20 ? '#ffc107' : '#28a745'}">${prov.deuda_pct}%</div>
+                    <div class="detalle-subtitulo">Deuda relativa</div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="detalle-label">% Bins Devueltos</div>
+                    <div class="detalle-valor">${prov.ratio_dev}%</div>
+                    <div class="detalle-subtitulo">Ratio de devolución</div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="detalle-label">Días sin Devolución</div>
+                    <div class="detalle-valor" style="color: ${prov.dias_sin_dev > 14 ? '#dc3545' : '#28a745'}">${prov.dias_sin_dev}</div>
+                    <div class="detalle-subtitulo">Desde última entrada</div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="detalle-label">Ritmo de Devolución</div>
+                    <div class="detalle-valor">${prov.ritmo_devolucion.toFixed(2)} bins/día</div>
+                    <div class="detalle-subtitulo">Promedio últimos 30 días</div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="detalle-label">Tiempo para Saldar</div>
+                    <div class="detalle-valor" style="color: ${prov.dias_para_saldar > 180 ? '#dc3545' : prov.dias_para_saldar > 60 ? '#ffc107' : '#28a745'}">
+                        ${prov.dias_para_saldar === 9999 ? '∞' : prov.dias_para_saldar === 0 ? 'N/A' : prov.dias_para_saldar + ' días'}
+                    </div>
+                    <div class="detalle-subtitulo">A ritmo actual (${prov.ritmo_alerta})</div>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // FUNCIONALIDAD DE BÚSQUEDA CON AUTOCOMPLETADO
+        // ============================================================
+
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearSearch');
+        const dropdown = document.getElementById('autocompleteDropdown');
+
+        // Mostrar/ocultar botón de limpiar
+        searchInput.addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                clearBtn.style.display = 'block';
+                mostrarAutocompletado(this.value);
+            } else {
+                clearBtn.style.display = 'none';
+                ocultarDropdown();
+            }
+        });
+
+        // Función para mostrar autocompletado
+        function mostrarAutocompletado(texto) {
+            const filtro = texto.toLowerCase().trim();
+
+            if (filtro === '') {
+                ocultarDropdown();
+                return;
+            }
+
+            // Filtrar proveedores que coincidan
+            const coincidencias = proveedores.filter((prov, index) => {
+                const codigo = String(prov.proveedor || '').toLowerCase();
+                const nombre = String(prov.nombre || '').toLowerCase();
+                return codigo.includes(filtro) || nombre.includes(filtro);
+            });
+
+            // Mostrar resultados
+            if (coincidencias.length > 0) {
+                dropdown.innerHTML = '';
+
+                // Limitar a 10 resultados
+                const resultados = coincidencias.slice(0, 10);
+
+                resultados.forEach(prov => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.innerHTML = `
+                        <span class="codigo">${prov.proveedor}</span>
+                        <span class="nombre">- ${prov.nombre}</span>
+                    `;
+
+                    // Click en item
+                    item.onclick = function() {
+                        seleccionarProveedorPorCodigo(prov.proveedor);
+                        searchInput.value = `${prov.proveedor} - ${prov.nombre}`;
+                        ocultarDropdown();
+                    };
+
+                    dropdown.appendChild(item);
+                });
+
+                // Mostrar mensaje si hay más resultados
+                if (coincidencias.length > 10) {
+                    const moreItem = document.createElement('div');
+                    moreItem.className = 'autocomplete-no-results';
+                    moreItem.textContent = `... y ${coincidencias.length - 10} más resultados`;
+                    dropdown.appendChild(moreItem);
+                }
+
+                dropdown.style.display = 'block';
+            } else {
+                // Sin resultados
+                dropdown.innerHTML = '<div class="autocomplete-no-results">No se encontraron proveedores</div>';
+                dropdown.style.display = 'block';
+            }
+        }
+
+        // Función para ocultar dropdown
+        function ocultarDropdown() {
+            dropdown.style.display = 'none';
+        }
+
+        // Función para limpiar búsqueda
+        function limpiarBusqueda() {
+            searchInput.value = '';
+            clearBtn.style.display = 'none';
+            ocultarDropdown();
+            searchInput.focus();
+        }
+
+        // Seleccionar proveedor por código
+        function seleccionarProveedorPorCodigo(codigo) {
+            const index = proveedores.findIndex(p => p.proveedor === codigo);
+            if (index !== -1) {
+                seleccionarProveedor(index);
+
+                // Scroll hacia la tarjeta seleccionada
+                const cards = document.querySelectorAll('.proveedor-card');
+                if (cards[index]) {
+                    cards[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        // Cerrar dropdown al hacer click fuera
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                ocultarDropdown();
+            }
+        });
+
+        // Atajo de teclado: Ctrl+F para enfocar búsqueda
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+
+            // Enter en búsqueda: seleccionar primer resultado
+            if (e.key === 'Enter' && document.activeElement === searchInput) {
+                const firstItem = dropdown.querySelector('.autocomplete-item');
+                if (firstItem) {
+                    firstItem.click();
+                }
+            }
+
+            // Escape: cerrar dropdown
+            if (e.key === 'Escape') {
+                ocultarDropdown();
+                searchInput.blur();
+            }
+        });
+
+        // Inicializar
+        renderizarGrid();
+
+        // Auto-fullscreen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F11') {
+                e.preventDefault();
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
