@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Dashboard - Jugos S.A.</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: #1B5E4E;
+            padding: 25px;
+            text-align: left;
+            border-bottom: 2px solid #2ECC71;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            color: #e0e0e0;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header .fecha {
+            font-size: 0.95em;
+            margin-top: 5px;
+            color: #b0b0b0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: auto auto auto;
+            gap: 15px;
+            padding: 20px;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        .kpi-card {
+            background: #1B5E4E;
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            border-left: 4px solid #2ECC71;
+        }
+
+        .kpi-title {
+            font-size: 0.85em;
+            color: #b0b0b0;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: 600;
+        
+            color: #2ECC71;}
+
+        .kpi-value {
+            font-size: 2em;
+            color: #e0e0e0;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .kpi-subtitle {
+            font-size: 0.85em;
+            color: #808080;
+        }
+
+        .chart-container {
+            background: #1B5E4E;
+            border-radius: 4px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            grid-column: span 2;
+            overflow: hidden;
+        }
+
+        .chart-container iframe {
+            display: block;
+            overflow: hidden !important;
+        }
+
+        .chart-container.full-width {
+            grid-column: span 4;
+        }
+
+        .stat-label {
+            font-weight: bold;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .tendencia {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Ocultar controles para modo kiosko */
+        .modebar {
+            display: none !important;
+        }
+
+        .footer {
+            background: #0d333d;
+            color: #b0b0b0;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.85em;
+            border-top: 2px solid #2ECC71;
+            margin-top: 30px;
+        }
+
+        .footer-title {
+            color: #e0e0e0;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .footer-subtitle {
+            color: #808080;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .footer-contact {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .footer-contact-item {
+            color: #b0b0b0;
+        }
+
+        .footer-contact-item a {
+            color: #2ECC71;
+            text-decoration: none;
+        }
+
+        .footer-contact-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Estilos para el control de ajuste automático */
+        .chart-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            display: inline-block;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #555;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #2ECC71;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .chart-control-label {
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+
+        .chart-control input:checked ~ .chart-control-label {
+            color: #2ECC71;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>JUGOS S.A. - Control de Stock de Bins</h1>
+        <div class="fecha">Actualizado: 05/02/2026 18:58:03</div>
+    </div>
+
+    <div class="container">
+        <!-- KPI Cards - Sistema de Alerta -->
+        <div class="kpi-card">
+            <div class="kpi-title">Bins Vacíos Disponibles</div>
+            <div class="kpi-value" style="color: #2ECC71;">22.971</div>
+            <div class="kpi-subtitle">Nivel: NORMAL</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-title">Tendencia (14 días)</div>
+            <div class="kpi-value" style="color: #E74C3C;">-33.1</div>
+            <div class="kpi-subtitle">bins por día</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-title">Días hasta Advertencia</div>
+            <div class="kpi-value" style="color: #2ECC71;">452</div>
+            <div class="kpi-subtitle">umbral: 8.000</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-title">Días hasta Crítico</div>
+            <div class="kpi-value" style="color: #2ECC71;">542</div>
+            <div class="kpi-subtitle">umbral: 5.000</div>
+        </div>
+
+        <!-- GRÁFICO 1: Distribución -->
+        <div class="chart-container" style="grid-column: span 4;">
+            <iframe id="iframe-grafico1" src="temp_grafico1.html" style="width:100%; height:617px; border:none; overflow:hidden !important;"></iframe>
+        </div>
+
+        <!-- GRÁFICO 2: Comparación -->
+        <div class="chart-container" style="grid-column: span 4;">
+            <iframe id="iframe-grafico2" src="temp_grafico2.html" style="width:100%; height:617px; border:none; overflow:hidden !important;"></iframe>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-title">Desarrollado por Gaspar Giannitrapani</div>
+        <div class="footer-subtitle">Técnico Superior en Ciencia de Datos</div>
+        <div class="footer-contact">
+            <div class="footer-contact-item">
+                <a href="mailto:giannitrapanigaspar@gmail.com">giannitrapanigaspar@gmail.com</a>
+            </div>
+            <div class="footer-contact-item">+54 9 298 470-4091</div>
+            <div class="footer-contact-item">
+                <a href="https://www.linkedin.com/in/giannitrapanigaspar" target="_blank">linkedin.com/in/giannitrapanigaspar</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-fullscreen para modo kiosko
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F11') {
+                e.preventDefault();
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

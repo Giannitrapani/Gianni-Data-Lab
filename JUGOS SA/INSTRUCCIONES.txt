@@ -1,0 +1,218 @@
+================================================================================
+SISTEMA DE DASHBOARDS - JUGOS S.A.
+INSTRUCCIONES DE USO Y DESPLIEGUE
+================================================================================
+
+================================================================================
+1. USO NORMAL (EN TU PC)
+================================================================================
+
+INICIAR EL SISTEMA:
+  - Doble clic en: INICIAR_SISTEMA.bat
+  - Se abrirá el dashboard con 3 pestañas
+  - El sistema se actualizará automáticamente cada 1 hora
+
+FUNCIONAMIENTO AUTOMÁTICO:
+  - El servicio de actualización se ejecuta en segundo plano
+  - Cada 1 hora actualiza los datos desde Access
+  - El navegador detecta los cambios y se refresca solo
+  - NO necesitas hacer nada manualmente
+
+DETENER EL SISTEMA:
+  - Cierra el navegador normalmente
+  - Si quieres detener las actualizaciones automáticas:
+    Doble clic en: DETENER_SERVICIO.bat
+
+
+================================================================================
+2. DESPLIEGUE EN LA EMPRESA (PENDRIVE EN RED)
+================================================================================
+
+IMPORTANTE - USUARIOS SIN PERMISOS DE ADMINISTRADOR:
+  Si NO tienes permisos de administrador en la PC de la empresa,
+  lee primero: GUIA_SIN_ADMIN.txt
+
+  Ese archivo explica cómo usar Python Portable (sin instalación)
+  para que el sistema funcione sin permisos de admin.
+
+PREPARACIÓN:
+  1. Copia toda la carpeta JUGOS-CLAUDE a un pendrive
+  2. Conecta el pendrive en una PC de la red de la empresa
+  3. Coloca la carpeta cerca de donde está la base de datos Access
+
+CONFIGURAR LA RUTA DE ACCESS:
+  El sistema buscará automáticamente el Access en:
+    JUGOS-CLAUDE\datos_fuente\VerDatosGaspar-local.accdb
+
+  Si el Access está en otro lugar:
+  1. Abre: ACTUALIZAR_CSV.py (con Bloc de notas o editor)
+  2. Busca la línea: db_path = os.path.join(...)
+  3. Cámbiala por la ruta de red, ejemplo:
+     db_path = r'\\SERVIDOR\carpeta\VerDatosGaspar-local.accdb'
+  4. Guarda el archivo
+
+EJECUTAR:
+  - Doble clic en: INICIAR_SISTEMA.bat
+  - El sistema funcionará igual que en tu PC
+  - Se actualizará automáticamente cada hora
+
+
+================================================================================
+3. COMPATIBILIDAD ODBC (x32 vs x64) - MUY IMPORTANTE
+================================================================================
+
+PROBLEMA COMÚN:
+  En tu PC: Python x64 + Driver ODBC x64 → ✓ Funciona
+  En la empresa: Python x64 + Office 32 bits (driver ODBC x32) → ✗ NO funciona
+
+DETECCIÓN AUTOMÁTICA:
+  Ejecuta primero: DIAGNOSTICO.bat
+
+  Este script te dirá exactamente:
+  - Qué versión de Python tienes (x32 o x64)
+  - Qué drivers ODBC están instalados (x32 o x64)
+  - Si son compatibles entre sí
+  - Qué solución aplicar
+
+SOLUCIÓN IMPLEMENTADA:
+  El sistema AHORA intenta automáticamente con múltiples drivers:
+  - Microsoft Access Driver (*.mdb, *.accdb)  [x64]
+  - Microsoft Access Driver (*.mdb)  [x32]
+  - Drivers en español, portugués, etc.
+
+SI HAY INCOMPATIBILIDAD (ESCENARIO MÁS COMÚN):
+
+  OPCIÓN A - Python Portable x32 (RECOMENDADO - Sin permisos admin):
+  ────────────────────────────────────────────────────────────────────
+  1. Descarga WinPython 32 bits desde: https://winpython.github.io/
+  2. Extrae en la carpeta del proyecto
+  3. Ejecuta: CONFIGURAR_PYTHON_PORTABLE.bat
+  4. Sigue las instrucciones en pantalla
+
+  Lee GUIA_SIN_ADMIN.txt para detalles completos
+
+  OPCIÓN B - Instalar driver ODBC x64 (Requiere administrador):
+  ─────────────────────────────────────────────────────────────
+  1. Descargar: Microsoft Access Database Engine 2016 Redistributable
+  2. Instalar versión de 64 bits
+  3. Enlace: https://www.microsoft.com/en-us/download/details.aspx?id=54920
+
+  NOTA: Si Office 32 bits está instalado, NO permitirá instalar driver x64.
+        En ese caso, usa la OPCIÓN A (Python Portable x32)
+
+
+================================================================================
+4. ESTRUCTURA DE ARCHIVOS
+================================================================================
+
+ARCHIVOS PRINCIPALES:
+  INICIAR_SISTEMA.bat          - Inicia todo el sistema
+  DETENER_SERVICIO.bat         - Detiene las actualizaciones automáticas
+  servicio_actualizacion.py    - Servicio que actualiza cada hora
+  dashboard_completo.html      - Página principal con 3 pestañas
+
+HERRAMIENTAS DE DIAGNÓSTICO (NUEVOS):
+  DIAGNOSTICO.bat              - Detecta problemas de compatibilidad
+  diagnostico_completo.py      - Script de diagnóstico completo
+  VERIFICAR_ODBC.bat          - Muestra drivers ODBC instalados
+  verificar_odbc.py           - Script verificador de drivers
+
+HERRAMIENTAS DE CONFIGURACIÓN (NUEVOS):
+  CONFIGURAR_RUTA_RED.bat     - Configura ruta de Access en red
+  CONFIGURAR_PYTHON_PORTABLE.bat  - Asistente para Python portable
+
+GUÍAS Y DOCUMENTACIÓN (NUEVOS):
+  INSTRUCCIONES.txt           - Este archivo (manual general)
+  GUIA_SIN_ADMIN.txt         - Guía para usuarios sin permisos admin
+
+GENERADORES:
+  ACTUALIZAR_CSV.py                  - Lee Access y genera CSV
+  actualizar_dashboard_completo.py   - Regenera todos los dashboards
+  generar_dashboard.py               - Dashboard de Stock Global
+  generar_pagina_proveedores.py      - Página de Proveedores
+  generar_analisis_logistico.py      - Análisis Logístico
+
+CARPETAS:
+  datos_fuente\        - Aquí va el archivo Access
+  datos_csv\           - CSV generados desde Access
+
+
+================================================================================
+5. RESOLUCIÓN DE PROBLEMAS
+================================================================================
+
+¡IMPORTANTE! ANTES DE CUALQUIER COSA:
+  Si tienes problemas, ejecuta primero: DIAGNOSTICO.bat
+  Te dirá exactamente qué está mal y cómo solucionarlo.
+
+PROBLEMA: "Error al conectar con Access"
+SOLUCIÓN:
+  1. Ejecuta: DIAGNOSTICO.bat
+  2. Verifica que el Access esté en: datos_fuente\VerDatosGaspar-local.accdb
+  3. Verifica que nadie tenga el Access abierto en modo exclusivo
+  4. Si hay incompatibilidad Python/ODBC, lee: GUIA_SIN_ADMIN.txt
+
+PROBLEMA: "Incompatibilidad Python x64 vs ODBC x32"
+SOLUCIÓN:
+  - Lee: GUIA_SIN_ADMIN.txt (solución completa sin permisos admin)
+  - O usa: CONFIGURAR_PYTHON_PORTABLE.bat (asistente automático)
+
+PROBLEMA: "No se ven los cambios en el navegador"
+SOLUCIÓN:
+  - Verifica que la ventana minimizada de Python esté corriendo
+  - Presiona Ctrl+F5 para forzar recarga completa
+  - Cierra y vuelve a ejecutar INICIAR_SISTEMA.bat
+
+PROBLEMA: "El sistema no se actualiza solo"
+SOLUCIÓN:
+  - Verifica que no hayas cerrado la ventana minimizada de Python
+  - Ejecuta DETENER_SERVICIO.bat y luego INICIAR_SISTEMA.bat
+  - Verifica que se esté creando/actualizando: ultima_actualizacion.txt
+
+PROBLEMA: "Error de Python no encontrado"
+SOLUCIÓN:
+  - Instala Python 3.x desde: https://www.python.org/downloads/
+  - Durante instalación, marca: "Add Python to PATH"
+  - Reinicia la PC después de instalar
+
+
+================================================================================
+6. REQUISITOS DEL SISTEMA
+================================================================================
+
+SOFTWARE NECESARIO:
+  - Python 3.x (con librerías: pandas, pyodbc, plotly)
+  - Driver ODBC para Access (x32 o x64 según la PC)
+  - Navegador web (Microsoft Edge recomendado)
+
+PARA LA EMPRESA:
+  - Red local con acceso al archivo Access
+  - Permisos de lectura en la ubicación del Access
+  - Puerto de red abierto para leer archivos de red
+
+
+================================================================================
+7. CONTACTO Y SOPORTE
+================================================================================
+
+Si encuentras problemas o necesitas ajustes:
+  - Documentar el error exacto que aparece en pantalla
+  - Verificar la versión de Python: python --version
+  - Verificar los drivers ODBC instalados en Windows
+  - Contactar al desarrollador con capturas de pantalla
+
+
+================================================================================
+NOTAS FINALES
+================================================================================
+
+- El sistema NO modifica la base de datos, solo la lee
+- Los CSV son copias temporales para mejorar el rendimiento
+- Las actualizaciones automáticas NO afectan el rendimiento de la red
+- El sistema es portable: funciona desde cualquier ubicación
+- Compatible con Windows 7, 8, 10, 11 (x32 y x64)
+
+================================================================================
+VERSIÓN: 2.0 - Enero 2026
+DESARROLLADO PARA: JUGOS S.A.
+================================================================================

@@ -1,0 +1,18 @@
+{
+  "sistema": {
+    "nombre_empresa": "JUGOS S.A.",
+    "ruta_base_datos": "C:\\Users\\giann\\Desktop\\JUGOS-CLAUDE\\datos_fuente\\VerDatosGaspar-local.accdb",
+    "comentario_ruta": "Usar 'auto' para detectar automaticamente (datos_fuente/VerDatosGaspar-local.accdb)"
+  },
+  "bins": {
+    "total_bins": 30000,
+    "umbral_critico": 5000,
+    "umbral_advertencia": 8000
+  },
+  "proveedores": {
+    "semaforo_deuda_verde": 20,
+    "semaforo_deuda_amarillo": 40,
+    "margen_stockeo_dias": 0,
+    "dias_sin_devolucion_alerta": 14
+  }
+}

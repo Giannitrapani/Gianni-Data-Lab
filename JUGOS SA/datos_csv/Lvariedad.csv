@@ -1,0 +1,56 @@
+nro,gru,nom,apc,tbn,tmu,exp,pes,ifu,afo,col,prt
+RG,RC,ROJA GALPON                   ,RG             ,1.0,R,manza     ,1.0,12.5,False,3818464,False
+RC,RC,ROJA CHACRA                   ,RC             ,1.0,R,manza     ,1.0,12.5,False,3818464,False
+VG,VC,VERDE GALPON                  ,VG             ,1.0,V,manza     ,1.0,12.5,False,8454016,False
+VC,VC,VERDE CHACRA                  ,VC             ,1.0,V,manza     ,1.0,12.5,False,8454016,False
+PG,PC,PERA GALPON                   ,PG             ,1.0,P,pera      ,1.2,12.5,False,8454143,False
+PC,PC,PERA CHACRA                   ,PC             ,1.0,P,pera      ,1.2,12.5,False,8454143,False
+PW,PC,PERA WILLIAMS                 ,PW             ,1.0,P,pera      ,1.2,12.5,False,8454143,False
+LC,LC,PINK LADY CHACRA              ,PINKC          ,1.0,K,manza     ,1.0,12.5,False,12615935,False
+LG,LC,PINK LADY GALPON              ,PINKG          ,1.0,K,manza     ,1.0,12.5,False,12615935,False
+O ,  ,ORUJO                         ,O              ,2.0, ,Orujo     ,1.0,0.0,False,0,True
+TF,  ,TIERRA FILTRANTE              ,TF             ,2.0, ,Orujo     ,1.0,0.0,False,0,True
+TE,  ,TOLVA EFLUENTES               ,TE             ,2.0, ,Orujo     ,1.0,0.0,False,0,True
+FD,  ,FRUTA DESECHADA               ,FD             ,2.0, ,Orujo     ,1.0,0.0,False,0,True
+OT,  ,ORUJO + TIERRA FILTRANTE      ,O+TF           ,2.0, ,Orujo     ,1.0,0.0,False,0,True
+CP,  ,J.CLARIFICADO PERA            ,CP             ,3.0, ,Conc      ,1.0,0.0,False,0,True
+CM,  ,J.CLARIFICADO MANZANA         ,CM             ,3.0, ,Conc      ,1.0,0.0,False,0,True
+TP,  ,J.TURBIO PERA                 ,TP             ,3.0, ,Turbio    ,1.0,0.0,False,0,True
+TM,  ,J.TURBIO MZNA                 ,TM             ,3.0, ,Turbio    ,1.0,0.0,False,0,True
+RP,  ,RECHAZO PERA                  ,RP             ,3.0, ,Rech      ,1.0,0.0,False,0,True
+RM,  ,RECHAZO MZNA                  ,RM             ,3.0, ,Rech      ,1.0,0.0,False,0,True
+RO,RO,ROJA ORGANICA                 ,RO             ,1.0,O,manza     ,1.0,12.5,False,255,False
+PO,PO,PERA ORGANICA                 ,PO             ,1.0,S,pera      ,1.2,12.5,False,65535,False
+VO,VO,VERDE ORGANICA                ,VO             ,1.0,Q,manza     ,1.0,12.5,False,65280,False
+OM,  ,ORUJO DE MANZANA              ,OM             ,2.0, ,Orujo     ,1.0,0.0,False,0,True
+OP,  ,ORUJO DE PERA                 ,OP             ,2.0, ,Orujo     ,1.0,0.0,False,0,True
+CO,  ,COMPOSTAJE                    ,CO             ,2.0, ,Orujo     ,1.0,0.0,False,0,True
+OZ,  ,ORUJO MEZCLA                  ,OZ             ,2.0, ,Orujo     ,1.0,0.0,False,0,False
+LO,LO,PINK LADY ORGANICA            ,PINKO          ,1.0,T,manza     ,1.0,12.5,False,12615935,False
+RD,  ,RECHAZO DIAFILTRACION         ,RD             ,3.0, ,Rech      ,1.0,0.0,False,0,False
+G ,  ,AGUA                          ,AG             ,2.0, ,Agua      ,1.0,0.0,False,0,False
+JF,  ,JUGO FRESCO CLARIFICADO Y FILT,JF             ,3.0, ,Jugo      ,1.0,0.0,True,0,False
+IN,  ,INSUMO                        ,IN             ,4.0, ,Insumo    ,1.0,0.0,True,0,False
+PV,  ,PERA VENTA                    ,PV             ,1.0,P,pera      ,1.2,0.0,False,8454143,False
+SI,  ,CALDO PARA SIDRA              ,SI             ,3.0, ,Caldo     ,1.0,0.0,False,0,False
+AP,  ,AROMA CONCENTRADO DE PERA     ,ACP            ,3.0, ,Conc      ,1.0,0.0,False,0,True
+AM,  ,AROMA CONCENTRADO DE MANZANA  ,ACM            ,3.0, ,Conc      ,1.0,0.0,False,0,True
+MZ,  ,MANZANA                       ,MZ             ,1.0, ,          ,1.0,0.0,False,0,False
+SB,  ,SIDRA BASE                    ,SB             ,3.0, ,Caldo     ,1.0,0.0,False,0,False
+DZ,  ,DURAZNO                       ,DZ             ,1.0, ,duraz     ,1.0,0.0,False,0,False
+TO,  ,J.TURBIO  ORGANICO            ,TO             ,3.0, ,Turbio    ,1.0,0.0,False,0,True
+OC,  ,J.CONCENTR. ORGANICO          ,TB             ,3.0, ,Conc      ,1.0,0.0,False,0,False
+CH,  ,CHATARRA                      ,CH             ,1.0, ,Residuos  ,1.0,0.0,False,0,True
+PL,  ,PLASTICO                      ,PL             ,1.0, ,Residuos  ,1.0,0.0,False,0,False
+AI,  ,ACERO INOXIDABLE              ,AI             ,1.0, ,Residuos  ,1.0,0.0,False,0,False
+CT,  ,CARTON                        ,CT             ,1.0, ,Residuos  ,1.0,0.0,False,0,False
+PM,  ,PULPA MANZANA                 ,PM             ,3.0, ,Conc      ,1.0,0.0,False,0,True
+PP,  ,PULPA PERA                    ,PP             ,3.0, ,Conc      ,1.0,0.0,False,0,False
+PA,  ,PERA                          ,PA             ,1.0, ,          ,1.0,0.0,False,0,False
+RS,  ,RESIDUOS PELIGROSOS           ,RS             ,1.0, ,          ,1.0,0.0,False,0,True
+RV,  ,RESIDUOS VARIOS               ,AB             ,4.0, ,          ,1.0,0.0,False,0,False
+NM,  ,NFCM                          ,NFCM           ,3.0, ,Jugo      ,1.0,0.0,False,0,False
+CB,  ,CALDO BASE                    ,CB             ,3.0, ,Conc      ,1.0,0.0,False,0,False
+BT,  ,BATERIAS EN DESUSO            ,CC             ,0.0, ,          ,1.0,0.0,False,0,False
+NP,  ,NFCP                          ,NFCP           ,3.0, ,Jugo      ,1.0,0.0,False,0,False
+VD,  ,VIDRIO                        ,VD             ,1.0, ,          ,1.0,0.0,False,0,False

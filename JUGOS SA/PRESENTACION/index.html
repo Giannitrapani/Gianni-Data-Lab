@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación Sistema Dashboards - JUGOS S.A.</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Canvas principal para zoom/pan */
+        #canvas {
+            position: absolute;
+            width: 10000px;
+            height: 10000px;
+            transform-origin: 0 0;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Slides individuales */
+        .slide {
+            position: absolute;
+            background: #1B5E4E;
+            border-radius: 8px;
+            padding: 5vh 5vw;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            border: 2px solid #2ECC71;
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            width: 90vw;
+            height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Portada central */
+        #portada {
+            left: 4600px;
+            top: 4750px;
+            text-align: center;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+            align-items: center;
+        }
+
+        #portada h1 {
+            font-size: 2.2em;
+            color: #e0e0e0;
+            margin: 0 0 4vh 0;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            line-height: 1.3;
+        }
+
+        /* Secciones principales (nivel 1) */
+        .seccion-principal {
+            text-align: center;
+            align-items: center;
+        }
+
+        .seccion-principal h1 {
+            font-size: 2.2em;
+            color: #e0e0e0;
+            margin: 0 0 4vh 0;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            line-height: 1.3;
+        }
+
+        /* Stock Global */
+        #stock-global {
+            left: 3500px;
+            top: 3800px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Proveedores */
+        #proveedores {
+            left: 4600px;
+            top: 3800px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Cálculo de Bins - Parte 1 */
+        #calculo-bins-1 {
+            left: 3500px;
+            top: 5700px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Cálculo de Bins - Parte 2 */
+        #calculo-bins-2 {
+            left: 3500px;
+            top: 6650px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Gráfico Bins 1 */
+        #grafico-bins-1 {
+            left: 3500px;
+            top: 7600px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Proveedores 2 */
+        #proveedores-2 {
+            left: 4600px;
+            top: 5700px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Proveedores 3 */
+        #proveedores-3 {
+            left: 4600px;
+            top: 4750px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Proveedores 4 */
+        #proveedores-4 {
+            left: 4600px;
+            top: 6650px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Logística */
+        #logistica {
+            left: 5700px;
+            top: 3800px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Proveedores 5 */
+        #proveedores-5 {
+            left: 5700px;
+            top: 4750px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Logística 2 - KPIs */
+        #logistica-2 {
+            left: 5700px;
+            top: 5700px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Logística 3 - Análisis Temporal */
+        #logistica-3 {
+            left: 5700px;
+            top: 6650px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Logística 4 - Distribución por Distancia */
+        #logistica-4 {
+            left: 5700px;
+            top: 7600px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Logística 5 - Análisis por Variedad */
+        #logistica-5 {
+            left: 6800px;
+            top: 3800px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Logística 6 - Top 20 Orígenes */
+        #logistica-6 {
+            left: 6800px;
+            top: 4750px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Logística 7 - Participación por Tipo de Camión */
+        #logistica-7 {
+            left: 6800px;
+            top: 5700px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Logística 8 - Segmentación de Productores */
+        #logistica-8 {
+            left: 6800px;
+            top: 6650px;
+            background: linear-gradient(135deg, #1B5E4E 0%, #0d333d 100%);
+        }
+
+        /* Controles de navegación */
+        #controles {
+            position: fixed;
+            right: calc((100vw - 90vw) / 2 - 55px);
+            bottom: 50%;
+            transform: translateY(50%);
+            background: rgba(27, 94, 78, 0.95);
+            padding: 8px 5px;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1000;
+            border: 2px solid #2ECC71;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        }
+
+        .btn-control {
+            background: #2ECC71;
+            color: #0a0a0a;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', sans-serif;
+            white-space: nowrap;
+        }
+
+        #btn-inicio {
+            text-shadow:
+                -0.8px -0.8px 0 #0a0a0a,
+                0.8px -0.8px 0 #0a0a0a,
+                -0.8px 0.8px 0 #0a0a0a,
+                0.8px 0.8px 0 #0a0a0a,
+                -0.8px 0 0 #0a0a0a,
+                0.8px 0 0 #0a0a0a,
+                0 -0.8px 0 #0a0a0a,
+                0 0.8px 0 #0a0a0a;
+        }
+
+        .btn-control:hover {
+            background: #27AE60;
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-control:disabled {
+            background: #555;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Indicador de posición */
+        #indicador {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: rgba(27, 94, 78, 0.95);
+            padding: 15px 25px;
+            border-radius: 8px;
+            z-index: 1000;
+            border: 2px solid #2ECC71;
+            font-size: 1.1em;
+            color: #2ECC71;
+            display: none;
+        }
+
+        /* Ayuda de teclado */
+        #ayuda {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(27, 94, 78, 0.95);
+            padding: 15px 25px;
+            border-radius: 8px;
+            z-index: 1000;
+            border: 2px solid #2ECC71;
+            font-size: 0.9em;
+            color: #b0b0b0;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        #ayuda.oculto {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #ayuda:hover {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+
+        .key {
+            background: #2ECC71;
+            color: #0a0a0a;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin: 0 3px;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas">
+        <!-- PORTADA -->
+        <div id="portada" class="slide" data-slide="0">
+            <h1>Sistema Integrado de Pronóstico de Stock,<br>Control de Proveedores y Optimización Logística</h1>
+
+            <div style="text-align: left; line-height: 1.8; font-size: 1.1em; width: 100%;">
+                <p style="margin-bottom: 3vh;">
+                    El sistema integra <strong style="color: #e0e0e0;">tres módulos operativos</strong> para la gestión integral de recursos:
+                </p>
+
+                <p style="margin-bottom: 2.5vh;">
+                    <strong style="color: #e0e0e0;">1. Pronóstico de Stock:</strong> Anticipa momentos críticos en la disponibilidad de bins mediante regresión lineal sobre datos históricos, proyectando la evolución de bins vacíos y llenos tanto en planta como en campos.
+                </p>
+
+                <p style="margin-bottom: 2.5vh;">
+                    <strong style="color: #e0e0e0;">2. Control de Proveedores:</strong> Monitorea deuda de bins por proveedor mediante sistema de semáforo, incluyendo métricas de bins pedidos, devueltos y ritmo de devolución.
+                </p>
+
+                <p style="margin-bottom: 0;">
+                    <strong style="color: #e0e0e0;">3. Optimización Logística:</strong> Analiza volumen de ingresos (kg), distribución por distancia, especies y variedades, orígenes principales, tipos de camión y segmentación de proveedores por volumen aportado.
+                </p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 1: STOCK GLOBAL -->
+        <div id="stock-global" class="slide seccion-principal" data-slide="1">
+            <h1>Pronóstico de Stock</h1>
+
+            <div style="text-align: left; line-height: 1.8; font-size: 1.1em; width: 100%;">
+                <p style="margin-bottom: 0;">
+                    Esta sección monitorea la disponibilidad de bins vacíos en planta mediante análisis predictivo, proyectando tendencias con regresión lineal sobre los últimos 14 días de datos históricos. Visualiza la distribución total de bins (vacíos en planta, llenos en planta, en campos) y genera alertas tempranas cuando se detectan niveles críticos, permitiendo tomar decisiones correctivas con anticipación.
+                </p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 1.1: CÁLCULO DE BINS - PARTE 1 -->
+        <div id="calculo-bins-1" class="slide seccion-principal" data-slide="1.1">
+            <h1>Cálculo de Bins - Fundamentos</h1>
+
+            <div style="text-align: left; line-height: 1.5; font-size: 1.02em; width: 100%;">
+                <p style="margin-bottom: 1.2vh;">
+                    <strong>Nota:</strong> Esta sección trabaja únicamente con bins del grupo J. Total disponible: 30,000 bins.
+                </p>
+
+                <p style="margin-bottom: 3.2vh;">
+                    Los bins pueden estar en <strong>3 estados</strong>: Vacíos en Planta, Llenos en Planta, y en Campo. El sistema mantiene equilibrio: la suma siempre es 30,000.
+                </p>
+
+                <!-- Tabla de movimientos -->
+                <div style="margin-bottom: 3.2vh;">
+                    <strong style="display: block; margin-bottom: 1.2vh; font-size: 1.05em;">Los 4 Movimientos Registrados:</strong>
+                    <table style="width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.3); border-radius: 4px; overflow: hidden;">
+                        <thead>
+                            <tr style="background: rgba(46, 204, 113, 0.3);">
+                                <th style="padding: 0.8vh 1.2vw; text-align: left; border-bottom: 2px solid #2ECC71; font-size: 0.88em; line-height: 1.3;">Movimiento</th>
+                                <th style="padding: 0.8vh 1.2vw; text-align: left; border-bottom: 2px solid #2ECC71; font-size: 0.88em; line-height: 1.3;">Desde → Hacia</th>
+                                <th style="padding: 0.8vh 1.2vw; text-align: left; border-bottom: 2px solid #2ECC71; font-size: 0.88em; line-height: 1.3;">Descripción</th>
+                                <th style="padding: 0.8vh 1.2vw; text-align: left; border-bottom: 2px solid #2ECC71; font-size: 0.88em; line-height: 1.3;">Efecto en Estados</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;"><strong>SALIDA</strong></td>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;">Planta → Campo</td>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;">Bins vacíos salen hacia productores</td>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;">↓ Vacíos Planta &nbsp; ↑ Campo</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;"><strong>ENTRADA (Llenos)</strong></td>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;">Campo → Planta</td>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;">Bins llenos regresan con fruta</td>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;">↓ Campo &nbsp; ↑ Llenos Planta</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;"><strong>VOLCADO (FVO)</strong></td>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;">Llenos → Vacíos</td>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;">Fruta se procesa, bins quedan vacíos</td>
+                                <td style="padding: 0.8vh 1.2vw; border-bottom: 1px solid rgba(46, 204, 113, 0.2); font-size: 0.85em; line-height: 1.3;">↓ Llenos Planta &nbsp; ↑ Vacíos Planta</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.8vh 1.2vw; font-size: 0.85em; line-height: 1.3;"><strong>ENTRADA (Vacíos)</strong></td>
+                                <td style="padding: 0.8vh 1.2vw; font-size: 0.85em; line-height: 1.3;">Campo → Planta</td>
+                                <td style="padding: 0.8vh 1.2vw; font-size: 0.85em; line-height: 1.3;">Bins vacíos sin usar regresan (fin temporada)</td>
+                                <td style="padding: 0.8vh 1.2vw; font-size: 0.85em; line-height: 1.3;">↓ Campo &nbsp; ↑ Vacíos Planta</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <strong style="display: block; margin-bottom: 1.7vh; font-size: 1.07em;">Fórmulas de Cálculo:</strong>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.7vh 2vw; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.92em; line-height: 1.3;">
+                        <div style="margin-bottom: 0.6vh;">Campo = Salidas_Acum - Entradas_Acum</div>
+                        <div style="margin-bottom: 0.6vh;">Llenos = Bins con FVO > hoy (sin procesar)</div>
+                        <div>Vacíos = 30,000 - Campo - Llenos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 1.2: CÁLCULO DE BINS - PARTE 2 -->
+        <div id="calculo-bins-2" class="slide seccion-principal" data-slide="1.2">
+            <h1>Cálculo de Bins - Ejemplo (Ilustrativo) Día 15→16</h1>
+
+            <div style="text-align: left; line-height: 1.4; font-size: 1.02em; width: 100%;">
+                <!-- Dos columnas -->
+                <div style="display: flex; gap: 2vw; margin-bottom: 3.2vh;">
+                    <!-- Columna 1: Día 15 -->
+                    <div style="flex: 1;">
+                        <strong style="display: block; margin-bottom: 1.7vh; font-size: 1.07em;">Movimientos del Día 15 (estado inicial):</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.7vh 2vw; border-radius: 4px; font-size: 0.92em; line-height: 1.5;">
+                            <div style="margin-bottom: 1vh;">• Vacíos Planta: 10 bins</div>
+                            <div style="margin-bottom: 1vh;">• Llenos Planta: 5 bins</div>
+                            <div style="margin-bottom: 1vh;">• Campo: 15 bins</div>
+                            <div style="font-weight: bold; margin-top: 1.7vh;">Total: 30 bins ✓</div>
+                        </div>
+                    </div>
+
+                    <!-- Columna 2: Día 16 -->
+                    <div style="flex: 1;">
+                        <strong style="display: block; margin-bottom: 1.7vh; font-size: 1.07em;">Movimientos del Día 16:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.7vh 2vw; border-radius: 4px; font-size: 0.92em; line-height: 1.5;">
+                            <div style="margin-bottom: 1.1vh;">• Ingresaron 6 bins llenos desde campo</div>
+                            <div style="margin-bottom: 1.1vh;">• Se procesaron 4 bins (volcado de fruta)</div>
+                            <div>• Se distribuyeron 7 bins vacíos a campo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cálculo del Resultado (debajo, ancho completo) -->
+                <div style="margin-bottom: 3.2vh;">
+                    <strong style="display: block; margin-bottom: 1.7vh; font-size: 1.07em;">Cálculo del Resultado:</strong>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.7vh 2vw; border-radius: 4px; font-size: 0.92em; line-height: 1.5;">
+                        <div style="margin-bottom: 1.6vh;">
+                            <strong>Vacíos Planta:</strong> 10 + 4 procesados - 7 distribuidos = <strong>7 bins</strong>
+                        </div>
+                        <div style="margin-bottom: 1.6vh;">
+                            <strong>Llenos Planta:</strong> 5 + 6 ingresados - 4 procesados = <strong>7 bins</strong>
+                        </div>
+                        <div>
+                            <strong>Campo:</strong> 15 + 7 distribuidos - 6 ingresados = <strong>16 bins</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verificación de Equilibrio (centrado) -->
+                <div style="text-align: center; padding: 1.7vh; background: rgba(0,0,0,0.3); border-radius: 4px;">
+                    <strong style="font-size: 1.07em;">Verificación de Equilibrio:</strong><br>
+                    <span style="font-size: 1.25em; font-weight: bold; margin-top: 1.4vh; display: block;">7 + 7 + 16 = 30 bins ✓</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 1.3: IMAGEN 1.1 -->
+        <div id="grafico-bins-1" class="slide seccion-principal" data-slide="1.3">
+            <div style="text-align: center; width: 100%;">
+                <img src="1.1.png" alt="Gráfico Stock de Bins" style="max-width: 90%; max-height: 50vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+            </div>
+
+            <div style="text-align: left; line-height: 1.5; font-size: 0.95em; width: 100%; margin-top: 2vh;">
+                <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 2vw; border-radius: 4px;">
+                    <p style="margin-bottom: 1.2vh;">
+                        <strong>Bins Vacíos Disponibles:</strong> Se calcula restando del total (30,000) los bins en campo y los llenos en planta. Este valor indica cuántos bins están listos para ser utilizados.
+                    </p>
+                    <p style="margin-bottom: 1.2vh;">
+                        <strong>Tendencia:</strong> Se analiza la evolución de los últimos 14 días mediante regresión lineal por mínimos cuadrados. Se toman los días (x = 0, 1, 2... 13) y los bins vacíos de cada día (y), ajustando estos datos a la ecuación y = mx + b, donde m es la pendiente que indica cuántos bins se pierden o ganan por día en promedio. Un valor negativo indica pérdida de bins vacíos (situación de riesgo), mientras que un valor positivo indica recuperación de stock.
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Proyección de Alertas:</strong> Con la tendencia actual, el sistema calcula cuántos días faltan para alcanzar los umbrales críticos. Si la proyección indica ≤7 días hasta el umbral crítico (5,000) o ≤7 días hasta advertencia (8,000), se activa la alerta correspondiente.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: PROVEEDORES -->
+        <div id="proveedores" class="slide seccion-principal" data-slide="2">
+            <h1>Análisis del Gráfico de Áreas Apiladas</h1>
+
+            <div style="display: flex; gap: 0.5vw; width: calc(100% + 7vw); margin-left: -4vw; margin-right: -3vw;">
+                <!-- Columna izquierda: Imagen -->
+                <div style="flex: 0 0 77.5%; display: flex; align-items: center; justify-content: flex-start;">
+                    <img src="1.2.png" alt="Gráfico Áreas Apiladas" style="max-width: 100%; max-height: 60vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+                </div>
+
+                <!-- Columna derecha: Texto -->
+                <div style="flex: 0 0 22.5%; text-align: left; line-height: 1.25; font-size: 0.95em;">
+                    <div style="margin-bottom: 2.5vh;">
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Estructura del Gráfico:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                            <p style="margin-bottom: 1.2vh; font-size: 0.95em;">
+                                El gráfico muestra <strong>3 áreas apiladas</strong> que suman siempre 30,000 bins:
+                            </p>
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                • <strong>Área 1 (Base - Verde):</strong> Bins Vacíos en Planta
+                            </p>
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                • <strong>Área 2 (Morado):</strong> Bins Llenos en Planta
+                            </p>
+                            <p style="margin-bottom: 0; font-size: 0.92em;">
+                                • <strong>Área 3 (Rojo):</strong> Bins en Campos
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 2.5vh;">
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Líneas de Referencia (Umbrales):</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                • <strong>Umbral Crítico (Azul):</strong> 5,000 bins
+                            </p>
+                            <p style="margin-bottom: 0; font-size: 0.92em;">
+                                • <strong>Umbral Advertencia (Amarillo):</strong> 8,000 bins
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Principio de Apilamiento:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; text-align: center; font-size: 1em; font-weight: bold; line-height: 1.25;">
+                            Total = Vacíos + Llenos + Campo = 30,000 bins
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2.1: PROVEEDORES DUPLICADO -->
+        <div id="proveedores-2" class="slide seccion-principal" data-slide="2.1">
+            <h1>Control de Proveedores</h1>
+
+            <div style="text-align: left; line-height: 1.8; font-size: 1.1em; width: 100%;">
+                <p style="margin-bottom: 0;">
+                    Esta sección monitorea la deuda de bins por proveedor mediante un sistema de semáforo automático que categoriza por niveles de riesgo (verde, amarillo, rojo) según porcentaje de retención. Calcula métricas de bins pedidos, devueltos, ritmo de devolución y días sin retorno, identificando proveedores con comportamiento crítico y permitiendo gestionar recuperación de activos de forma proactiva.
+                </p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2.2: GRÁFICO EVOLUCIÓN INDIVIDUAL - IMAGEN 1.3 -->
+        <div id="proveedores-3" class="slide seccion-principal" data-slide="2.2">
+            <h1>Gráfico de Evolución Individual por Categoría</h1>
+
+            <div style="display: flex; gap: 0.5vw; width: calc(100% + 7vw); margin-left: -4vw; margin-right: -3vw;">
+                <!-- Columna izquierda: Imagen -->
+                <div style="flex: 0 0 77.5%; display: flex; align-items: center; justify-content: flex-start;">
+                    <img src="1.3.png" alt="Gráfico Evolución Individual" style="max-width: 100%; max-height: 60vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+                </div>
+
+                <!-- Columna derecha: Texto -->
+                <div style="flex: 0 0 22.5%; text-align: left; line-height: 1.25; font-size: 0.95em;">
+                    <div style="margin-bottom: 2.5vh;">
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Líneas Independientes:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                • <strong>Verde:</strong> Bins Vacíos Disponibles
+                            </p>
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                • <strong>Morada:</strong> Bins Llenos pendientes
+                            </p>
+                            <p style="margin-bottom: 0; font-size: 0.92em;">
+                                • <strong>Roja:</strong> Bins en Campos
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 2.5vh;">
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Diferencia con Áreas Apiladas:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                            <p style="margin-bottom: 0; font-size: 0.92em;">
+                                Permite <strong>comparar tendencias individuales</strong> y diagnosticar qué variable causa cambios en el stock disponible.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Ventaja Principal:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                            <p style="margin-bottom: 0; font-size: 0.92em;">
+                                Permite tomar decisiones rápidas: ver que la línea roja está alta indica necesidad de recuperar bins de campo; ver la morada alta indica acelerar el volcado de fruta.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2.3: CONTROL DE PROVEEDORES - SISTEMA DE SEMÁFORO -->
+        <div id="proveedores-4" class="slide seccion-principal" data-slide="2.3">
+            <h1>Sistema de Semáforo para Control de Proveedores</h1>
+
+            <div style="display: flex; gap: 0.5vw; width: calc(100% + 7vw); margin-left: -4vw; margin-right: -3vw;">
+                <!-- Columna izquierda: Imagen -->
+                <div style="flex: 0 0 70%; display: flex; align-items: center; justify-content: center;">
+                    <img src="2.1.png" alt="Sistema de Semáforo de Proveedores" style="max-width: 100%; max-height: 60vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+                </div>
+
+                <!-- Columna derecha: Texto -->
+                <div style="flex: 0 0 30%; text-align: left; line-height: 1.25; font-size: 0.95em; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="margin-bottom: 2.5vh;">
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Sistema de Semáforo:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                            <p style="margin-bottom: 0; font-size: 0.92em;">
+                                Clasifica automáticamente a cada proveedor según su porcentaje de deuda de bins, permitiendo identificar rápidamente situaciones de riesgo.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 2.5vh;">
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Criterios de Clasificación:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                • <strong style="color: #4ade80;">Verde (&lt;20%):</strong> Retorno saludable
+                            </p>
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                • <strong style="color: #fbbf24;">Amarillo (20-40%):</strong> Requiere monitoreo
+                            </p>
+                            <p style="margin-bottom: 0; font-size: 0.92em;">
+                                • <strong style="color: #ef4444;">Rojo (&gt;40%):</strong> Acción crítica necesaria
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Métricas Clave:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                            <p style="margin-bottom: 0; font-size: 0.92em;">
+                                Calcula bins pedidos, devueltos, ritmo de devolución, días sin retorno, y proyecta el tiempo estimado para saldar la deuda actual.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: LOGÍSTICA -->
+        <div id="logistica" class="slide seccion-principal" data-slide="3">
+            <h1>Optimización Logística</h1>
+
+            <div style="text-align: left; line-height: 1.8; font-size: 1.1em; width: 100%;">
+                <p style="margin-bottom: 3vh;">
+                    A diferencia de las secciones de <strong>Pronóstico de Stock</strong> y <strong>Control de Proveedores</strong>, que se centran exclusivamente en el seguimiento de los <strong>bins del grupo J</strong>, la sección de <strong>Optimización Logística</strong> amplía su alcance para analizar <strong>TODA la fruta que ingresa a la planta Jugos S.A.</strong>, sin limitarse a un tipo específico de envase o categoría.
+                </p>
+
+                <div>
+                    <strong style="display: block; margin-bottom: 1.5vh; font-size: 1.1em;">Alcance del Análisis</strong>
+                    <div style="background: rgba(0,0,0,0.3); padding: 2vh 2vw; border-radius: 4px; line-height: 1.7;">
+                        <p style="margin-bottom: 0;">
+                            El módulo logístico procesa todos los ingresos de fruta con información georreferenciada. Cada registro incluye: fecha de ingreso, kilogramos transportados, cantidad de bins, distancia recorrida (km), origen, especie, variedad, tipo de camión y productor.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2.4: INTERACCIÓN GAUGE Y TARJETA DE PROVEEDOR -->
+        <div id="proveedores-5" class="slide seccion-principal" data-slide="2.4">
+            <h1>Sistema Interactivo de Análisis por Proveedor</h1>
+            <p style="text-align: center; font-size: 0.95em; color: #b0b0b0; margin-top: -2.5vh; margin-bottom: 2vh;">
+                Los valores se actualizan al seleccionar un proveedor desde la cuadrícula o mediante el buscador por nombre/código
+            </p>
+
+            <div style="display: flex; gap: 0.5vw; width: calc(100% + 7vw); margin-left: -4vw; margin-right: -3vw;">
+                <!-- Columna izquierda: Imagen -->
+                <div style="flex: 0 0 70%; display: flex; align-items: center; justify-content: center;">
+                    <img src="2.2.png" alt="Gauge y Tarjeta de Proveedor" style="max-width: 100%; max-height: 60vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+                </div>
+
+                <!-- Columna derecha: Texto -->
+                <div style="flex: 0 0 30%; text-align: left; line-height: 1.25; font-size: 0.95em; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="margin-bottom: 2.5vh;">
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Gauge de Deuda:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                Velocímetro de 0-100% dividido en tres zonas de color según porcentaje de deuda.
+                            </p>
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                • <strong style="color: #4ade80;">Verde (0-20%):</strong> Bajo riesgo
+                            </p>
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                • <strong style="color: #fbbf24;">Amarillo (20-40%):</strong> Riesgo moderado
+                            </p>
+                            <p style="margin-bottom: 0; font-size: 0.92em;">
+                                • <strong style="color: #ef4444;">Rojo (>40%):</strong> Riesgo alto
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <strong style="display: block; margin-bottom: 1vh; font-size: 1.05em;">Tarjeta de Métricas:</strong>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                            <p style="margin-bottom: 0.8vh; font-size: 0.92em;">
+                                Despliega 10 indicadores: Estado, Código, Bins Pedidos, Bins Devueltos, Bins Pendientes, % sin Devolver, % Devueltos, Días sin Devolución, Ritmo de Devolución y Tiempo para Saldar.
+                            </p>
+                            <p style="margin-bottom: 0; font-size: 0.92em;">
+                                Los valores críticos se muestran en rojo (deuda positiva, +14 días sin devolver, +180 días para saldar).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3.1: KPIs LOGÍSTICOS -->
+        <div id="logistica-2" class="slide seccion-principal" data-slide="3.1">
+            <div style="text-align: center; width: 100%;">
+                <img src="3.1.png" alt="KPIs Logísticos" style="max-width: 90%; max-height: 50vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+            </div>
+
+            <div style="text-align: left; line-height: 1.5; font-size: 0.95em; width: 100%; margin-top: 2vh;">
+                <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 2vw; border-radius: 4px;">
+                    <p style="margin-bottom: 1.2vh;">
+                        <strong>Total de Kilogramos:</strong> Suma todos los kilogramos de fruta ingresados durante el período analizado, sin importar especie, variedad o tipo de envase.
+                    </p>
+                    <p style="margin-bottom: 1.2vh;">
+                        <strong>Total de Bins:</strong> Cuenta la cantidad total de envases (bins) utilizados en todos los ingresos registrados.
+                    </p>
+                    <p style="margin-bottom: 1.2vh;">
+                        <strong>Promedio KG por Bin:</strong> Calcula cuántos kilogramos transporta cada bin en promedio. Se obtiene dividiendo el total de kilogramos por el total de bins.
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Ingresos Registrados:</strong> Número total de viajes o cargas ingresadas a la planta. Cada registro representa una entrega individual con su información completa.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3.2: ANÁLISIS TEMPORAL -->
+        <div id="logistica-3" class="slide seccion-principal" data-slide="3.2">
+            <div style="text-align: center; width: 100%;">
+                <img src="3.2.png" alt="Análisis Temporal" style="max-width: 90%; max-height: 50vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+            </div>
+
+            <div style="text-align: left; line-height: 1.5; font-size: 0.95em; width: 100%; margin-top: 2vh;">
+                <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 2vw; border-radius: 4px;">
+                    <p style="margin-bottom: 0;">
+                        Esta sección presenta tres gráficos de línea que muestran la evolución de los kilogramos de fruta ingresados a la planta según diferentes períodos de tiempo: <strong>diario</strong> (azul), <strong>semanal</strong> (verde) y <strong>mensual</strong> (naranja). Cada gráfico incluye el promedio del período, el valor mínimo y máximo con sus fechas correspondientes, permitiendo identificar picos de actividad, patrones estacionales y planificar recursos operativos según la variabilidad temporal de los ingresos.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3.3: DISTRIBUCIÓN POR DISTANCIA -->
+        <div id="logistica-4" class="slide seccion-principal" data-slide="3.3">
+            <h1>Distribución por Distancia de Transporte</h1>
+
+            <div style="display: flex; gap: 0.5vw; width: calc(100% + 7vw); margin-left: -4vw; margin-right: -3vw;">
+                <!-- Columna izquierda: Imagen -->
+                <div style="flex: 0 0 70%; display: flex; align-items: center; justify-content: flex-start;">
+                    <img src="3.3.png" alt="Distribución por Distancia" style="max-width: 100%; max-height: 55vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+                </div>
+
+                <!-- Columna derecha: Texto -->
+                <div style="flex: 0 0 30%; text-align: left; line-height: 1.25; font-size: 1.00em;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                        <p style="margin-bottom: 0; font-size: 0.92em;">
+                            Este gráfico de barras segmenta los kilogramos transportados en rangos de 25 kilómetros de distancia, mostrando qué zonas geográficas aportan más volumen a la planta. Los rangos con mayor altura indican las áreas de mayor abastecimiento actual, mientras que los rangos con barras bajas revelan zonas con bajo aporte. Esta información permite identificar territorios desaprovechados y diseñar estrategias comerciales para captar nuevos productores en esas zonas o fortalecer relaciones con proveedores existentes que están aportando poco. Al conocer desde dónde proviene la mayor cantidad de fruta, se pueden dirigir esfuerzos de expansión hacia las regiones con potencial no explotado, equilibrando la matriz de abastecimiento geográfico y reduciendo la dependencia de pocas áreas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3.4: ANÁLISIS POR VARIEDAD -->
+        <div id="logistica-5" class="slide seccion-principal" data-slide="3.4">
+            <h1>Análisis por Especie y Variedad</h1>
+
+            <div style="display: flex; gap: 0.5vw; width: calc(100% + 7vw); margin-left: -4vw; margin-right: -3vw;">
+                <!-- Columna izquierda: Imagen -->
+                <div style="flex: 0 0 70%; display: flex; align-items: center; justify-content: flex-start;">
+                    <img src="3.4.png" alt="Análisis por Variedad" style="max-width: 100%; max-height: 55vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+                </div>
+
+                <!-- Columna derecha: Texto -->
+                <div style="flex: 0 0 30%; text-align: left; line-height: 1.25; font-size: 1.00em;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                        <p style="margin-bottom: 0; font-size: 1.02em;">
+                            Esta sección combina dos visualizaciones complementarias. A la izquierda, un gráfico de barras horizontales muestra las 10 variedades de fruta más transportadas con su porcentaje de participación, identificando cuáles son los productos estrella en volumen. A la derecha, un gráfico circular compara la distribución total de kilogramos entre Pera y Manzana. Esta información permite evaluar la diversificación del portafolio de productos, identificar dependencias excesivas de ciertas variedades, y tomar decisiones sobre qué especies priorizar en estrategias comerciales, equilibrando el riesgo de concentración en pocas variedades.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3.5: TOP 20 ORÍGENES -->
+        <div id="logistica-6" class="slide seccion-principal" data-slide="3.5">
+            <h1>Top 20 Orígenes por Kg</h1>
+
+            <div style="display: flex; gap: 0.5vw; width: calc(100% + 7vw); margin-left: -4vw; margin-right: -3vw;">
+                <!-- Columna izquierda: Imagen -->
+                <div style="flex: 0 0 70%; display: flex; align-items: center; justify-content: flex-start;">
+                    <img src="3.5.png" alt="Top 20 Orígenes" style="max-width: 100%; max-height: 55vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+                </div>
+
+                <!-- Columna derecha: Texto -->
+                <div style="flex: 0 0 30%; text-align: left; line-height: 1.25; font-size: 1.00em;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                        <p style="margin-bottom: 0; font-size: 0.92em;">
+                            Este gráfico de barras horizontales presenta los 20 principales orígenes que más aportan al volumen total ingresado a la planta. Cada barra muestra la cantidad de fruta aportada por ese origen con su porcentaje de participación sobre el total. Es un simple registro de los orígenes que más contribuyen al volumen ingresado.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3.6: PARTICIPACIÓN POR TIPO DE CAMIÓN -->
+        <div id="logistica-7" class="slide seccion-principal" data-slide="3.6">
+            <h1>Participación por Tipo de Camión</h1>
+
+            <div style="display: flex; gap: 0.5vw; width: calc(100% + 7vw); margin-left: -4vw; margin-right: -3vw;">
+                <!-- Columna izquierda: Imagen -->
+                <div style="flex: 0 0 70%; display: flex; align-items: center; justify-content: flex-start;">
+                    <img src="3.6.png" alt="Participación por Tipo de Camión" style="max-width: 100%; max-height: 55vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+                </div>
+
+                <!-- Columna derecha: Texto -->
+                <div style="flex: 0 0 30%; text-align: left; line-height: 1.25; font-size: 1.00em;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                        <p style="margin-bottom: 0; font-size: 0.92em;">
+                            Este gráfico de barras horizontales muestra la distribución porcentual del volumen transportado según el tipo de camión utilizado. Cada barra representa qué proporción del total de kilogramos fue transportada por cada tipo de vehículo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3.7: SEGMENTACIÓN DE PRODUCTORES -->
+        <div id="logistica-8" class="slide seccion-principal" data-slide="3.7">
+            <h1>Segmentación de Productores por Volumen</h1>
+
+            <div style="display: flex; gap: 0.5vw; width: calc(100% + 7vw); margin-left: -4vw; margin-right: -3vw;">
+                <!-- Columna izquierda: Imagen -->
+                <div style="flex: 0 0 70%; display: flex; align-items: center; justify-content: flex-start;">
+                    <img src="3.7.png" alt="Segmentación de Productores" style="max-width: 100%; max-height: 55vh; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
+                </div>
+
+                <!-- Columna derecha: Texto -->
+                <div style="flex: 0 0 30%; text-align: left; line-height: 1.25; font-size: 1.00em;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.5vh 1.5vw; border-radius: 4px; line-height: 1.25;">
+                        <p style="margin-bottom: 0; font-size: 0.92em;">
+                            Esta sección clasifica a los productores en cuatro categorías según el volumen total de kilogramos aportados: <strong>Pequeño</strong> (0-100 mil kg), <strong>Mediano</strong> (100-500 mil kg), <strong>Grande</strong> (500 mil-1M kg) y <strong>Mega</strong> (más de 1M kg). El gráfico circular de la izquierda muestra qué porcentaje del volumen total aporta cada segmento, mientras que el gráfico de barras de la derecha indica cuántos productores pertenecen a cada categoría.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Controles de navegación -->
+    <div id="controles">
+        <button class="btn-control" id="btn-next">▲</button>
+        <button class="btn-control" id="btn-inicio">⌂</button>
+        <button class="btn-control" id="btn-prev">▼</button>
+    </div>
+
+    <!-- Indicador de posición -->
+    <div id="indicador">Portada</div>
+
+    <!-- Ayuda de teclado -->
+    <div id="ayuda">
+        <span class="key">←</span> Atrás &nbsp;
+        <span class="key">→</span> Siguiente &nbsp;
+        <span class="key">ESC</span> Inicio &nbsp;
+        <span class="key">F11</span> Pantalla completa
+    </div>
+
+    <script>
+        // Configuración de slides
+        const slides = [
+            { id: 'portada', x: 4600, y: 4750, scale: 1, nombre: 'Portada' },
+            { id: 'stock-global', x: 3500, y: 3800, scale: 1, nombre: 'Pronóstico de Stock' },
+            { id: 'calculo-bins-1', x: 3500, y: 5700, scale: 1, nombre: 'Cálculo de Bins - Fundamentos' },
+            { id: 'calculo-bins-2', x: 3500, y: 6650, scale: 1, nombre: 'Cálculo de Bins - Ejemplo (Ilustrativo) Día 15→16' },
+            { id: 'grafico-bins-1', x: 3500, y: 7600, scale: 1, nombre: 'Gráfico Stock de Bins' },
+            { id: 'proveedores', x: 4600, y: 3800, scale: 1, nombre: 'Análisis Gráfico Áreas Apiladas' },
+            { id: 'proveedores-3', x: 4600, y: 4750, scale: 1, nombre: 'Análisis Gráfico Áreas Apiladas (2)' },
+            { id: 'proveedores-2', x: 4600, y: 5700, scale: 1, nombre: 'Control de Proveedores' },
+            { id: 'proveedores-4', x: 4600, y: 6650, scale: 1, nombre: 'Control de Proveedores (2)' },
+            { id: 'proveedores-5', x: 5700, y: 4750, scale: 1, nombre: 'Sistema Interactivo' },
+            { id: 'logistica', x: 5700, y: 3800, scale: 1, nombre: 'Optimización Logística' },
+            { id: 'logistica-2', x: 5700, y: 5700, scale: 1, nombre: 'Indicadores Clave' },
+            { id: 'logistica-3', x: 5700, y: 6650, scale: 1, nombre: 'Análisis Temporal' },
+            { id: 'logistica-4', x: 5700, y: 7600, scale: 1, nombre: 'Distribución por Distancia' },
+            { id: 'logistica-5', x: 6800, y: 3800, scale: 1, nombre: 'Análisis por Variedad' },
+            { id: 'logistica-6', x: 6800, y: 4750, scale: 1, nombre: 'Top 20 Orígenes' },
+            { id: 'logistica-7', x: 6800, y: 5700, scale: 1, nombre: 'Participación por Tipo de Camión' },
+            { id: 'logistica-8', x: 6800, y: 6650, scale: 1, nombre: 'Segmentación de Productores' }
+        ];
+
+        let currentSlide = 0;
+        const canvas = document.getElementById('canvas');
+        const indicador = document.getElementById('indicador');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const btnInicio = document.getElementById('btn-inicio');
+
+        // Función para navegar a un slide
+        function goToSlide(index) {
+            if (index < 0 || index >= slides.length) return;
+
+            currentSlide = index;
+            const slide = slides[index];
+
+            // Obtener elemento del slide
+            const element = document.getElementById(slide.id);
+            if (!element) return;
+
+            // Calcular zoom fijo
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const scale = 1;
+
+            // Obtener dimensiones del slide
+            const elementWidth = windowWidth * 0.9;
+            const elementHeight = windowHeight * 0.85;
+
+            // Centrar el slide en la ventana
+            const translateX = (windowWidth / 2) - (slide.x + elementWidth / 2);
+            const translateY = (windowHeight / 2) - (slide.y + elementHeight / 2);
+
+            canvas.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+
+            // Actualizar indicador
+            indicador.textContent = `${index + 1}/${slides.length} - ${slide.nombre}`;
+
+            // Actualizar estado de botones
+            btnPrev.disabled = (index === 0);
+            btnNext.disabled = (index === slides.length - 1);
+
+            // Marcar slide activo
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // Event listeners
+        btnPrev.addEventListener('click', () => goToSlide(currentSlide - 1));
+        btnNext.addEventListener('click', () => goToSlide(currentSlide + 1));
+        btnInicio.addEventListener('click', () => goToSlide(0));
+
+        // Navegación con teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                goToSlide(currentSlide + 1);
+            }
+            if (e.key === 'Escape') goToSlide(0);
+        });
+
+        // Inicializar en portada
+        goToSlide(0);
+
+        // Re-calcular zoom al cambiar tamaño de ventana
+        window.addEventListener('resize', () => {
+            goToSlide(currentSlide);
+        });
+
+        // Ocultar ayuda de teclado después de 5 segundos
+        const ayuda = document.getElementById('ayuda');
+        setTimeout(() => {
+            ayuda.classList.add('oculto');
+        }, 5000);
+
+        // Mostrar ayuda al pasar mouse
+        let timeoutOcultar;
+        ayuda.addEventListener('mouseenter', () => {
+            clearTimeout(timeoutOcultar);
+            ayuda.classList.remove('oculto');
+        });
+
+        ayuda.addEventListener('mouseleave', () => {
+            timeoutOcultar = setTimeout(() => {
+                ayuda.classList.add('oculto');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

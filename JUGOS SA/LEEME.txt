@@ -1,0 +1,205 @@
+================================================================================
+SISTEMA DE DASHBOARDS - JUGOS S.A.
+INICIO RÁPIDO
+================================================================================
+
+¡Hola! Este es un sistema de visualización de datos para JUGOS S.A.
+
+
+================================================================================
+INICIO RÁPIDO (SI TODO FUNCIONA)
+================================================================================
+
+1. Doble clic en:
+   INICIAR_SISTEMA.bat
+
+2. ¡Listo! El dashboard se abrirá automáticamente.
+
+
+================================================================================
+¿PRIMERA VEZ? ¿PROBLEMAS? ¿EN LA EMPRESA?
+================================================================================
+
+PASO 1: Ejecuta el diagnóstico
+   └─> DIAGNOSTICO.bat
+
+   Te dirá si hay algún problema y cómo solucionarlo.
+
+
+PASO 2: Lee la guía correspondiente
+
+   ┌─ ¿Funciona todo? ────────────────────────┐
+   │                                           │
+   │  Sí → Ejecuta INICIAR_SISTEMA.bat        │
+   │                                           │
+   │  No → ¿Eres administrador?                │
+   │       │                                   │
+   │       ├─ Sí → Lee INSTRUCCIONES.txt      │
+   │       │                                   │
+   │       └─ No → Lee GUIA_SIN_ADMIN.txt     │
+   │             (Solución sin permisos)       │
+   └───────────────────────────────────────────┘
+
+
+================================================================================
+ARCHIVOS IMPORTANTES
+================================================================================
+
+PARA EJECUTAR:
+   INICIAR_SISTEMA.bat    - Inicia el sistema completo
+   DETENER_SERVICIO.bat   - Detiene actualizaciones automáticas
+
+PARA DIAGNOSTICAR:
+   DIAGNOSTICO.bat        - Detecta problemas automáticamente
+
+PARA CONFIGURAR:
+   CONFIGURAR_RUTA_RED.bat           - Si Access está en red
+   CONFIGURAR_PYTHON_PORTABLE.bat    - Si necesitas Python portable
+
+PARA LEER:
+   INSTRUCCIONES.txt      - Manual completo del sistema
+   GUIA_SIN_ADMIN.txt    - Guía para usuarios sin permisos admin
+
+
+================================================================================
+ESCENARIOS COMUNES
+================================================================================
+
+ESCENARIO 1: "Soy el desarrollador, funciona en mi PC"
+   → Ejecuta: INICIAR_SISTEMA.bat
+   → Todo debería funcionar automáticamente
+
+ESCENARIO 2: "Lo llevo a la empresa por primera vez"
+   → Paso 1: Ejecuta DIAGNOSTICO.bat
+   → Paso 2: Sigue las instrucciones que aparezcan
+   → Paso 3: Lee GUIA_SIN_ADMIN.txt si no tienes permisos
+
+ESCENARIO 3: "Dice 'Error al conectar con Access'"
+   → Ejecuta: DIAGNOSTICO.bat
+   → El diagnóstico te dirá exactamente qué hacer
+
+ESCENARIO 4: "Incompatibilidad Python x64 vs ODBC x32"
+   → Lee: GUIA_SIN_ADMIN.txt
+   → Usa Python Portable (NO requiere permisos admin)
+
+
+================================================================================
+¿QUÉ HACE ESTE SISTEMA?
+================================================================================
+
+- Lee datos desde una base de datos Access (.accdb)
+- Genera dashboards interactivos con gráficos
+- Se actualiza automáticamente cada 1 hora
+- Funciona sin conexión a internet
+- Portable: se puede ejecutar desde pendrive o red
+
+
+================================================================================
+CARACTERÍSTICAS TÉCNICAS
+================================================================================
+
+✓ Actualización automática cada hora
+✓ Compatible con ODBC x32 y x64
+✓ Funciona sin permisos de administrador
+✓ Portable (pendrive, red, local)
+✓ Detección automática de problemas
+✓ Sistema de caché inteligente
+✓ Compatible con Windows 7, 8, 10, 11
+
+
+================================================================================
+SOPORTE
+================================================================================
+
+Si después de leer las guías sigues con problemas:
+
+1. Ejecuta: DIAGNOSTICO.bat
+2. Toma captura de pantalla del resultado
+3. Toma captura de cualquier mensaje de error
+4. Contacta al desarrollador con las capturas
+
+
+================================================================================
+FLUJO RECOMENDADO PARA NUEVOS USUARIOS
+================================================================================
+
+Tu primera vez con el sistema:
+
+   1. Lee este archivo (LEEME.txt) ← ¡Estás aquí!
+   2. Ejecuta DIAGNOSTICO.bat
+   3. Si dice "Todo OK" → Ejecuta INICIAR_SISTEMA.bat
+   4. Si hay problemas → Lee GUIA_SIN_ADMIN.txt
+   5. Para más detalles → Lee INSTRUCCIONES.txt
+
+
+================================================================================
+PREGUNTAS FRECUENTES
+================================================================================
+
+P: ¿Necesito internet?
+R: NO. Todo funciona offline.
+
+P: ¿Necesito permisos de administrador?
+R: NO. Con Python Portable funciona sin admin.
+
+P: ¿Puedo usarlo en un pendrive?
+R: SÍ. Copia toda la carpeta y ejecuta.
+
+P: ¿Funciona en red?
+R: SÍ. Puedes colocarlo en carpeta compartida.
+
+P: ¿Modifica la base de datos?
+R: NO. Solo lee, nunca escribe.
+
+P: ¿Se actualiza automáticamente?
+R: SÍ. Cada 1 hora sin intervención manual.
+
+
+================================================================================
+RESUMEN EJECUTIVO
+================================================================================
+
+                 ┌─────────────────────────────┐
+                 │   ¿Primera vez?              │
+                 └──────────┬──────────────────┘
+                            │
+                            ▼
+                 ┌─────────────────────────────┐
+                 │   Ejecuta DIAGNOSTICO.bat    │
+                 └──────────┬──────────────────┘
+                            │
+                    ┌───────┴───────┐
+                    │               │
+                  ¿OK?             [X]
+                    │               │
+                    ▼               ▼
+         ┌──────────────┐   ┌──────────────┐
+         │ INICIAR      │   │ GUIA_SIN_    │
+         │ _SISTEMA.bat │   │ ADMIN.txt    │
+         └──────────────┘   └──────────────┘
+                │
+                ▼
+         ¡SISTEMA CORRIENDO!
+
+
+================================================================================
+CONTACTO
+================================================================================
+
+Sistema desarrollado para: JUGOS S.A.
+Versión: 2.0 - Enero 2026
+Soporte: Consultar con el área de IT
+
+
+================================================================================
+¡LISTO PARA COMENZAR!
+================================================================================
+
+Ahora ejecuta:
+   DIAGNOSTICO.bat
+
+Y sigue las instrucciones que aparezcan en pantalla.
+
+¡Éxito!
+
+================================================================================

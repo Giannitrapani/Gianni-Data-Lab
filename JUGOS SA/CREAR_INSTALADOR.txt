@@ -1,0 +1,59 @@
+================================================================================
+COMO CREAR EL INSTALADOR DE JUGOS S.A. DASHBOARD
+================================================================================
+
+PASO 1: Descargar Inno Setup
+-----------------------------
+1. Ir a: https://jrsoftware.org/isdl.php
+2. Descargar "Inno Setup 6" (el archivo .exe)
+3. Instalarlo (siguiente, siguiente, finalizar)
+
+
+PASO 2: Compilar el instalador
+------------------------------
+1. En la carpeta JUGOS-CLAUDE, hacer clic derecho en "instalador_setup.iss"
+2. Seleccionar "Compile" (o abrir con Inno Setup y presionar Ctrl+F9)
+3. Esperar a que termine (puede tardar unos minutos)
+4. El instalador se creara en: JUGOS-CLAUDE\instalador_output\
+
+
+PASO 3: Resultado
+-----------------
+Se genera el archivo:
+   JUGOS_Dashboard_Instalador_v3.1.exe
+
+Este archivo contiene TODO:
+- Python 3.12.7
+- Driver ODBC de Access
+- Librerias (pandas, pyodbc, plotly)
+- Todos los scripts y dashboards
+- Base de datos de ejemplo
+
+
+PARA INSTALAR EN OTRA PC:
+-------------------------
+1. Copiar el archivo JUGOS_Dashboard_Instalador_v3.1.exe a la otra PC
+2. Ejecutar como administrador
+3. Seguir el asistente (siguiente, siguiente, instalar)
+4. Al finalizar, se crea acceso directo en el escritorio
+5. Ejecutar "JUGOS S.A. Dashboard" desde el escritorio
+6. Usar "Elegir Base de Datos" si necesita usar otra base de datos
+
+
+NOTAS IMPORTANTES:
+------------------
+- El instalador requiere permisos de administrador
+- La instalacion puede tardar varios minutos (instala Python y librerias)
+- Se instala en C:\JUGOS-DASHBOARD por defecto
+- Se crea acceso directo en el escritorio automaticamente
+
+
+TAMANO APROXIMADO:
+------------------
+- Instalador: ~60-80 MB (incluye Python y ODBC)
+- Espacio en disco despues de instalar: ~300-400 MB
+
+
+================================================================================
+Creado: Enero 2026
+================================================================================

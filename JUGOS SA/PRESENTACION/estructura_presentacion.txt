@@ -1,0 +1,577 @@
+================================================================================
+ESTRUCTURA DE PRESENTACION - SISTEMA DE DASHBOARDS JUGOS S.A.
+================================================================================
+ARCHIVO EDITABLE - Modificar este archivo y avisar para regenerar el HTML
+================================================================================
+
+[INSTRUCCIONES]
+- Cada nivel está marcado con #, ##, ###, etc.
+- Las fórmulas están entre { }
+- Los comentarios explicativos están entre [ ]
+- Las capturas se referencian como [CAPTURA: nombre_archivo.png]
+
+================================================================================
+# NIVEL 0 - PORTADA
+================================================================================
+
+TITULO: Sistema de Dashboards Interactivos
+SUBTITULO: Control Integral de Stock y Logística - JUGOS S.A.
+
+PROBLEMA QUE RESUELVE:
+- Visibilidad en tiempo real del stock de bins
+- Alertas tempranas para evitar paradas de producción
+- Control de deuda de proveedores
+- Optimización de rutas logísticas
+
+VALOR GENERADO:
+- Evita pérdidas por paradas: USD 10,000+/año
+- Recuperación de bins retenidos: 2,000+ bins
+- Optimización logística: 10-15% ahorro
+
+[Al hacer clic en cualquier sección, hace zoom hacia ella]
+
+================================================================================
+## NIVEL 1 - SECCIÓN 1: STOCK GLOBAL
+================================================================================
+
+DESCRIPCION:
+Dashboard principal para monitoreo de bins vacíos disponibles y tendencias.
+Actualización automática desde Access.
+
+[CAPTURA: dashboard_stock_completo.png]
+
+--- SUBSECCIONES ---
+
+### KPI 1: Bins Vacíos Disponibles
+
+[CAPTURA: kpi_bins_vacios.png]
+
+QUE MUESTRA:
+- Cantidad actual de bins vacíos disponibles en planta
+- Color del indicador (verde/amarillo/rojo)
+- Nivel de alerta (NORMAL/ADVERTENCIA/CRÍTICO)
+
+FORMULA:
+{ Bins_Vacios_Planta = TOTAL_BINS - Bins_En_Campos - Bins_Llenos_Planta }
+
+DONDE:
+- TOTAL_BINS = 30,000 (configurado en config.json)
+- Bins_En_Campos = Salidas_Vacios_Acum - Entradas_Desde_Campo_Acum
+- Bins_Llenos_Planta = COUNT(bins en BASCULAR donde FECHA ≤ hoy Y (FVO = NULL O FVO > hoy))
+
+SISTEMA DE COLORES:
+- Verde (#2ECC71): > 8,000 bins (NORMAL)
+- Amarillo (#F39C12): 5,000 - 8,000 bins (ADVERTENCIA)
+- Rojo (#E74C3C): < 5,000 bins (CRÍTICO)
+
+REFERENCIA EN CÓDIGO:
+- Archivo: generar_dashboard.py
+- Líneas: 168-172
+
+---
+
+### KPI 2: Tendencia (bins/día)
+
+[CAPTURA: kpi_tendencia.png]
+
+QUE MUESTRA:
+- Cambio diario promedio de bins vacíos
+- Positivo (+): Recuperando bins
+- Negativo (-): Perdiendo bins
+
+FORMULA:
+{ Regresión lineal sobre últimos 14 días }
+
+CALCULO DETALLADO:
+1. Tomar últimos 14 días de Bins_Vacios_Planta
+2. Crear variable x = [0, 1, 2, ..., 13] (días)
+3. Crear variable y = [bins_dia_0, bins_dia_1, ..., bins_dia_13]
+4. Ajustar recta: y = pendiente × x + intercepto
+5. Resultado: pendiente (bins/día)
+
+CODIGO PYTHON:
+{
+  x = datos_recientes['dias_num'].values
+  y = datos_recientes['BINS_VACIOS_PLANTA'].values
+  coef = np.polyfit(x, y, 1)
+  pendiente = coef[0]
+}
+
+INTERPRETACION:
+- Tendencia = -150 → Perdiendo 150 bins/día
+- Tendencia = +200 → Ganando 200 bins/día
+- Tendencia = 0 → Estable
+
+SISTEMA ADAPTATIVO:
+- Días 1-6: No calcula tendencia (datos insuficientes)
+- Días 7-13: Regresión con 7 días
+- Días 14+: Regresión con 14 días (MODO NORMAL)
+
+REFERENCIA EN CÓDIGO:
+- Archivo: generar_dashboard.py
+- Líneas: 269-278
+
+---
+
+### KPI 3: Días hasta Advertencia
+
+[CAPTURA: kpi_dias_advertencia.png]
+
+QUE MUESTRA:
+- Cuántos días faltan para llegar al umbral de advertencia (8,000 bins)
+- Solo se calcula si la tendencia es negativa
+- Muestra "---" si la tendencia es positiva o estable
+
+FORMULA:
+{ Dias_Hasta_Amarillo = (Bins_Vacios_Actual - 8000) / |pendiente| }
+
+EJEMPLO PRÁCTICO:
+- Bins_Vacios_Actual = 12,500
+- UMBRAL_ADVERTENCIA = 8,000
+- Tendencia = -150 bins/día
+
+Cálculo:
+Dias_Hasta_Amarillo = (12,500 - 8,000) / 150 = 30 días
+
+INTERPRETACION:
+- 30 días: Tenemos 1 mes antes de llegar a advertencia
+- 7 días: ALERTA - Solo 1 semana
+- ---: Tendencia positiva, no aplica
+
+SISTEMA DE COLORES:
+- Verde: > 14 días
+- Amarillo: 7-14 días
+- Rojo: < 7 días
+
+REFERENCIA EN CÓDIGO:
+- Archivo: generar_dashboard.py
+- Líneas: 287-288
+
+---
+
+### KPI 4: Días hasta Crítico
+
+[CAPTURA: kpi_dias_critico.png]
+
+QUE MUESTRA:
+- Cuántos días faltan para llegar al umbral crítico (5,000 bins)
+- Alerta máxima del sistema
+- Solo se calcula si la tendencia es negativa
+
+FORMULA:
+{ Dias_Hasta_Critico = (Bins_Vacios_Actual - 5000) / |pendiente| }
+
+EJEMPLO PRÁCTICO:
+- Bins_Vacios_Actual = 12,500
+- UMBRAL_CRITICO = 5,000
+- Tendencia = -150 bins/día
+
+Cálculo:
+Dias_Hasta_Critico = (12,500 - 5,000) / 150 = 50 días
+
+INTERPRETACION:
+- 50 días: Situación controlada
+- 14 días: PRECAUCIÓN - Preparar medidas
+- 7 días: CRÍTICO - Acción inmediata
+- < 3 días: EMERGENCIA - Parada inminente
+
+SISTEMA DE COLORES:
+- Verde: > 14 días
+- Amarillo: 7-14 días
+- Rojo: < 7 días
+
+DETECTOR DE CAIDAS BRUSCAS:
+Si en un día se pierden > 1,000 bins, activa alerta inmediata
+independiente de los días calculados.
+
+REFERENCIA EN CÓDIGO:
+- Archivo: generar_dashboard.py
+- Líneas: 285-286
+
+---
+
+### GRÁFICO 1: Distribución Total de Bins (Áreas Apiladas)
+
+[CAPTURA: grafico_areas_apiladas.png]
+
+QUE MUESTRA:
+- Distribución visual de los 30,000 bins totales
+- 3 categorías apiladas que suman el total
+- Evolución temporal de enero a diciembre
+
+CAPAS DEL GRÁFICO (de abajo hacia arriba):
+
+1. CAPA VERDE - Bins Vacíos Disponibles
+   - Base del gráfico
+   - Color: rgba(35, 170, 152, 1)
+   - Representa bins listos para usar
+
+2. CAPA MORADA - Bins Llenos (pendientes de volcar)
+   - Sobre la capa verde
+   - Color: rgba(100, 35, 170, 1)
+   - Bins que ingresaron con fruta pero aún no fueron volcados
+
+3. CAPA ROJA - Bins en Campos
+   - Tope del gráfico
+   - Color: rgba(170, 35, 35, 1)
+   - Bins que salieron a proveedores y aún no regresaron
+
+LINEAS DE REFERENCIA:
+
+- Línea Amarilla: Umbral Advertencia (8,000 bins)
+  { y = 8,000 }
+
+- Línea Azul: Umbral Crítico (5,000 bins)
+  { y = 5,000 }
+
+INTERPRETACION:
+- Si la capa verde baja de la línea amarilla → ADVERTENCIA
+- Si la capa verde baja de la línea azul → CRÍTICO
+- La suma de las 3 capas siempre debe ser 30,000
+
+INTERACTIVIDAD:
+- Hover: Muestra valores exactos por fecha
+- Formato: "05/Enero/2026 - Vacíos: 12,543"
+
+EJE X:
+- Rango fijo: 01/Enero a 31/Diciembre
+- Ticks mensuales centrados (día 15)
+- Formato: "Ene 2026", "Feb 2026", etc.
+
+REFERENCIA EN CÓDIGO:
+- Archivo: generar_dashboard.py
+- Líneas: 314-420
+
+---
+
+### GRÁFICO 2: Evolución Individual por Categoría (Líneas)
+
+[CAPTURA: grafico_lineas_individuales.png]
+
+QUE MUESTRA:
+- Las mismas 3 categorías pero como líneas independientes
+- Permite comparar tendencias entre categorías
+- No están apiladas, cada línea muestra su valor real
+
+LINEAS DEL GRÁFICO:
+
+1. LÍNEA VERDE - Bins Vacíos Disponibles
+   - Color: rgba(35, 170, 152, 1)
+   - Ancho: 3px
+   - Muestra disponibilidad real
+
+2. LÍNEA MORADA - Bins Llenos
+   - Color: rgba(100, 35, 170, 1)
+   - Ancho: 3px
+   - Muestra acumulación de bins pendientes
+
+3. LÍNEA ROJA - Bins en Campos
+   - Color: rgba(170, 35, 35, 1)
+   - Ancho: 3px
+   - Muestra bins en circulación
+
+UTILIDAD:
+- Identificar patrones: ¿Cuándo suben/bajan los bins en campo?
+- Correlaciones: ¿Si bajan vacíos, suben llenos?
+- Alertas visuales: Cruces entre líneas
+
+EJEMPLO DE ANÁLISIS:
+- Si línea roja sube mucho → Proveedores reteniendo bins
+- Si línea morada sube → Cuello de botella en volcado
+- Si línea verde baja → Acción inmediata requerida
+
+MISMAS LINEAS DE REFERENCIA:
+- Umbral Amarillo: 8,000
+- Umbral Crítico: 5,000
+
+REFERENCIA EN CÓDIGO:
+- Archivo: generar_dashboard.py
+- Líneas: 422-504
+
+---
+
+[FIN SECCIÓN STOCK GLOBAL]
+
+================================================================================
+## NIVEL 1 - SECCIÓN 2: PROVEEDORES
+================================================================================
+
+DESCRIPCION:
+Dashboard para control de deuda de bins por proveedor.
+Sistema de semáforo visual para identificar proveedores con retención.
+
+[CAPTURA: dashboard_proveedores_completo.png]
+
+--- SUBSECCIONES ---
+
+### Sistema de Semáforo
+
+[CAPTURA: cuadricula_proveedores.png]
+
+QUE MUESTRA:
+- Cuadrícula con todos los proveedores activos
+- Color de fondo según nivel de deuda
+- Métricas principales visibles
+
+LOGICA DE COLORES:
+
+VERDE (< 20 bins):
+- Color: rgba(46, 204, 113, 0.3)
+- Significado: Proveedor al día
+- Acción: Ninguna
+
+AMARILLO (20-40 bins):
+- Color: rgba(241, 196, 15, 0.3)
+- Significado: Atención requerida
+- Acción: Monitorear
+
+ROJO (> 40 bins):
+- Color: rgba(231, 76, 60, 0.3)
+- Significado: Deuda crítica
+- Acción: Contactar proveedor
+
+FORMULA:
+{
+  if Deuda < 20: color = VERDE
+  elif 20 <= Deuda <= 40: color = AMARILLO
+  else: color = ROJO
+}
+
+CONFIGURACION:
+- Archivo: config.json
+- Parámetros:
+  - semaforo_deuda_verde: 20
+  - semaforo_deuda_amarillo: 40
+
+REFERENCIA EN CÓDIGO:
+- Archivo: generar_pagina_proveedores.py
+
+---
+
+### Tarjeta de Proveedor Individual
+
+[CAPTURA: tarjeta_proveedor_detalle.png]
+
+METRICAS MOSTRADAS:
+
+1. NOMBRE DEL PROVEEDOR
+   - Fuente grande, color blanco
+   - Centrado en la tarjeta
+
+2. DEUDA ACTUAL
+   - Fórmula: { Deuda = Salidas_al_proveedor - Entradas_del_proveedor }
+   - Formato: "Deuda: 35 bins"
+   - Color según semáforo
+
+3. BINS EN CAMPO
+   - Total de bins actualmente en poder del proveedor
+   - Incluye bins con fruta y vacíos
+
+4. DIAS SIN DEVOLUCION
+   - Fórmula: { Dias = Hoy - Ultima_fecha_devolucion }
+   - Alerta si > 14 días (configurable)
+   - Color rojo si supera umbral
+
+INTERACTIVIDAD:
+- Click: Amplía detalles del proveedor
+- Hover: Muestra tooltip con historial
+
+---
+
+### Filtros y Búsqueda
+
+[CAPTURA: controles_filtros.png]
+
+FILTROS DISPONIBLES:
+
+1. BUSCAR POR NOMBRE
+   - Input de texto
+   - Búsqueda en tiempo real
+
+2. FILTRAR POR COLOR
+   - Solo verdes
+   - Solo amarillos
+   - Solo rojos
+
+3. ORDENAR POR
+   - Deuda (mayor a menor)
+   - Nombre (A-Z)
+   - Días sin devolución
+
+---
+
+[FIN SECCIÓN PROVEEDORES]
+
+================================================================================
+## NIVEL 1 - SECCIÓN 3: LOGÍSTICA
+================================================================================
+
+DESCRIPCION:
+Dashboard para análisis de movimientos logísticos.
+Datos de báscula integrados con kilómetros recorridos.
+
+[CAPTURA: dashboard_logistica_completo.png]
+
+--- SUBSECCIONES ---
+
+### Análisis Temporal
+
+[CAPTURA: analisis_temporal.png]
+
+QUE MUESTRA:
+- KG transportados por período
+- 3 vistas: Diario, Semanal, Mensual
+
+METRICAS:
+
+1. KG DIARIO
+   - Fórmula: { SUM(Peso) GROUP BY Fecha }
+   - Gráfico de barras
+   - Identifica días pico
+
+2. KG SEMANAL
+   - Fórmula: { SUM(Peso) GROUP BY Semana }
+   - Promedio semanal
+   - Tendencias por semana
+
+3. KG MENSUAL
+   - Fórmula: { SUM(Peso) GROUP BY Mes }
+   - Comparación entre meses
+   - Estacionalidad
+
+---
+
+### Análisis por Distancia
+
+[CAPTURA: analisis_distancia.png]
+
+QUE MUESTRA:
+- Relación entre KG transportados y KM recorridos
+- Eficiencia logística por ruta
+
+METRICAS:
+
+1. KG vs KM (Scatter plot)
+   - Eje X: Kilómetros
+   - Eje Y: Kilogramos
+   - Puntos: Cada viaje
+
+2. EFICIENCIA
+   - Fórmula: { Eficiencia = KG / KM }
+   - Unidad: kg/km
+   - Identifica rutas ineficientes
+
+3. RANGOS DE DISTANCIA
+   - Corta: 0-50 km
+   - Media: 50-150 km
+   - Larga: > 150 km
+
+---
+
+### Top 10 Especies
+
+[CAPTURA: top10_especies.png]
+
+QUE MUESTRA:
+- Las 10 especies más transportadas
+- Kilogramos totales por especie
+
+FORMULA:
+{
+  SELECT Especie, SUM(Peso) as Total_KG
+  FROM IngresosConKm
+  GROUP BY Especie
+  ORDER BY Total_KG DESC
+  LIMIT 10
+}
+
+GRAFICO:
+- Tipo: Barras horizontales
+- Color: Degradado verde
+- Ordenado de mayor a menor
+
+---
+
+### Análisis por Origen
+
+[CAPTURA: analisis_origen.png]
+
+QUE MUESTRA:
+- Distribución geográfica de proveedores
+- KG por zona/región
+
+METRICAS:
+- Total KG por origen
+- Cantidad de viajes
+- Distancia promedio
+
+---
+
+### Análisis por Tipo de Camión
+
+[CAPTURA: analisis_tipo_camion.png]
+
+QUE MUESTRA:
+- Comparativa entre tipos de vehículos
+- Eficiencia por tipo
+
+METRICAS:
+- KG promedio por viaje
+- Utilización de capacidad
+- Cantidad de viajes por tipo
+
+FORMULA UTILIZACION:
+{
+  Utilizacion = (KG_Real / Capacidad_Maxima) × 100
+}
+
+---
+
+[FIN SECCIÓN LOGÍSTICA]
+
+================================================================================
+## NIVEL 2 - CONCLUSIONES Y ROI
+================================================================================
+
+VALOR GENERADO POR EL SISTEMA:
+
+1. PREVENCIÓN DE PARADAS
+   - Alertas tempranas evitan quedarse sin bins
+   - Ahorro estimado: USD 10,000+/año
+
+2. RECUPERACIÓN DE BINS
+   - Identificación de proveedores con retención
+   - Recuperación potencial: 2,000+ bins
+
+3. OPTIMIZACIÓN LOGÍSTICA
+   - Análisis de eficiencia de rutas
+   - Ahorro estimado: 10-15% en costos
+
+RETORNO DE INVERSIÓN:
+- Inversión: USD 8,500
+- Ahorro anual: USD 65,000+
+- ROI: < 2 meses
+
+CARACTERISTICAS TÉCNICAS:
+- Actualización automática desde Access
+- Sin licencias recurrentes
+- Portable (red/local/pendrive)
+- No requiere servidor
+
+================================================================================
+FIN DE ESTRUCTURA
+================================================================================
+
+NOTAS PARA EDICIÓN:
+- Agregar [CAPTURA: nombre.png] donde falten screenshots
+- Modificar fórmulas si cambian en el código
+- Ajustar umbrales según config.json
+- Actualizar precios/valores según necesidad
+
+PARA REGENERAR HTML:
+1. Editar este archivo
+2. Guardar cambios
+3. Avisar a Claude: "Regenerar HTML desde estructura_presentacion.txt"
+4. Claude generará nuevo presentacion_gerencia.html
+
+================================================================================

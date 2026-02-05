@@ -1,0 +1,386 @@
+================================================================================
+OPTIMIZACIÓN CON QUERY CONSOLIDACION - JUGOS S.A.
+================================================================================
+
+RESUMEN
+--------
+Se implementó una optimización que reduce la carga de datos de 2 tablas separadas
+a 1 solo query consolidado, mejorando velocidad y eficiencia.
+
+ANTES (2 lecturas):
+-------------------
+  TBL_Lbascular_formato_final (11,230 registros)
+  +
+  TBL_basculae_formato_final (8,238 registros)
+  =
+  19,468 movimientos totales
+
+DESPUÉS (1 lectura):
+--------------------
+  CONSOLIDACION (query) = 19,468 movimientos
+  ✓ 1 sola lectura
+  ✓ Más rápido
+  ✓ Menos I/O
+
+
+================================================================================
+COMPONENTES DEL SISTEMA
+================================================================================
+
+1. QUERY EN ACCESS
+------------------
+Nombre: CONSOLIDACION
+Ubicación: VerDatosGaspar-local.accdb
+Descripción: Une TBL_Lbascular y TBL_basculae con UNION ALL
+Columnas clave:
+  - NUMERO
+  - FECHA
+  - PROVEEDOR
+  - NOMBRE
+  - ENVASE
+  - CANTIDAD
+  - ORIGEN
+  - DESTINO
+  - MFL
+  - MOVIMIENTO (entrada/salida)
+  - FVO (fecha de volcado)
+  - TABLA_ORIGEN (BASCULAR/BASCULAE) ← AGREGADA
+
+2. MACRO VBA EN ACCESS
+-----------------------
+Nombre: Macro_ExportarConsolidacion
+Función: ExportarConsolidacion()
+Ubicación: Módulo VBA en Access
+Propósito: Exportar query CONSOLIDACION a CSV con formato correcto
+
+Características:
+  ✓ Delimitador: punto y coma (;)
+  ✓ Encoding: Latin1/Windows-1252
+  ✓ Fechas: Formato ISO (yyyy-mm-dd hh:nn:ss)
+  ✓ Manejo de NULL values
+  ✓ Escape de comillas
+
+Código VBA:
+-----------
+Public Sub ExportarConsolidacion()
+    On Error GoTo ErrorHandler
+
+    Dim rutaCSV As String
+    Dim rs As DAO.Recordset
+    Dim db As DAO.Database
+    Dim i As Integer
+    Dim linea As String
+    Dim archivo As Integer
+    Dim valor As Variant
+
+    rutaCSV = "C:\Users\giann\Desktop\JUGOS-CLAUDE\datos_csv\CONSOLIDACION.csv"
+
+    Set db = CurrentDb
+    Set rs = db.OpenRecordset("CONSOLIDACION", dbOpenSnapshot)
+
+    ' Abrir archivo para escribir
+    archivo = FreeFile
+    Open rutaCSV For Output As #archivo
+
+    ' Escribir encabezados
+    linea = ""
+    For i = 0 To rs.Fields.Count - 1
+        If i > 0 Then linea = linea & ";"
+        linea = linea & rs.Fields(i).Name
+    Next i
+    Print #archivo, linea
+
+    ' Escribir datos
+    Do Until rs.EOF
+        linea = ""
+        For i = 0 To rs.Fields.Count - 1
+            If i > 0 Then linea = linea & ";"
+
+            valor = rs.Fields(i).Value
+
+            If IsNull(valor) Then
+                linea = linea & ""
+            ElseIf IsDate(valor) Then
+                ' FORMATO ISO PARA FECHAS
+                linea = linea & """" & Format(valor, "yyyy-mm-dd hh:nn:ss") & """"
+            Else
+                linea = linea & """" & Replace(CStr(valor), """", """""") & """"
+            End If
+        Next i
+        Print #archivo, linea
+        rs.MoveNext
+    Loop
+
+    ' Cerrar
+    Close #archivo
+    rs.Close
+    Set rs = Nothing
+    Set db = Nothing
+
+    Debug.Print "CONSOLIDACION exportado: " & Now()
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "Error: " & Err.Description, vbCritical
+    On Error Resume Next
+    Close #archivo
+End Sub
+
+3. EXPORTAR_CONSOLIDACION.BAT
+------------------------------
+Propósito: Ejecutar macro VBA desde línea de comandos
+Comando: msaccess.exe <ruta> /x <macro> /nostartup
+Salida: datos_csv\CONSOLIDACION.csv
+
+4. CARGAR_DATOS_UNIVERSAL.PY (MODIFICADO)
+------------------------------------------
+Función: cargar_movimientos_bins()
+
+Comportamiento:
+  1. Intenta cargar query CONSOLIDACION (OPTIMIZADO)
+  2. Si falla, usa fallback (2 tablas separadas)
+
+Características:
+  ✓ Detección automática de delimitador (coma o punto y coma)
+  ✓ Detección automática de encoding (latin1, cp1252, utf-8)
+  ✓ Conversión automática de tipos de datos
+  ✓ Manejo de fechas ISO y otros formatos
+
+5. SERVICIO_ACTUALIZACION.PY (MODIFICADO)
+------------------------------------------
+Flujo de actualización (cada 1 hora):
+
+  [1/3] Exportar CONSOLIDACION desde Access (VBA)
+        ↓
+  [2/3] Exportar otras tablas (Python ODBC/CSV)
+        ↓
+  [3/3] Regenerar dashboards HTML
+
+6. INICIAR_SISTEMA.BAT (MODIFICADO)
+------------------------------------
+Flujo de inicio:
+
+  [1/5] Actualizar datos
+        [1.1] Exportar CONSOLIDACION (VBA)
+        [1.2] Exportar otras tablas (Python)
+        ↓
+  [2/5] Generar dashboards
+        ↓
+  [3/5] Iniciar servicio de actualización automática
+        ↓
+  [4/5] Abrir navegador
+        ↓
+  [5/5] Sistema listo
+
+
+================================================================================
+FLUJO COMPLETO DE DATOS
+================================================================================
+
+1. CAMBIO EN ACCESS
+-------------------
+Usuario modifica:
+  - Lbascular (tabla)
+  - Lbasculae (tabla)
+    ↓
+  CONSOLIDACION (query) se actualiza AUTOMÁTICAMENTE
+
+2. EXPORTACIÓN A CSV (cada 1 hora o al iniciar)
+------------------------------------------------
+  EXPORTAR_CONSOLIDACION.bat
+    ↓
+  Ejecuta macro VBA
+    ↓
+  Access exporta CONSOLIDACION.csv
+
+3. PYTHON LEE CSV
+-----------------
+  cargar_movimientos_bins()
+    ↓
+  Lee CONSOLIDACION.csv con encoding/delimitador automático
+    ↓
+  Convierte tipos de datos
+    ↓
+  Retorna DataFrame con 19,468 movimientos
+
+4. GENERACIÓN DE DASHBOARDS
+----------------------------
+  generar_dashboard.py → Stock Global
+  generar_pagina_proveedores.py → Análisis Proveedores
+  generar_analisis_logistico.py → Análisis Logístico
+    ↓
+  dashboard_completo.html (con 3 pestañas)
+
+
+================================================================================
+VENTAJAS DE LA OPTIMIZACIÓN
+================================================================================
+
+1. RENDIMIENTO
+--------------
+  ✓ 1 lectura en lugar de 2 (50% menos I/O)
+  ✓ Datos ya ordenados por FECHA en el query
+  ✓ Menos procesamiento en Python (no necesita concat)
+
+2. CONSISTENCIA
+---------------
+  ✓ Stock y Proveedores usan EXACTAMENTE los mismos datos
+  ✓ No hay posibilidad de desincronización
+  ✓ Más fácil de mantener
+
+3. MANTENIBILIDAD
+-----------------
+  ✓ Lógica de unión centralizada en Access (donde debe estar)
+  ✓ Python solo consume datos consolidados
+  ✓ Cambios en estructura se hacen 1 vez en el query
+
+4. ESCALABILIDAD
+----------------
+  ✓ Fácil agregar más filtros o joins en el query
+  ✓ Python no necesita cambios
+  ✓ Mejor para grandes volúmenes de datos
+
+
+================================================================================
+VERIFICACIÓN DEL SISTEMA
+================================================================================
+
+Para verificar que todo funciona correctamente:
+
+1. PROBAR EXPORTACIÓN VBA
+--------------------------
+  - Abre Access
+  - Alt + F8 → Ejecutar macro → Macro_ExportarConsolidacion
+  - Verifica que se crea: datos_csv\CONSOLIDACION.csv
+
+2. PROBAR LECTURA PYTHON
+-------------------------
+  python probar_consolidacion.py
+
+  Resultado esperado:
+    [OPTIMIZADO] Total: 19,468 movimientos desde query CONSOLIDACION
+    Columnas: OK
+    Datos: OK
+    Optimización: ACTIVADA
+
+3. PROBAR SISTEMA COMPLETO
+---------------------------
+  INICIAR_SISTEMA.bat
+
+  Resultado esperado:
+    [1.1] Exportando query CONSOLIDACION (VBA)... OK
+    [1.2] Exportando otras tablas... OK
+    [2/5] Generando dashboards... OK
+    [3/5] Iniciando servicios automáticos... OK
+    [4/5] Abriendo navegador... OK
+    [5/5] Sistema iniciado correctamente
+
+
+================================================================================
+SOLUCIÓN DE PROBLEMAS
+================================================================================
+
+PROBLEMA 1: No se exporta CONSOLIDACION
+----------------------------------------
+Causa: Macro VBA no existe o tiene error
+Solución:
+  1. Abre Access
+  2. Alt + F11 (Editor VBA)
+  3. Verifica que existe el módulo con la función
+  4. Ejecuta manualmente (F5)
+
+PROBLEMA 2: CSV con encoding incorrecto
+----------------------------------------
+Causa: VBA exporta con encoding diferente
+Solución: Python detecta automáticamente (latin1, cp1252, utf-8)
+         No requiere acción
+
+PROBLEMA 3: Fechas inválidas
+-----------------------------
+Causa: Formato de fecha no reconocido
+Solución: VBA exporta en formato ISO (yyyy-mm-dd hh:nn:ss)
+         Verificar que la macro VBA tiene el formato correcto
+
+PROBLEMA 4: Registros faltantes
+--------------------------------
+Causa: Query CONSOLIDACION no incluye todos los registros
+Solución:
+  1. Abre Access
+  2. Abre query CONSOLIDACION en vista Diseño
+  3. Verifica que tiene UNION ALL (no UNION)
+  4. Verifica filtros WHERE
+
+
+================================================================================
+ARCHIVOS MODIFICADOS
+================================================================================
+
+NUEVOS:
+-------
+  ✓ EXPORTAR_CONSOLIDACION.bat
+  ✓ probar_consolidacion.py
+  ✓ OPTIMIZACION_CONSOLIDACION.txt (este archivo)
+
+MODIFICADOS:
+------------
+  ✓ cargar_datos_universal.py
+    - cargar_movimientos_bins() ahora intenta CONSOLIDACION primero
+    - Detección automática de encoding y delimitador
+
+  ✓ servicio_actualizacion.py
+    - Paso 1: Exportar CONSOLIDACION (VBA)
+    - Paso 2: Exportar otras tablas
+    - Paso 3: Regenerar dashboards
+
+  ✓ INICIAR_SISTEMA.bat
+    - Paso 1.1: Exportar CONSOLIDACION
+    - Paso 1.2: Exportar otras tablas
+
+  ✓ ACTUALIZAR_CSV.py
+    - Agregado 'CONSOLIDACION' a lista de tablas
+    - Mejor manejo de errores por tabla
+
+EN ACCESS:
+----------
+  ✓ Query: CONSOLIDACION (creado/modificado)
+    - Agregada columna TABLA_ORIGEN
+
+  ✓ Módulo VBA: ModuloExportacion
+    - Función: ExportarConsolidacion()
+
+  ✓ Macro: Macro_ExportarConsolidacion
+    - Ejecuta ExportarConsolidacion()
+
+
+================================================================================
+PRÓXIMOS PASOS OPCIONALES
+================================================================================
+
+1. AUTOMATIZAR MÁS
+------------------
+  - Agregar evento "OnClose" en Access para exportar automáticamente
+  - Configurar Windows Task Scheduler para ejecutar cada X minutos
+
+2. MONITOREO
+------------
+  - Agregar logs de cada exportación
+  - Dashboard de estado del sistema
+  - Alertas si la exportación falla
+
+3. OPTIMIZACIONES ADICIONALES
+------------------------------
+  - Comprimir CSV (gzip) para ahorrar espacio
+  - Exportar solo cambios incrementales
+  - Cache inteligente de datos
+
+
+================================================================================
+CONTACTO
+================================================================================
+
+Sistema: JUGOS S.A. - Dashboards Interactivos
+Versión: 3.1 (Optimización CONSOLIDACION)
+Fecha: Enero 2026
+Desarrollado por: Claude Code + Gaspar Giannitrapani
+
+================================================================================
