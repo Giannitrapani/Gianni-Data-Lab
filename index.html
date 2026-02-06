@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gianni Data Lab</title>
+    <meta name="description" content="Portfolio de Ciencia de Datos - Gianni Data Lab">
+    <meta name="theme-color" content="#202020">
+
+    <!-- Google Fonts: Roboto Slab (headings) + Noto Sans (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Roboto+Slab:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== RESET ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Hydejack-inspired palette */
+            --body-bg: #fff;
+            --body-color: #333;
+            --accent: #4fb1ba;
+            --accent-faded: rgba(79, 177, 186, 0.5);
+            --accent-light: rgba(79, 177, 186, 0.1);
+            --gray: #777;
+            --gray-text: #666;
+            --gray-bg: rgba(0, 0, 0, 0.025);
+            --border-color: #ebebeb;
+            --sidebar-bg: #202020;
+            --sidebar-text: hsla(0, 0%, 100%, 0.75);
+            --sidebar-width: 21rem;
+
+            --font-body: 'Noto Sans', Helvetica, Arial, sans-serif;
+            --font-heading: 'Roboto Slab', Helvetica, Arial, sans-serif;
+
+            --content-max: 42rem;
+        }
+
+        /* Dark mode */
+        .dark-mode {
+            --body-bg: hsl(201, 6%, 17.5%);
+            --body-color: #ccc;
+            --gray: rgba(255, 255, 255, 0.5);
+            --gray-text: rgba(255, 255, 255, 0.625);
+            --gray-bg: rgba(255, 255, 255, 0.033);
+            --border-color: hsl(201, 6%, 22.5%);
+        }
+
+        html {
+            font-size: 15px;
+            scroll-behavior: smooth;
+        }
+
+        @media (min-width: 42em) { html { font-size: 16px; } }
+        @media (min-width: 86em) { html { font-size: 17px; } }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--body-bg);
+            color: var(--body-color);
+            line-height: 1.75;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration-color: var(--accent-faded);
+            text-underline-offset: 0.35rem;
+            text-decoration-thickness: 2px;
+            transition: text-decoration-color 0.25s;
+        }
+
+        a:hover { text-decoration-color: var(--accent); }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            line-height: 1.3;
+            color: var(--body-color);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            z-index: 100;
+            text-align: center;
+        }
+
+        .sidebar-avatar {
+            width: 7rem;
+            height: 7rem;
+            border-radius: 100%;
+            border: 0.5rem solid var(--body-bg);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #fff;
+            font-family: var(--font-heading);
+            margin-bottom: 1.25rem;
+            transition: border-color 0.3s;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-tagline {
+            font-size: 0.85rem;
+            color: var(--sidebar-text);
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-nav li { margin-bottom: 0.4rem; }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 0.25rem;
+            transition: color 0.25s, background 0.25s;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--sidebar-text);
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: var(--font-body);
+            margin-bottom: 1.5rem;
+            transition: all 0.25s;
+        }
+
+        .theme-toggle:hover {
+            border-color: rgba(255,255,255,0.5);
+            color: #fff;
+        }
+
+        /* ===== MOBILE NAV ===== */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3.5rem;
+            background: var(--sidebar-bg);
+            z-index: 200;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .mobile-nav-title {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            color: #fff;
+            font-size: 1.1rem;
+            margin-left: 0.75rem;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+        }
+
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 150;
+        }
+
+        .mobile-overlay.open { display: block; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            margin-left: calc(var(--sidebar-width) + 3rem);
+            margin-right: 3rem;
+            padding-top: 6rem;
+            padding-bottom: 8rem;
+            max-width: var(--content-max);
+        }
+
+        @media (min-width: 104em) {
+            .main {
+                margin-left: calc(50vw - 25rem + var(--sidebar-width));
+            }
+        }
+
+        /* ===== PAGE SECTIONS ===== */
+        .page-section {
+            margin-bottom: 6rem;
+        }
+
+        .page-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .page-section h3 {
+            font-size: 1.2rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .lead {
+            font-size: 1.1rem;
+            color: var(--gray-text);
+            margin-bottom: 2rem;
+        }
+
+        /* ===== HERO / INTRO ===== */
+        .hero-section {
+            margin-bottom: 6rem;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-section h1 .accent {
+            color: var(--accent);
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--gray-text);
+            max-width: 38rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.85rem;
+            background: var(--accent-light);
+            border: 1px solid var(--accent-faded);
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-badge .dot {
+            width: 7px;
+            height: 7px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ===== SKILL TAGS ===== */
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .skill-item {
+            display: inline-block;
+            border: 1px solid var(--border-color);
+            padding: 0.2rem 0.5rem;
+            font-size: 0.82rem;
+            color: var(--gray);
+            border-radius: 0.25rem;
+            transition: all 0.25s;
+        }
+
+        .skill-item:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ===== SKILL CATEGORIES ===== */
+        .skill-category {
+            margin-bottom: 2rem;
+        }
+
+        .skill-category h3 {
+            font-size: 1.08rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-category p {
+            color: var(--gray-text);
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ===== PROJECTS GRID ===== */
+        .projects-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -1rem;
+        }
+
+        @media (min-width: 42em) {
+            .projects-grid { margin: -1.5rem; }
+        }
+
+        .project-col {
+            width: 100%;
+            padding: 1rem;
+        }
+
+        @media (min-width: 42em) {
+            .project-col {
+                width: 50%;
+                padding: 1.5rem;
+            }
+        }
+
+        /* ===== PROJECT CARD (Hydejack style) ===== */
+        .project-card {
+            background: var(--gray-bg);
+            border-radius: 0.5rem;
+            box-shadow: 0.125rem 0.125rem 1rem rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: transform 500ms ease, box-shadow 500ms ease;
+            padding-bottom: 1rem;
+        }
+
+        .project-card:hover {
+            transform: translateY(-0.25rem);
+            box-shadow: 0.125rem 0.125rem 1.5rem rgba(0, 0, 0, 0.2);
+            transition-duration: 250ms;
+        }
+
+        .project-card-img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #1a3a3a 0%, #0d2b2b 50%, #1a2a35 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card-img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 60%, rgba(79, 177, 186, 0.15));
+        }
+
+        .project-card-img span {
+            z-index: 1;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+        }
+
+        .project-card-title {
+            font-family: var(--font-heading);
+            font-size: 1.08rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 0.75rem 1rem 0.25rem;
+            color: var(--body-color);
+        }
+
+        .project-card-text {
+            font-size: 0.88rem;
+            text-align: center;
+            color: var(--gray-text);
+            margin: 0.25rem 1rem;
+            line-height: 1.6;
+        }
+
+        .project-card-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            margin-top: 0.75rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .project-card-status.active { color: #4caf50; }
+        .project-card-status.coming { color: var(--gray); }
+
+        .project-card-status .s-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .project-card-tech {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.3rem;
+            margin: 0.75rem 1rem 0;
+        }
+
+        .project-card-tech span {
+            border: 1px solid var(--border-color);
+            padding: 0.1rem 0.4rem;
+            font-size: 0.7rem;
+            color: var(--gray);
+            border-radius: 0.2rem;
+        }
+
+        .project-card-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-top: 0.75rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .project-card-action .arrow {
+            transition: transform 0.25s;
+        }
+
+        .project-card:hover .project-card-action .arrow {
+            transform: translateX(3px);
+        }
+
+        /* Placeholder card */
+        .project-card-placeholder {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.5rem;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            cursor: default;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .project-card-placeholder:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .placeholder-icon {
+            width: 50px;
+            height: 50px;
+            border: 2px dashed var(--gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: var(--gray);
+        }
+
+        .placeholder-text {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        /* ===== TOAST NOTIFICATION ===== */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--sidebar-bg);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 9999;
+            transform: translateY(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { border-left: 4px solid #4caf50; }
+        .toast.error { border-left: 4px solid #ef5350; }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--body-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            max-width: 440px;
+            width: 90%;
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+        .modal h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal p {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.6;
+        }
+
+        .modal-path {
+            background: var(--gray-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            padding: 0.5rem 0.75rem;
+            font-family: 'Consolas', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            word-break: break-all;
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-accent:hover { opacity: 0.85; }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--body-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline:hover { border-color: var(--gray); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 64em) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 300;
+            }
+
+            .sidebar.open { transform: translateX(0); }
+
+            .mobile-nav { display: flex; }
+
+            .main {
+                margin-left: 1.5rem;
+                margin-right: 1.5rem;
+                padding-top: 5.5rem;
+                max-width: none;
+            }
+        }
+
+        /* ===== SCROLL ANIMATIONS ===== */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile top nav -->
+    <div class="mobile-nav">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+        <span class="mobile-nav-title">Gianni Data Lab</span>
+    </div>
+    <div class="mobile-overlay" id="mobile-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-avatar">G</div>
+        <div class="sidebar-title">Gianni Data Lab</div>
+        <div class="sidebar-tagline">Ciencia de Datos aplicada al negocio</div>
+
+        <button class="theme-toggle" onclick="toggleDarkMode()">
+            <span id="theme-icon">&#9789;</span> Dark mode
+        </button>
+
+        <ul class="sidebar-nav">
+            <li><a href="#inicio" class="active" onclick="navClick(this)">Inicio</a></li>
+            <li><a href="#sobre-mi" onclick="navClick(this)">Sobre Mi</a></li>
+            <li><a href="#capacidades" onclick="navClick(this)">Capacidades</a></li>
+            <li><a href="#proyectos" onclick="navClick(this)">Proyectos</a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            &copy; 2026 Gianni Data Lab
+        </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+
+        <!-- INICIO -->
+        <section id="inicio" class="hero-section fade-up">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                Disponible para nuevos proyectos
+            </div>
+            <h1>Transformo datos en<br><span class="accent">decisiones</span></h1>
+            <p class="hero-description">
+                Tecnico Superior en Ciencia de Datos. Desarrollo soluciones integrales
+                de analisis, dashboards interactivos y sistemas de inteligencia
+                de negocios que convierten informacion cruda en valor estrategico.
+            </p>
+        </section>
+
+        <!-- SOBRE MI -->
+        <section id="sobre-mi" class="page-section fade-up">
+            <h2>Sobre Mi</h2>
+            <p class="lead">
+                Soy Tecnico Superior en Ciencia de Datos con enfoque en soluciones
+                reales para empresas. Mi trabajo se centra en tomar datos dispersos,
+                limpiarlos, analizarlos y presentarlos de forma clara para que las
+                decisiones de negocio se basen en evidencia concreta.
+            </p>
+            <p style="color: var(--gray-text); margin-bottom: 1rem;">
+                Cada proyecto que desarrollo es un sistema completo: desde la extraccion
+                de datos hasta el dashboard final, pasando por ETL, analisis estadistico
+                y visualizacion interactiva. Todo pensado para que el usuario final
+                pueda operar sin conocimientos tecnicos.
+            </p>
+        </section>
+
+        <!-- CAPACIDADES -->
+        <section id="capacidades" class="page-section fade-up">
+            <h2>Capacidades</h2>
+            <p class="lead">
+                Herramientas y tecnologias que utilizo para construir soluciones de datos
+                completas, desde la fuente hasta la visualizacion.
+            </p>
+
+            <div class="skill-category fade-up">
+                <h3>Python & Analisis de Datos</h3>
+                <p>Procesamiento, limpieza y analisis con el ecosistema completo de Python.</p>
+                <div class="skill-list">
+                    <span class="skill-item">Python</span>
+                    <span class="skill-item">Pandas</span>
+                    <span class="skill-item">NumPy</span>
+                    <span class="skill-item">Plotly</span>
+                    <span class="skill-item">Jupyter Notebooks</span>
+                </div>
+            </div>
+
+            <div class="skill-category fade-up">
+                <h3>Bases de Datos & ETL</h3>
+                <p>Extraccion, transformacion y carga desde multiples fuentes.</p>
+                <div class="skill-list">
+                    <span class="skill-item">SQL</span>
+                    <span class="skill-item">Microsoft Access</span>
+                    <span class="skill-item">ODBC</span>
+                    <span class="skill-item">CSV / Excel</span>
+                    <span class="skill-item">pyodbc</span>
+                </div>
+            </div>
+
+            <div class="skill-category fade-up">
+                <h3>Visualizacion & Dashboards</h3>
+                <p>Dashboards interactivos y presentaciones ejecutivas.</p>
+                <div class="skill-list">
+                    <span class="skill-item">HTML / CSS / JS</span>
+                    <span class="skill-item">Plotly</span>
+                    <span class="skill-item">KPIs interactivos</span>
+                    <span class="skill-item">Graficos dinamicos</span>
+                </div>
+            </div>
+
+            <div class="skill-category fade-up">
+                <h3>Automatizacion & Sistemas</h3>
+                <p>Sistemas que se ejecutan sin intervencion del usuario final.</p>
+                <div class="skill-list">
+                    <span class="skill-item">Windows Batch</span>
+                    <span class="skill-item">Servicios auto-update</span>
+                    <span class="skill-item">Despliegue portable</span>
+                    <span class="skill-item">Sin admin requerido</span>
+                </div>
+            </div>
+
+            <div class="skill-category fade-up">
+                <h3>IA & Herramientas Modernas</h3>
+                <p>Integracion de inteligencia artificial en el flujo de trabajo.</p>
+                <div class="skill-list">
+                    <span class="skill-item">Claude AI</span>
+                    <span class="skill-item">Prompting avanzado</span>
+                    <span class="skill-item">Git / GitHub</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROYECTOS -->
+        <section id="proyectos" class="page-section fade-up">
+            <h2>Proyectos</h2>
+            <p class="lead">
+                Cada tarjeta es un proyecto real y funcional. Hace click para
+                ver el sistema en accion.
+            </p>
+
+            <div class="projects-grid">
+
+                <!-- JUGOS SA -->
+                <div class="project-col">
+                    <a href="JUGOS SA/proyecto.html" class="project-card fade-up" style="text-decoration:none; color:inherit; display:block;">
+                        <div class="project-card-img">
+                            <span>&#127818;</span>
+                        </div>
+                        <div class="project-card-title">JUGOS S.A.</div>
+                        <div class="project-card-text">
+                            Sistema integral de gestion de envases (bins). Dashboard con KPIs
+                            en tiempo real, semaforo de proveedores y analisis logistico.
+                        </div>
+                        <div class="project-card-status active">
+                            <span class="s-dot"></span> Produccion
+                        </div>
+                        <div class="project-card-tech">
+                            <span>Python</span>
+                            <span>Plotly</span>
+                            <span>Access DB</span>
+                            <span>HTML</span>
+                            <span>ETL</span>
+                        </div>
+                        <div class="project-card-action">
+                            Ver proyecto <span class="arrow">&rarr;</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Placeholder -->
+                <div class="project-col">
+                    <div class="project-card-placeholder">
+                        <div class="placeholder-icon">+</div>
+                        <span class="placeholder-text">Proximo proyecto</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // ===== DARK MODE =====
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('gianni-dark', isDark);
+            document.getElementById('theme-icon').innerHTML = isDark ? '&#9788;' : '&#9789;';
+            const btn = document.querySelector('.theme-toggle');
+            btn.lastChild.textContent = isDark ? ' Light mode' : ' Dark mode';
+        }
+
+        // Restore preference
+        if (localStorage.getItem('gianni-dark') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('theme-icon').innerHTML = '&#9788;';
+            document.querySelector('.theme-toggle').lastChild.textContent = ' Light mode';
+        }
+
+        // ===== SIDEBAR TOGGLE (mobile) =====
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('mobile-overlay').classList.toggle('open');
+        }
+
+        function navClick(el) {
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+            el.classList.add('active');
+            // Close sidebar on mobile
+            if (window.innerWidth <= 1024) toggleSidebar();
+        }
+
+        // ===== SCROLL ANIMATIONS =====
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+        // ===== ACTIVE NAV ON SCROLL =====
+        const sections = document.querySelectorAll('section[id]');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(s => {
+                if (window.scrollY >= s.offsetTop - 120) current = s.id;
+            });
+            document.querySelectorAll('.sidebar-nav a').forEach(a => {
+                a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+            });
+        });
+    </script>
+
+</body>
+</html>
