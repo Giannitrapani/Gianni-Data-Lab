@@ -7,11 +7,6 @@
     <meta name="description" content="Portfolio de Ciencia de Datos - Gianni Data Lab">
     <meta name="theme-color" content="#0A1628">
 
-    <!-- Google Fonts: Roboto Slab (headings) + Noto Sans (body) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Roboto+Slab:wght@400;700;900&display=swap" rel="stylesheet">
-
     <style>
         /* ===== RESET ===== */
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,20 +27,10 @@
             --sidebar-text: hsla(0, 0%, 100%, 0.75);
             --sidebar-width: 21rem;
 
-            --font-body: 'Noto Sans', Helvetica, Arial, sans-serif;
-            --font-heading: 'Roboto Slab', Helvetica, Arial, sans-serif;
+            --font-body: 'Times New Roman', Times, Georgia, serif;
+            --font-heading: 'Times New Roman', Times, Georgia, serif;
 
             --content-max: 42rem;
-        }
-
-        /* Dark mode (same palette, slightly deeper) */
-        .dark-mode {
-            --body-bg: #070D18;
-            --body-color: #d8d8d8;
-            --gray: rgba(255, 255, 255, 0.5);
-            --gray-text: rgba(255, 255, 255, 0.65);
-            --gray-bg: rgba(255, 255, 255, 0.04);
-            --border-color: rgba(255, 255, 255, 0.08);
         }
 
         html {
@@ -62,7 +47,6 @@
             color: var(--body-color);
             line-height: 1.75;
             overflow-x: hidden;
-            transition: background 0.3s, color 0.3s;
             min-height: 100vh;
         }
 
@@ -149,6 +133,7 @@
             color: var(--sidebar-text);
             margin-bottom: 2rem;
             line-height: 1.5;
+            font-style: italic;
         }
 
         .sidebar-nav {
@@ -180,24 +165,6 @@
             margin-top: auto;
             font-size: 0.7rem;
             color: rgba(255, 255, 255, 0.3);
-        }
-
-        .theme-toggle {
-            background: none;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: var(--sidebar-text);
-            padding: 0.4rem 0.8rem;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-family: var(--font-body);
-            margin-bottom: 1.5rem;
-            transition: all 0.25s;
-        }
-
-        .theme-toggle:hover {
-            border-color: rgba(255,255,255,0.5);
-            color: #fff;
         }
 
         /* ===== MOBILE NAV ===== */
@@ -395,7 +362,7 @@
             }
         }
 
-        /* ===== PROJECT CARD (Hydejack style) ===== */
+        /* ===== PROJECT CARD ===== */
         .project-card {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -551,121 +518,60 @@
             font-size: 0.85rem;
         }
 
-        /* ===== TOAST NOTIFICATION ===== */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--sidebar-bg);
-            color: #fff;
-            padding: 1rem 1.5rem;
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
-            font-family: var(--font-body);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 9999;
-            transform: translateY(120%);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        /* ===== CONTACT SECTION ===== */
+        .contact-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .contact-card {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            max-width: 400px;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast.success { border-left: 4px solid #4caf50; }
-        .toast.error { border-left: 4px solid #ef5350; }
-
-        /* ===== MODAL ===== */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-overlay.active { display: flex; }
-
-        .modal {
-            background: var(--body-bg);
-            border: 1px solid var(--border-color);
+            gap: 1rem;
+            padding: 1.2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 0.5rem;
-            padding: 2rem;
-            max-width: 440px;
-            width: 90%;
-            animation: modalIn 0.3s ease-out;
-        }
-
-        @keyframes modalIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .modal-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-
-        .modal h3 {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal p {
-            color: var(--gray-text);
-            font-size: 0.9rem;
-            margin-bottom: 1.25rem;
-            line-height: 1.6;
-        }
-
-        .modal-path {
-            background: var(--gray-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 0.25rem;
-            padding: 0.5rem 0.75rem;
-            font-family: 'Consolas', monospace;
-            font-size: 0.75rem;
-            color: var(--accent);
-            word-break: break-all;
-            margin-bottom: 1.25rem;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            border: none;
-            font-size: 0.9rem;
-            font-weight: 700;
-            font-family: var(--font-body);
-            cursor: pointer;
-            transition: all 0.25s;
-        }
-
-        .btn-accent {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .btn-accent:hover { opacity: 0.85; }
-
-        .btn-outline {
-            background: transparent;
+            text-decoration: none;
             color: var(--body-color);
-            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 250px;
         }
 
-        .btn-outline:hover { border-color: var(--gray); }
+        .contact-card:hover {
+            border-color: rgba(212, 135, 46, 0.3);
+            background: rgba(212, 135, 46, 0.06);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+
+        .contact-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+
+        .contact-value {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 64em) {
@@ -704,7 +610,7 @@
 
     <!-- Mobile top nav -->
     <div class="mobile-nav">
-        <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Menú">&#9776;</button>
         <span class="mobile-nav-title">Gianni Data Lab</span>
     </div>
     <div class="mobile-overlay" id="mobile-overlay" onclick="toggleSidebar()"></div>
@@ -713,17 +619,14 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-avatar"><img src="ICONO.png" alt="Gianni Data Lab"></div>
         <div class="sidebar-title">Gianni Data Lab</div>
-        <div class="sidebar-tagline">Ciencia de Datos aplicada al negocio</div>
-
-        <button class="theme-toggle" onclick="toggleDarkMode()">
-            <span id="theme-icon">&#9789;</span> Dark mode
-        </button>
+        <div class="sidebar-tagline">Datos claros. Decisiones inteligentes.</div>
 
         <ul class="sidebar-nav">
             <li><a href="#inicio" class="active" onclick="navClick(this)">Inicio</a></li>
-            <li><a href="#sobre-mi" onclick="navClick(this)">Sobre Mi</a></li>
+            <li><a href="#sobre-mi" onclick="navClick(this)">Sobre Mí</a></li>
             <li><a href="#capacidades" onclick="navClick(this)">Capacidades</a></li>
             <li><a href="#proyectos" onclick="navClick(this)">Proyectos</a></li>
+            <li><a href="#contacto" onclick="navClick(this)">Contacto</a></li>
         </ul>
 
         <div class="sidebar-footer">
@@ -742,26 +645,26 @@
             </div>
             <h1>Transformo datos en<br><span class="accent">decisiones</span></h1>
             <p class="hero-description">
-                Tecnico Superior en Ciencia de Datos. Desarrollo soluciones integrales
-                de analisis, dashboards interactivos y sistemas de inteligencia
-                de negocios que convierten informacion cruda en valor estrategico.
+                Técnico Superior en Ciencia de Datos. Desarrollo soluciones integrales
+                de análisis, dashboards interactivos y sistemas de inteligencia
+                de negocios que convierten información cruda en valor estratégico.
             </p>
         </section>
 
-        <!-- SOBRE MI -->
+        <!-- SOBRE MÍ -->
         <section id="sobre-mi" class="page-section fade-up">
-            <h2>Sobre Mi</h2>
+            <h2>Sobre Mí</h2>
             <p class="lead">
-                Soy Tecnico Superior en Ciencia de Datos con enfoque en soluciones
+                Soy Técnico Superior en Ciencia de Datos con enfoque en soluciones
                 reales para empresas. Mi trabajo se centra en tomar datos dispersos,
                 limpiarlos, analizarlos y presentarlos de forma clara para que las
                 decisiones de negocio se basen en evidencia concreta.
             </p>
             <p style="color: var(--gray-text); margin-bottom: 1rem;">
-                Cada proyecto que desarrollo es un sistema completo: desde la extraccion
-                de datos hasta el dashboard final, pasando por ETL, analisis estadistico
-                y visualizacion interactiva. Todo pensado para que el usuario final
-                pueda operar sin conocimientos tecnicos.
+                Cada proyecto que desarrollo es un sistema completo: desde la extracción
+                de datos hasta el dashboard final, pasando por ETL, análisis estadístico
+                y visualización interactiva. Todo pensado para que el usuario final
+                pueda operar sin conocimientos técnicos.
             </p>
         </section>
 
@@ -769,13 +672,13 @@
         <section id="capacidades" class="page-section fade-up">
             <h2>Capacidades</h2>
             <p class="lead">
-                Herramientas y tecnologias que utilizo para construir soluciones de datos
-                completas, desde la fuente hasta la visualizacion.
+                Herramientas y tecnologías que utilizo para construir soluciones de datos
+                completas, desde la fuente hasta la visualización.
             </p>
 
             <div class="skill-category fade-up">
-                <h3>Python & Analisis de Datos</h3>
-                <p>Procesamiento, limpieza y analisis con el ecosistema completo de Python.</p>
+                <h3>Python &amp; Análisis de Datos</h3>
+                <p>Procesamiento, limpieza y análisis con el ecosistema completo de Python.</p>
                 <div class="skill-list">
                     <span class="skill-item">Python</span>
                     <span class="skill-item">Pandas</span>
@@ -786,8 +689,8 @@
             </div>
 
             <div class="skill-category fade-up">
-                <h3>Bases de Datos & ETL</h3>
-                <p>Extraccion, transformacion y carga desde multiples fuentes.</p>
+                <h3>Bases de Datos &amp; ETL</h3>
+                <p>Extracción, transformación y carga desde múltiples fuentes.</p>
                 <div class="skill-list">
                     <span class="skill-item">SQL</span>
                     <span class="skill-item">Microsoft Access</span>
@@ -798,19 +701,19 @@
             </div>
 
             <div class="skill-category fade-up">
-                <h3>Visualizacion & Dashboards</h3>
+                <h3>Visualización &amp; Dashboards</h3>
                 <p>Dashboards interactivos y presentaciones ejecutivas.</p>
                 <div class="skill-list">
                     <span class="skill-item">HTML / CSS / JS</span>
                     <span class="skill-item">Plotly</span>
                     <span class="skill-item">KPIs interactivos</span>
-                    <span class="skill-item">Graficos dinamicos</span>
+                    <span class="skill-item">Gráficos dinámicos</span>
                 </div>
             </div>
 
             <div class="skill-category fade-up">
-                <h3>Automatizacion & Sistemas</h3>
-                <p>Sistemas que se ejecutan sin intervencion del usuario final.</p>
+                <h3>Automatización &amp; Sistemas</h3>
+                <p>Sistemas que se ejecutan sin intervención del usuario final.</p>
                 <div class="skill-list">
                     <span class="skill-item">Windows Batch</span>
                     <span class="skill-item">Servicios auto-update</span>
@@ -820,8 +723,8 @@
             </div>
 
             <div class="skill-category fade-up">
-                <h3>IA & Herramientas Modernas</h3>
-                <p>Integracion de inteligencia artificial en el flujo de trabajo.</p>
+                <h3>IA &amp; Herramientas Modernas</h3>
+                <p>Integración de inteligencia artificial en el flujo de trabajo.</p>
                 <div class="skill-list">
                     <span class="skill-item">Claude AI</span>
                     <span class="skill-item">Prompting avanzado</span>
@@ -834,8 +737,8 @@
         <section id="proyectos" class="page-section fade-up">
             <h2>Proyectos</h2>
             <p class="lead">
-                Cada tarjeta es un proyecto real y funcional. Hace click para
-                ver el sistema en accion.
+                Cada tarjeta es un proyecto real y funcional. Hacé click para
+                ver el sistema en acción.
             </p>
 
             <div class="projects-grid">
@@ -848,11 +751,11 @@
                         </div>
                         <div class="project-card-title">JUGOS S.A.</div>
                         <div class="project-card-text">
-                            Sistema integral de gestion de envases (bins). Dashboard con KPIs
-                            en tiempo real, semaforo de proveedores y analisis logistico.
+                            Sistema integral de gestión de envases (bins). Dashboard con KPIs
+                            en tiempo real, semáforo de proveedores y análisis logístico.
                         </div>
                         <div class="project-card-status active">
-                            <span class="s-dot"></span> Produccion
+                            <span class="s-dot"></span> Producción
                         </div>
                         <div class="project-card-tech">
                             <span>Python</span>
@@ -871,33 +774,50 @@
                 <div class="project-col">
                     <div class="project-card-placeholder">
                         <div class="placeholder-icon">+</div>
-                        <span class="placeholder-text">Proximo proyecto</span>
+                        <span class="placeholder-text">Próximo proyecto</span>
                     </div>
                 </div>
 
             </div>
         </section>
 
+        <!-- CONTACTO -->
+        <section id="contacto" class="page-section fade-up">
+            <h2>Contacto</h2>
+            <p class="lead">
+                ¿Tenés un proyecto en mente o querés saber más? No dudes en escribirme.
+            </p>
+
+            <div class="contact-grid">
+                <a href="mailto:giannitrapanigaspar@gmail.com" class="contact-card fade-up">
+                    <div class="contact-icon">&#9993;</div>
+                    <div class="contact-info">
+                        <span class="contact-label">Email</span>
+                        <span class="contact-value">giannitrapanigaspar@gmail.com</span>
+                    </div>
+                </a>
+
+                <a href="https://wa.me/5492984704091" target="_blank" class="contact-card fade-up">
+                    <div class="contact-icon">&#128172;</div>
+                    <div class="contact-info">
+                        <span class="contact-label">WhatsApp</span>
+                        <span class="contact-value">+54 9 298 470-4091</span>
+                    </div>
+                </a>
+
+                <a href="https://linkedin.com/in/giannitrapanigaspar" target="_blank" class="contact-card fade-up">
+                    <div class="contact-icon">&#128188;</div>
+                    <div class="contact-info">
+                        <span class="contact-label">LinkedIn</span>
+                        <span class="contact-value">linkedin.com/in/giannitrapanigaspar</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
     </main>
 
     <script>
-        // ===== DARK MODE =====
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('gianni-dark', isDark);
-            document.getElementById('theme-icon').innerHTML = isDark ? '&#9788;' : '&#9789;';
-            const btn = document.querySelector('.theme-toggle');
-            btn.lastChild.textContent = isDark ? ' Light mode' : ' Dark mode';
-        }
-
-        // Restore preference
-        if (localStorage.getItem('gianni-dark') === 'true') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('theme-icon').innerHTML = '&#9788;';
-            document.querySelector('.theme-toggle').lastChild.textContent = ' Light mode';
-        }
-
         // ===== SIDEBAR TOGGLE (mobile) =====
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
@@ -907,7 +827,6 @@
         function navClick(el) {
             document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
             el.classList.add('active');
-            // Close sidebar on mobile
             if (window.innerWidth <= 1024) toggleSidebar();
         }
 
