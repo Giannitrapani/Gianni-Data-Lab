@@ -89,7 +89,11 @@
             left: 0;
             width: var(--sidebar-width);
             height: 100vh;
-            background: var(--sidebar-bg);
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(212, 135, 46, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 90%, rgba(212, 135, 46, 0.10) 0%, transparent 40%),
+                radial-gradient(ellipse at 60% 20%, rgba(30, 100, 180, 0.12) 0%, transparent 50%),
+                linear-gradient(180deg, #060E1A 0%, #0A1628 30%, #0F1D32 60%, #15202E 85%, #1A2233 100%);
             color: var(--sidebar-text);
             display: flex;
             flex-direction: column;
@@ -98,6 +102,29 @@
             padding: 2rem;
             z-index: 100;
             text-align: center;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(180deg, transparent 0%, rgba(212, 135, 46, 0.06) 40%, rgba(212, 135, 46, 0.12) 100%);
+            pointer-events: none;
+        }
+
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -20%;
+            width: 140%;
+            height: 40%;
+            background: radial-gradient(ellipse, rgba(212, 135, 46, 0.08) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .sidebar-avatar {
@@ -106,6 +133,8 @@
             border-radius: 0.5rem;
             margin-bottom: 1.25rem;
             overflow: hidden;
+            position: relative;
+            z-index: 1;
         }
 
         .sidebar-avatar img {
@@ -118,8 +147,13 @@
             font-family: var(--font-heading);
             font-size: 1.5rem;
             font-weight: 900;
-            color: #fff;
+            background: linear-gradient(135deg, #E8C476 0%, #D4872E 50%, #C07020 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 0.25rem;
+            position: relative;
+            z-index: 1;
         }
 
         .sidebar-tagline {
@@ -127,12 +161,16 @@
             color: var(--sidebar-text);
             margin-bottom: 2rem;
             line-height: 1.5;
+            position: relative;
+            z-index: 1;
         }
 
         .sidebar-nav {
             list-style: none;
             width: 100%;
             margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
         }
 
         .sidebar-nav li { margin-bottom: 0.4rem; }
@@ -158,6 +196,8 @@
             margin-top: auto;
             font-size: 0.7rem;
             color: rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
         }
 
         .theme-toggle {
@@ -171,6 +211,8 @@
             font-family: var(--font-body);
             margin-bottom: 1.5rem;
             transition: all 0.25s;
+            position: relative;
+            z-index: 1;
         }
 
         .theme-toggle:hover {
