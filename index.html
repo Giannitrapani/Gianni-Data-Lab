@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gianni Data Lab</title>
     <meta name="description" content="Portfolio de Ciencia de Datos - Gianni Data Lab">
-    <meta name="theme-color" content="#202020">
+    <meta name="theme-color" content="#0A1628">
 
     <!-- Google Fonts: Roboto Slab (headings) + Noto Sans (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,17 +17,18 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            /* Hydejack-inspired palette */
+            /* Palette inspired by logo */
             --body-bg: #fff;
-            --body-color: #333;
-            --accent: #4fb1ba;
-            --accent-faded: rgba(79, 177, 186, 0.5);
-            --accent-light: rgba(79, 177, 186, 0.1);
+            --body-color: #2a2a2a;
+            --accent: #D4872E;
+            --accent-faded: rgba(212, 135, 46, 0.45);
+            --accent-light: rgba(212, 135, 46, 0.08);
+            --accent-blue: #1B6FA8;
             --gray: #777;
-            --gray-text: #666;
+            --gray-text: #555;
             --gray-bg: rgba(0, 0, 0, 0.025);
-            --border-color: #ebebeb;
-            --sidebar-bg: #202020;
+            --border-color: #e0e0e0;
+            --sidebar-bg: #0A1628;
             --sidebar-text: hsla(0, 0%, 100%, 0.75);
             --sidebar-width: 21rem;
 
@@ -39,12 +40,12 @@
 
         /* Dark mode */
         .dark-mode {
-            --body-bg: hsl(201, 6%, 17.5%);
-            --body-color: #ccc;
+            --body-bg: #0D1B2A;
+            --body-color: #d8d8d8;
             --gray: rgba(255, 255, 255, 0.5);
-            --gray-text: rgba(255, 255, 255, 0.625);
-            --gray-bg: rgba(255, 255, 255, 0.033);
-            --border-color: hsl(201, 6%, 22.5%);
+            --gray-text: rgba(255, 255, 255, 0.65);
+            --gray-bg: rgba(255, 255, 255, 0.04);
+            --border-color: rgba(255, 255, 255, 0.1);
         }
 
         html {
@@ -100,20 +101,17 @@
         }
 
         .sidebar-avatar {
-            width: 7rem;
-            height: 7rem;
-            border-radius: 100%;
-            border: 0.5rem solid var(--body-bg);
-            background: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: #fff;
-            font-family: var(--font-heading);
+            width: 10rem;
+            height: auto;
+            border-radius: 0.5rem;
             margin-bottom: 1.25rem;
-            transition: border-color 0.3s;
+            overflow: hidden;
+        }
+
+        .sidebar-avatar img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
         .sidebar-title {
@@ -392,7 +390,7 @@
         .project-card-img {
             width: 100%;
             aspect-ratio: 16 / 9;
-            background: linear-gradient(135deg, #1a3a3a 0%, #0d2b2b 50%, #1a2a35 100%);
+            background: linear-gradient(135deg, #0A1628 0%, #0F2440 50%, #1a2a35 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -405,7 +403,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, transparent 60%, rgba(79, 177, 186, 0.15));
+            background: linear-gradient(135deg, transparent 60%, rgba(212, 135, 46, 0.15));
         }
 
         .project-card-img span {
@@ -684,7 +682,7 @@
 
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-avatar">G</div>
+        <div class="sidebar-avatar"><img src="ICONO.png" alt="Gianni Data Lab"></div>
         <div class="sidebar-title">Gianni Data Lab</div>
         <div class="sidebar-tagline">Ciencia de Datos aplicada al negocio</div>
 
