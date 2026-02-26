@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV - Gaspar Eduardo Giannitrapani</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0A1628">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --body-bg: #0B1120;
+            --body-color: #d0d0d0;
+            --accent: #D4872E;
+            --accent-faded: rgba(212, 135, 46, 0.45);
+            --accent-light: rgba(212, 135, 46, 0.12);
+            --gray: rgba(255, 255, 255, 0.5);
+            --gray-text: rgba(255, 255, 255, 0.65);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --font-body: 'Times New Roman', Times, Georgia, serif;
+            --font-heading: 'Times New Roman', Times, Georgia, serif;
+        }
+
+        html { font-size: 15px; scroll-behavior: smooth; }
+        @media (min-width: 42em) { html { font-size: 16px; } }
+        @media (min-width: 86em) { html { font-size: 17px; } }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--body-bg);
+            color: var(--body-color);
+            line-height: 1.75;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('FONDO.png') center center / cover no-repeat fixed;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .cv-container {
+            max-width: 52rem;
+            margin: 0 auto;
+            padding: 3rem 2rem 6rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .cv-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid rgba(212, 135, 46, 0.25);
+        }
+
+        .cv-logo {
+            width: 8rem;
+            height: auto;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cv-name {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #E8C476 0%, #D4872E 50%, #C07020 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .cv-subtitle {
+            font-size: 1.1rem;
+            color: var(--gray-text);
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+
+        .cv-contact {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--gray-text);
+        }
+
+        .cv-contact a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .cv-contact a:hover { text-decoration: underline; }
+
+        .cv-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* Sections */
+        .cv-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .cv-section h2 {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #e8e8e8;
+            margin-bottom: 1rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid rgba(212, 135, 46, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cv-section h3 {
+            font-family: var(--font-heading);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+            margin-top: 1.25rem;
+        }
+
+        .cv-section h3:first-of-type {
+            margin-top: 0;
+        }
+
+        /* Personal info grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem 2rem;
+            font-size: 0.92rem;
+        }
+
+        @media (max-width: 36em) {
+            .info-grid { grid-template-columns: 1fr; }
+        }
+
+        .info-label {
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: var(--body-color);
+        }
+
+        /* Education items */
+        .edu-item {
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+            border-left: 2px solid rgba(212, 135, 46, 0.2);
+        }
+
+        .edu-title {
+            font-weight: 700;
+            color: #e8e8e8;
+            font-size: 0.95rem;
+        }
+
+        .edu-institution {
+            color: var(--accent);
+            font-size: 0.88rem;
+        }
+
+        .edu-detail {
+            color: var(--gray-text);
+            font-size: 0.85rem;
+        }
+
+        /* Experience items */
+        .exp-item {
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid rgba(212, 135, 46, 0.2);
+        }
+
+        .exp-period {
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .exp-title {
+            font-weight: 700;
+            color: #e8e8e8;
+            font-size: 0.95rem;
+        }
+
+        .exp-company {
+            color: var(--gray-text);
+            font-size: 0.88rem;
+        }
+
+        .exp-desc {
+            color: var(--gray-text);
+            font-size: 0.88rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Capacity items */
+        .cap-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .cap-group-title {
+            font-weight: 700;
+            color: #e8e8e8;
+            font-size: 0.92rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .cap-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .cap-list li {
+            padding: 0.3rem 0;
+            font-size: 0.88rem;
+            color: var(--gray-text);
+            padding-left: 1.25rem;
+            position: relative;
+        }
+
+        .cap-list li::before {
+            content: '\2713';
+            color: var(--accent);
+            font-weight: 700;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Skills tags */
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 0.2rem 0.6rem;
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.6);
+            border-radius: 0.25rem;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Language bars */
+        .lang-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .lang-name {
+            font-size: 0.92rem;
+            color: #e8e8e8;
+            margin-bottom: 0.25rem;
+        }
+
+        .lang-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .lang-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #E8C476);
+            border-radius: 3px;
+        }
+
+        .lang-level {
+            font-size: 0.78rem;
+            color: var(--gray);
+            margin-top: 0.15rem;
+        }
+
+        /* Footer */
+        .cv-footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Animations */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        /* Print styles */
+        @media print {
+            body { background: #fff; color: #333; }
+            body::after { display: none; }
+            .cv-name { color: #333; -webkit-text-fill-color: #333; background: none; }
+            .cv-section h2 { color: #333; border-color: #ccc; }
+            .cv-section h3 { color: #D4872E; }
+            .edu-title, .exp-title, .cap-group-title { color: #333; }
+            .edu-institution, .exp-period { color: #D4872E; }
+            .edu-detail, .exp-company, .exp-desc, .cv-subtitle, .cv-contact,
+            .cap-list li, .lang-level, .info-value { color: #555; }
+            .info-label { color: #777; }
+            .skill-tag { border-color: #ccc; color: #555; }
+            .lang-bar-bg { background: #eee; }
+            .fade-up { opacity: 1; transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cv-container">
+
+    <!-- HEADER -->
+    <header class="cv-header fade-up">
+        <img src="ICONO.png" alt="Gianni Data Lab" class="cv-logo">
+        <h1 class="cv-name">Gaspar Eduardo Giannitrapani</h1>
+        <p class="cv-subtitle">Técnico Superior en Ciencia de Datos</p>
+        <div class="cv-contact">
+            <span class="cv-contact-item">Villa Regina, Río Negro, Argentina</span>
+            <span class="cv-contact-item"><a href="mailto:giannitrapanigaspar@gmail.com">giannitrapanigaspar@gmail.com</a></span>
+            <span class="cv-contact-item"><a href="https://wa.me/5492984704091">+54 9 298 470-4091</a></span>
+            <span class="cv-contact-item"><a href="https://linkedin.com/in/giannitrapanigaspar" target="_blank">LinkedIn</a></span>
+        </div>
+    </header>
+
+    <!-- DATOS PERSONALES -->
+    <section class="cv-section fade-up">
+        <h2>Información Personal</h2>
+        <div class="info-grid">
+            <span class="info-label">Fecha de nacimiento</span>
+            <span class="info-value">16 de julio de 1984</span>
+            <span class="info-label">Nacionalidad</span>
+            <span class="info-value">Argentino — Ciudadanía italiana</span>
+            <span class="info-label">Estado civil</span>
+            <span class="info-value">Soltero</span>
+            <span class="info-label">DNI</span>
+            <span class="info-value">30.225.724</span>
+            <span class="info-label">CUIL</span>
+            <span class="info-value">20-30225724-9</span>
+            <span class="info-label">Dirección</span>
+            <span class="info-value">Dr. Ramón Carrillo 219, Villa Regina, Río Negro</span>
+        </div>
+    </section>
+
+    <!-- FORMACIÓN ACADÉMICA -->
+    <section class="cv-section fade-up">
+        <h2>Formación Académica</h2>
+
+        <div class="edu-item">
+            <div class="edu-title">Técnico Superior en Ciencia de Datos (Data Science)</div>
+            <div class="edu-institution">Teclab — Instituto Técnico Superior (Res. 2023-3691-GCABA-MEDGC)</div>
+            <div class="edu-detail">Finalizado en diciembre de 2025 — Práctica profesionalizante en Jugos S.A.</div>
+        </div>
+
+        <div class="edu-item">
+            <div class="edu-title">Ingeniería Naval y Mecánica (3.er año cursado)</div>
+            <div class="edu-institution">Facultad de Ingeniería — Universidad de Buenos Aires</div>
+        </div>
+
+        <div class="edu-item">
+            <div class="edu-title">Bachillerato Mercantil</div>
+            <div class="edu-institution">Instituto Nuestra Señora del Rosario — Villa Regina, Río Negro</div>
+            <div class="edu-detail">Egreso: noviembre de 2002</div>
+        </div>
+    </section>
+
+    <!-- EXPERIENCIA LABORAL -->
+    <section class="cv-section fade-up">
+        <h2>Experiencia Laboral</h2>
+
+        <div class="exp-item">
+            <div class="exp-period">Marzo 2011 — Actualidad</div>
+            <div class="exp-title">Auxiliar Docente</div>
+            <div class="exp-company">Organización de Escuelas Parroquiales — Villa Regina, Río Negro</div>
+        </div>
+
+        <div class="exp-item">
+            <div class="exp-period">Septiembre 2012 — Diciembre 2016</div>
+            <div class="exp-title">Técnico en Informática</div>
+            <div class="exp-company">Municipalidad de Villa Regina — Río Negro</div>
+            <div class="exp-desc">Soporte técnico, mantenimiento de equipos y redes en la administración municipal.</div>
+        </div>
+
+        <div class="exp-item">
+            <div class="exp-period">Octubre 2008 — Diciembre 2010</div>
+            <div class="exp-title">Soporte Técnico — Área de Informática</div>
+            <div class="exp-company">DGFyCO — Agencia Gubernamental de Control, Gobierno de la Ciudad de Buenos Aires</div>
+            <div class="exp-desc">Soporte tecnológico en la Dirección General de Fiscalización y Control de Obras.</div>
+        </div>
+
+        <div class="exp-item">
+            <div class="exp-period">Enero 2007 — Marzo 2008</div>
+            <div class="exp-title">Embalador de 1.ra</div>
+            <div class="exp-company">Moño Azul S.A. — Planta de empaque, Villa Regina, Río Negro</div>
+        </div>
+
+        <div class="exp-item">
+            <div class="exp-period">Enero 2005 — Marzo 2006</div>
+            <div class="exp-title">Embalador de 1.ra</div>
+            <div class="exp-company">P.R.O.A. S.A. — Planta de empaque, Villa Regina, Río Negro</div>
+        </div>
+    </section>
+
+    <!-- CAPACITACIONES -->
+    <section class="cv-section fade-up">
+        <h2>Capacitaciones y Cursos</h2>
+
+        <div class="cap-group">
+            <div class="cap-group-title">Ciencia de Datos</div>
+            <ul class="cap-list">
+                <li>Técnico Superior en Ciencia de Datos — Teclab (2 años, finalizado dic. 2025)</li>
+            </ul>
+        </div>
+
+        <div class="cap-group">
+            <div class="cap-group-title">Petróleo y Energía</div>
+            <ul class="cap-list">
+                <li>Recorredor y Baterista de Yacimiento — Inst. Tecnológico de la Patagonia (96 hs, 2024)</li>
+                <li>Control de Pozos — Inst. Tecnológico de la Patagonia (32 hs, 2024)</li>
+                <li>Administración para la Industria Petrolera — IFSSA (160 hs, 2023)</li>
+                <li>Recuperación Terciaria de Hidrocarburos — Instituto Proactiva (12 hs, 2023)</li>
+                <li>Petróleo y Gas — UTN Buenos Aires (30 hs, concepto sobresaliente, 2023)</li>
+            </ul>
+        </div>
+
+        <div class="cap-group">
+            <div class="cap-group-title">Redes y Cisco (CCNA)</div>
+            <ul class="cap-list">
+                <li>CIS-ICND2 v3.0 Interconnecting Cisco Networking Devices Part 2 — IT College (2017)</li>
+                <li>CIS-INPD Implementing Network Protocols &amp; Devices — IT College (2017)</li>
+                <li>Interconnecting Cisco Network Devices (CIS-ICND 3.0) — IT College (2010)</li>
+                <li>Networking Fundamentals v2.1 — IT College (2010)</li>
+                <li>Workshop: Introducción a la Certificación CCNA — IT College</li>
+            </ul>
+        </div>
+
+        <div class="cap-group">
+            <div class="cap-group-title">Informática y Diseño</div>
+            <ul class="cap-list">
+                <li>Diplomatura Superior en TIC — Universidad Isalud (608 hs, 2018)</li>
+                <li>AutoCAD 3D: modelado, materiales e iluminación — Fac. de Ingeniería, UBA (2008)</li>
+                <li>AutoCAD 2D — Fac. de Ingeniería, UBA (2007)</li>
+                <li>Administrador Superior de Recursos — IAC (2010)</li>
+                <li>Montaje y Administración de Redes — IAC (2010)</li>
+                <li>Armado y Reparación de PC — IAC (2009)</li>
+            </ul>
+        </div>
+
+        <div class="cap-group">
+            <div class="cap-group-title">Educación y Social</div>
+            <ul class="cap-list">
+                <li>Preceptor Nacional — Grupo Colbert (300 hs, 2020)</li>
+                <li>Diplomatura en Abordaje Integral de Consumos Problemáticos — SEDRONAR / Univ. Nac. del Comahue (120 hs, 2017)</li>
+                <li>Clínica de lo Traumático — Concejo de Niñez, Adolescencia y Familia, Villa Regina (2017)</li>
+                <li>La función e importancia del rol de los acompañantes infanto-juveniles — Min. de Desarrollo Social de Río Negro (2015)</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- CONOCIMIENTOS INFORMÁTICOS -->
+    <section class="cv-section fade-up">
+        <h2>Conocimientos Informáticos</h2>
+        <div class="skill-tags">
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">Pandas</span>
+            <span class="skill-tag">NumPy</span>
+            <span class="skill-tag">Plotly</span>
+            <span class="skill-tag">Jupyter Notebooks</span>
+            <span class="skill-tag">SQL</span>
+            <span class="skill-tag">Microsoft Access</span>
+            <span class="skill-tag">pyodbc / ODBC</span>
+            <span class="skill-tag">HTML / CSS / JS</span>
+            <span class="skill-tag">Git / GitHub</span>
+            <span class="skill-tag">Windows (XP a 11)</span>
+            <span class="skill-tag">Ubuntu (Linux)</span>
+            <span class="skill-tag">Windows Server 2003/2008</span>
+            <span class="skill-tag">Word</span>
+            <span class="skill-tag">Excel</span>
+            <span class="skill-tag">AutoCAD 2D/3D</span>
+            <span class="skill-tag">Redes Cisco</span>
+        </div>
+    </section>
+
+    <!-- IDIOMAS -->
+    <section class="cv-section fade-up">
+        <h2>Idiomas</h2>
+
+        <div class="lang-item">
+            <div class="lang-name">Español</div>
+            <div class="lang-bar-bg"><div class="lang-bar" style="width: 100%;"></div></div>
+            <div class="lang-level">Nativo</div>
+        </div>
+
+        <div class="lang-item">
+            <div class="lang-name">Inglés</div>
+            <div class="lang-bar-bg"><div class="lang-bar" style="width: 30%;"></div></div>
+            <div class="lang-level">Nivel básico</div>
+        </div>
+
+        <div class="lang-item">
+            <div class="lang-name">Italiano</div>
+            <div class="lang-bar-bg"><div class="lang-bar" style="width: 30%;"></div></div>
+            <div class="lang-level">Nivel básico</div>
+        </div>
+    </section>
+
+    <!-- OBJETIVO -->
+    <section class="cv-section fade-up">
+        <h2>Objetivo Profesional</h2>
+        <p style="color: var(--gray-text); font-size: 0.95rem;">
+            Desempeñarme por completo en el trabajo que se me asigne, desarrollando en plenitud
+            mis conocimientos y dispuesto a adquirir nuevos. Me considero una persona predispuesta,
+            laboriosa y por sobre todas las cosas muy responsable.
+        </p>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="cv-footer fade-up">
+        &copy; 2026 Gianni Data Lab — Documento privado
+    </div>
+
+</div>
+
+<script>
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
