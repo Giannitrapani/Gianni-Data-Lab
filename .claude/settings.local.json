@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(start \"\" \"C:\\\\Users\\\\giann\\\\Documents\\\\GitHub\\\\Gianni-Data-Lab\\\\index.html\")",
+      "WebFetch(domain:hydejack.com)",
+      "Bash(dir:*)",
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nWeb portfolio Gianni Data Lab - estilo Hydejack\n\n- index.html: portfolio con sidebar oscuro, secciones Sobre Mi, Capacidades y Proyectos\n- JUGOS SA/proyecto.html: pagina del proyecto con acceso a Dashboard y Presentacion\n- servidor.py: servidor local para ejecucion de proyectos\n- INICIAR_WEB.bat: launcher para uso local\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(gh api:*)",
+      "Bash(done)",
+      "Bash(grep:*)",
+      "Bash(python:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAnonimizar nombres de proveedores para publicacion publica\n\nReemplazados 1926 nombres reales de proveedores por nombres ficticios\nen todos los CSV y HTML del proyecto, para proteger datos sensibles\nantes de hacer el repositorio publico.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(powershell:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAnonimizar nombres de origenes en datos de logistica\n\nReemplazados 456 origenes unicos por nombres ficticios en\nIngresosConKm.csv \\(14704 filas\\) y temp_logistica4.html \\(grafico Top 20\\).\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAlterar cantidades de bins para proteger datos reales\n\nPatron +10%/-10% alternado en cada fila, redondeado a entero.\n- IngresosConKm.csv: 14704 valores\n- TBL_Lbascular_formato_final.csv: 11230 valores\n- TBL_basculae_formato_final.csv: 8238 valores\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nMejorar alteracion de cantidades con variacion aleatoria\n\nReemplaza el patron +10%/-10% alternado por variacion aleatoria\nentre -15% y +15% por fila, para que los totales por proveedor\nnunca coincidan con los valores reales.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git checkout:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nDashboards regenerados y anonimizados\n\nRegenerados desde INICIAR_SISTEMA.bat con datos frescos, luego\nanonimizados: 276 proveedores y 24 origenes en los HTML.\nCSVs mantenidos con datos anonimizados previos.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(findstr:*)",
+      "Bash(python3:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAlterar valores numericos en dashboards HTML para proteger datos reales\n\nKPIs, datos de proveedores y arrays Plotly bdata modificados con variacion aleatoria.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAplicar variacion suave a graficos \\(factor unico por serie\\)\n\nConserva la forma original de los graficos aplicando un solo factor\nde variacion \\(±5-8%\\) por serie de datos en vez de por punto individual.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(gh run list:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAjustar KPIs con variacion suave \\(±10%, redondeado a entero\\)\n\nValores mas cercanos a los originales para mantener coherencia visual.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}
