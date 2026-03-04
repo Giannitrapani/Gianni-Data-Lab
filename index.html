@@ -511,9 +511,9 @@
 
         .contact-card {
             display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.2rem 2.2rem 1.2rem 0.75rem;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1.5rem 1.2rem 1.5rem 1rem;
             background: rgba(40, 70, 100, 0.30);
             border: 1px solid rgba(91, 155, 213, 0.18);
             border-radius: 0.5rem;
@@ -521,9 +521,15 @@
             color: var(--body-color);
             transition: all 0.3s ease;
             flex: 1;
-            min-width: 250px;
+            min-width: 220px;
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
+        }
+
+        .contact-top {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
         }
 
         .contact-card:hover {
@@ -548,11 +554,6 @@
             object-fit: contain;
         }
 
-        .contact-info {
-            display: flex;
-            flex-direction: column;
-        }
-
         .contact-label {
             font-size: 0.75rem;
             text-transform: uppercase;
@@ -565,6 +566,8 @@
         .contact-value {
             font-size: 0.95rem;
             color: #ffffff;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -780,27 +783,27 @@
 
             <div class="contact-grid">
                 <a href="mailto:giannitrapanigaspar@gmail.com" class="contact-card fade-up">
-                    <div class="contact-icon"><img src="ICONO%20EMAIL.PNG" alt="Email"></div>
-                    <div class="contact-info">
+                    <div class="contact-top">
+                        <div class="contact-icon"><img src="ICONO%20EMAIL.PNG" alt="Email"></div>
                         <span class="contact-label">Email</span>
-                        <span class="contact-value">giannitrapanigaspar@gmail.com</span>
                     </div>
+                    <span class="contact-value">giannitrapanigaspar@gmail.com</span>
                 </a>
 
                 <a href="https://wa.me/5492984704091" target="_blank" class="contact-card fade-up">
-                    <div class="contact-icon"><img src="ICONO%20WHATSAPP.PNG" alt="WhatsApp"></div>
-                    <div class="contact-info">
+                    <div class="contact-top">
+                        <div class="contact-icon"><img src="ICONO%20WHATSAPP.PNG" alt="WhatsApp"></div>
                         <span class="contact-label">WhatsApp</span>
-                        <span class="contact-value">+54 9 298 470-4091</span>
                     </div>
+                    <span class="contact-value">+54 9 298 470-4091</span>
                 </a>
 
                 <a href="https://linkedin.com/in/giannitrapanigaspar" target="_blank" class="contact-card fade-up">
-                    <div class="contact-icon"><img src="ICONO%20LINKEDIN.PNG" alt="LinkedIn"></div>
-                    <div class="contact-info">
+                    <div class="contact-top">
+                        <div class="contact-icon"><img src="ICONO%20LINKEDIN.PNG" alt="LinkedIn"></div>
                         <span class="contact-label">LinkedIn</span>
-                        <span class="contact-value">linkedin.com/in/giannitrapanigaspar</span>
                     </div>
+                    <span class="contact-value">linkedin.com/in/giannitrapanigaspar</span>
                 </a>
             </div>
         </section>
