@@ -299,6 +299,45 @@
         }
         .fade-up.visible { opacity: 1; transform: translateY(0); }
 
+        /* Diploma preview links */
+        .diploma-link {
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+            margin-left: 0.4rem;
+            color: rgba(255,255,255,0.40);
+            text-decoration: none;
+            vertical-align: middle;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        .diploma-link:hover { color: rgba(255,255,255,0.90); }
+
+        .diploma-icon { display: block; }
+
+        .diploma-preview {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 210px;
+            background: rgba(6, 12, 28, 0.97);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 6px;
+            padding: 6px;
+            z-index: 300;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.85);
+            pointer-events: none;
+        }
+        .diploma-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 4px;
+        }
+        .diploma-link:hover .diploma-preview { display: block; }
+
         /* Print styles */
         @media print {
             body { background: #fff; color: #333; }
@@ -419,51 +458,51 @@
         <div class="cap-group">
             <div class="cap-group-title">Ciencia de Datos</div>
             <ul class="cap-list">
-                <li>Técnico Superior en Ciencia de Datos — Teclab (2 años, finalizado dic. 2025)</li>
+                <li>Técnico Superior en Ciencia de Datos — Teclab (2 años, finalizado dic. 2025)<a href="Diplomas/22%20-%20TECNICO%20SUPERIOR%20EN%20CIENCIA%20DE%20DATOS.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/22%20-%20TECNICO%20SUPERIOR%20EN%20CIENCIA%20DE%20DATOS.jpg" alt="Diploma Teclab" loading="lazy"></span></a></li>
             </ul>
         </div>
 
         <div class="cap-group">
             <div class="cap-group-title">Petróleo y Energía</div>
             <ul class="cap-list">
-                <li>Recorredor y Baterista de Yacimiento — Inst. Tecnológico de la Patagonia (96 hs, 2024)</li>
-                <li>Control de Pozos — Inst. Tecnológico de la Patagonia (32 hs, 2024)</li>
-                <li>Administración para la Industria Petrolera — IFSSA (160 hs, 2023)</li>
-                <li>Recuperación Terciaria de Hidrocarburos — Instituto Proactiva (12 hs, 2023)</li>
-                <li>Petróleo y Gas — UTN Buenos Aires (30 hs, concepto sobresaliente, 2023)</li>
+                <li>Recorredor y Baterista de Yacimiento — Inst. Tecnológico de la Patagonia (96 hs, 2024)<a href="Diplomas/21%20-%20RECORREDOR%20Y%20BATERISTA%20DE%20YACIMIENTO.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/21%20-%20RECORREDOR%20Y%20BATERISTA%20DE%20YACIMIENTO.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Control de Pozos — Inst. Tecnológico de la Patagonia (32 hs, 2024)<a href="Diplomas/20%20-%20CONTROL%20DE%20POZOS.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/20%20-%20CONTROL%20DE%20POZOS.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Administración para la Industria Petrolera — IFSSA (160 hs, 2023)<a href="Diplomas/19%20-%20PROPUESTA%20FORMATIVA%20DE%20ADMINISTRACION%20PARA%20LA%20INDUSTRIA%20PETROLERA.JPG" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/19%20-%20PROPUESTA%20FORMATIVA%20DE%20ADMINISTRACION%20PARA%20LA%20INDUSTRIA%20PETROLERA.JPG" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Recuperación Terciaria de Hidrocarburos — Instituto Proactiva (12 hs, 2023)<a href="Diplomas/18%20-%20RECUPERACION%20TERCIARIA%20DE%20HIDROCARBUROS.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/18%20-%20RECUPERACION%20TERCIARIA%20DE%20HIDROCARBUROS.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Petróleo y Gas — UTN Buenos Aires (30 hs, concepto sobresaliente, 2023)<a href="Diplomas/17%20-%20CERTIFICADO%20DE%20APROBACION%20-%20PETROLEO%20Y%20GAS.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/17%20-%20CERTIFICADO%20DE%20APROBACION%20-%20PETROLEO%20Y%20GAS.jpg" alt="Diploma" loading="lazy"></span></a></li>
             </ul>
         </div>
 
         <div class="cap-group">
             <div class="cap-group-title">Redes y Cisco (CCNA)</div>
             <ul class="cap-list">
-                <li>CIS-ICND2 v3.0 Interconnecting Cisco Networking Devices Part 2 — IT College (2017)</li>
-                <li>CIS-INPD Implementing Network Protocols &amp; Devices — IT College (2017)</li>
-                <li>Interconnecting Cisco Network Devices (CIS-ICND 3.0) — IT College (2010)</li>
-                <li>Networking Fundamentals v2.1 — IT College (2010)</li>
-                <li>Workshop: Introducción a la Certificación CCNA — IT College</li>
+                <li>CIS-ICND2 v3.0 Interconnecting Cisco Networking Devices Part 2 — IT College (2017)<a href="Diplomas/11%20-%20CIS-ICND2%20V3.0%20INTERCONNECTING%20CISCO%20NETWORKING%20DEVICES%20PART%202.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/11%20-%20CIS-ICND2%20V3.0%20INTERCONNECTING%20CISCO%20NETWORKING%20DEVICES%20PART%202.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>CIS-INPD Implementing Network Protocols &amp; Devices — IT College (2017)<a href="Diplomas/10%20-%20CIS-INPD%20IMPLEMENTING%20NETWORK%20PROTOCOLS%20%26%20DEVICES.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/10%20-%20CIS-INPD%20IMPLEMENTING%20NETWORK%20PROTOCOLS%20%26%20DEVICES.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Interconnecting Cisco Network Devices (CIS-ICND 3.0) — IT College (2010)<a href="Diplomas/8%20-%20INTERCONNECTING%20CISCO%20NETWORK%20DEVICES%20%28ICND%29%20v3.0.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/8%20-%20INTERCONNECTING%20CISCO%20NETWORK%20DEVICES%20%28ICND%29%20v3.0.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Networking Fundamentals v2.1 — IT College (2010)<a href="Diplomas/7%20-%20NETWORKING%20FUNDAMENTALS%20v2.1.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/7%20-%20NETWORKING%20FUNDAMENTALS%20v2.1.jpg" alt="Diploma" loading="lazy"></span></a></li>
+
             </ul>
         </div>
 
         <div class="cap-group">
             <div class="cap-group-title">Informática y Diseño</div>
             <ul class="cap-list">
-                <li>Diplomatura Superior en TIC — Universidad Isalud (608 hs, 2018)</li>
-                <li>AutoCAD 3D: modelado, materiales e iluminación — Fac. de Ingeniería, UBA (2008)</li>
-                <li>AutoCAD 2D — Fac. de Ingeniería, UBA (2007)</li>
-                <li>Administrador Superior de Recursos — IAC (2010)</li>
-                <li>Montaje y Administración de Redes — IAC (2010)</li>
-                <li>Armado y Reparación de PC — IAC (2009)</li>
+                <li>Diplomatura Superior en TIC — Universidad Isalud (608 hs, 2018)<a href="Diplomas/15%20-%20DIPLOMATURA%20SUPERIOR%20EN%20TECNOLOGIA%20DE%20INFORMACION%20Y%20COMUNICACION.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/15%20-%20DIPLOMATURA%20SUPERIOR%20EN%20TECNOLOGIA%20DE%20INFORMACION%20Y%20COMUNICACION.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>AutoCAD 3D: modelado, materiales e iluminación — Fac. de Ingeniería, UBA (2008)<a href="Diplomas/6%20-%20CURSO%20AUTOCAD%203D.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/6%20-%20CURSO%20AUTOCAD%203D.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>AutoCAD 2D — Fac. de Ingeniería, UBA (2007)<a href="Diplomas/5%20-%20CURSO%20DE%20AUTOCAD.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/5%20-%20CURSO%20DE%20AUTOCAD.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Administrador Superior de Recursos — IAC (2010)<a href="Diplomas/4%20-%20ADMINISTRADOR%20SUPERIOR%20EN%20RECURSOS.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/4%20-%20ADMINISTRADOR%20SUPERIOR%20EN%20RECURSOS.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Montaje y Administración de Redes — IAC (2010)<a href="Diplomas/3%20-%20MONTAJE%20Y%20ADMINISTRACION%20DE%20REDES.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/3%20-%20MONTAJE%20Y%20ADMINISTRACION%20DE%20REDES.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Armado y Reparación de PC — IAC (2009)<a href="Diplomas/2%20-%20ARMADO%20Y%20REPARACION%20DE%20PC.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/2%20-%20ARMADO%20Y%20REPARACION%20DE%20PC.jpg" alt="Diploma" loading="lazy"></span></a></li>
             </ul>
         </div>
 
         <div class="cap-group">
             <div class="cap-group-title">Educación y Social</div>
             <ul class="cap-list">
-                <li>Preceptor Nacional — Grupo Colbert (300 hs, 2020)</li>
-                <li>Diplomatura en Abordaje Integral de Consumos Problemáticos — SEDRONAR / Univ. Nac. del Comahue (120 hs, 2017)</li>
-                <li>Clínica de lo Traumático — Concejo de Niñez, Adolescencia y Familia, Villa Regina (2017)</li>
-                <li>La función e importancia del rol de los acompañantes infanto-juveniles — Min. de Desarrollo Social de Río Negro (2015)</li>
+                <li>Preceptor Nacional — Grupo Colbert (300 hs, 2020)<a href="Diplomas/16%20-%20PRECEPTOR%20NACIONAL.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/16%20-%20PRECEPTOR%20NACIONAL.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Diplomatura en Abordaje Integral de Consumos Problemáticos — SEDRONAR / Univ. Nac. del Comahue (120 hs, 2017)<a href="Diplomas/14%20-%20DIPLOMATURA%20EN%20ABORDAJE%20INTEGRAL%20DE%20LOS%20CONSUMOS%20PROBLEMATICOS.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/14%20-%20DIPLOMATURA%20EN%20ABORDAJE%20INTEGRAL%20DE%20LOS%20CONSUMOS%20PROBLEMATICOS.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>Clínica de lo Traumático — Concejo de Niñez, Adolescencia y Familia, Villa Regina (2017)<a href="Diplomas/12%20-%20CLINICA%20DE%20LO%20TRAUMATICO.%20ABUSO%20SEXUAL%20INFANTIL.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/12%20-%20CLINICA%20DE%20LO%20TRAUMATICO.%20ABUSO%20SEXUAL%20INFANTIL.jpg" alt="Diploma" loading="lazy"></span></a></li>
+                <li>La función e importancia del rol de los acompañantes infanto-juveniles — Min. de Desarrollo Social de Río Negro (2015)<a href="Diplomas/9%20-%20LA%20FUNCION%20E%20IMPORTANCIA%20DEL%20ROL%20DE%20LOS%20ACOMPA%C3%91ANTES%20INFANTO%20-%20JUVENILES.jpg" target="_blank" class="diploma-link" aria-label="Ver diploma"><svg class="diploma-icon" width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="11" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="9.5" y2="5"/><line x1="3.5" y1="7.5" x2="9.5" y2="7.5"/><line x1="3.5" y1="10" x2="7" y2="10"/></svg><span class="diploma-preview"><img src="Diplomas/9%20-%20LA%20FUNCION%20E%20IMPORTANCIA%20DEL%20ROL%20DE%20LOS%20ACOMPA%C3%91ANTES%20INFANTO%20-%20JUVENILES.jpg" alt="Diploma" loading="lazy"></span></a></li>
             </ul>
         </div>
     </section>
