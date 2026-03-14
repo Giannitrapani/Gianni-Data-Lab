@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip --version)",
+      "Bash(jupyter --version)",
+      "Bash(python -c \"import requests; print\\(''requests:'', requests.__version__\\)\")",
+      "Bash(python -c \"import pandas; print\\(''pandas:'', pandas.__version__\\)\")",
+      "Bash(python -c \"import numpy; print\\(''numpy:'', numpy.__version__\\)\")",
+      "Bash(dir \"C:\\\\Users\\\\giann\\\\Documents\\\\GitHub\\\\Gianni-Data-Lab\\\\HIDROCARBUROS\\\\notebooks\")"
+    ]
+  }
+}
