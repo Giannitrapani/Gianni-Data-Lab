@@ -1,3 +1,9 @@
 .nombre_map_backup.json
 alterar_numeros_html.py
 alterar_bdata_suave.py
+
+# Bases Access: pesan 57 MB cada una y contienen los nombres reales de
+# proveedores. No van al repositorio. Se conservan localmente en
+# D:\DOCUMENTOS\GITHUB\jugos-datos\
+*.accdb
+*.mdb

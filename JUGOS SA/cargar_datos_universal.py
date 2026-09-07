@@ -134,7 +134,16 @@ def cargar_tabla(nombre_tabla):
 
     # MÉTODO 2: Leer desde CSV (fallback)
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    archivo_csv = os.path.join(script_dir, "datos_csv", f"{nombre_tabla}.csv")
+
+    # Los queries dinámicos de Access se exportan a CSV con otro nombre.
+    # Sin esta equivalencia el fallback busca "10_qry_....csv", que no existe,
+    # y el sistema falla aunque los datos estén disponibles.
+    EQUIVALENCIAS_CSV = {
+        '10_qry_Lbascular_formato_final': 'TBL_Lbascular_formato_final',
+        '11_qry_basculae_formato_final': 'TBL_basculae_formato_final',
+    }
+    nombre_archivo = EQUIVALENCIAS_CSV.get(nombre_tabla, nombre_tabla)
+    archivo_csv = os.path.join(script_dir, "datos_csv", f"{nombre_archivo}.csv")
 
     if not os.path.exists(archivo_csv):
         raise FileNotFoundError(
