@@ -10,9 +10,7 @@
 
     <script>document.documentElement.classList.add('js');</script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Tipografia: Times New Roman (serif del sistema, sin fuentes web) -->
 
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,8 +26,8 @@
             --glow-blue: rgba(79, 156, 240, 0.40);
             --glow-warm: rgba(255, 243, 214, 0.30);
             --shadow: rgba(7, 29, 51, 0.60);
-            --font-body: 'Inter', system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
-            --font-head: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+            --font-body: 'Times New Roman', Times, Georgia, serif;
+            --font-head: 'Times New Roman', Times, Georgia, serif;
             --sidebar-width: 19rem; --content-max: 56rem;
         }
 
@@ -53,7 +51,7 @@
             pointer-events: none; z-index: 0;
         }
         a { color: var(--link); text-decoration: none; }
-        h1, h2, h3 { font-family: var(--font-head); font-weight: 700; line-height: 1.2; color: #fff; letter-spacing: -0.01em; }
+        h1, h2, h3 { font-family: var(--font-head); font-weight: 700; line-height: 1.2; color: #fff; letter-spacing: normal; }
 
         /* ===== SIDEBAR ===== */
         .sidebar {
