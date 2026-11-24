@@ -7,3 +7,14 @@ alterar_bdata_suave.py
 # D:\DOCUMENTOS\GITHUB\jugos-datos\
 *.accdb
 *.mdb
+
+# Configuracion local de Claude Code (no debe publicarse: expone metodo y rutas)
+.claude/
+
+# Basura de Python y Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Archivos temporales de trabajo
+tmpclaude-*
