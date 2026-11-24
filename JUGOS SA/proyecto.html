@@ -5,466 +5,241 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <title>JUGOS S.A. | Gianni Data Lab</title>
-    <meta name="description" content="Sistema integral de gestión de envases - JUGOS S.A.">
-    <meta name="theme-color" content="#0A1628">
+    <meta name="description" content="Sistema integral de gestión de envases (bins) para JUGOS S.A. — dashboard, semáforo de proveedores y análisis logístico.">
+    <meta name="theme-color" content="#0A1929">
+
+    <script>document.documentElement.classList.add('js');</script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* ===== RESET ===== */
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+        /* ===== PALETA OFICIAL GIANNI DATA LAB ===== */
         :root {
-            --body-color: #ffffff;
-            --accent: #D4872E;
-            --accent-faded: rgba(212, 135, 46, 0.45);
-            --accent-light: rgba(212, 135, 46, 0.12);
-            --accent-blue: #1B6FA8;
-            --gray: rgba(255, 255, 255, 0.5);
-            --gray-text: rgba(255, 255, 255, 0.85);
-            --gray-bg: rgba(255, 255, 255, 0.05);
-            --border-color: rgba(255, 255, 255, 0.12);
-            --sidebar-text: #ffffff;
-            --sidebar-width: 21rem;
-
-            --font-body: 'Times New Roman', Times, Georgia, serif;
-            --font-heading: 'Times New Roman', Times, Georgia, serif;
-
-            --content-max: none;
+            --bg-0: #0A1929; --bg-1: #0F2942; --ambient: #183D5D;
+            --interactive: #2F7AB8; --interactive-hover: #4F9CF0; --link: #6CA6D9;
+            --text: #FFFFFF; --text-dim: #A7D2F2; --text-2: #8FB8DE; --text-faint: #7A93B8;
+            --glass-bg: rgba(24, 61, 93, 0.35);
+            --glass-border: rgba(143, 184, 222, 0.25);
+            --glass-border-hover: rgba(79, 156, 240, 0.55);
+            --glow-blue: rgba(79, 156, 240, 0.40);
+            --glow-warm: rgba(255, 243, 214, 0.30);
+            --shadow: rgba(7, 29, 51, 0.60);
+            --font-body: 'Inter', system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+            --font-head: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+            --sidebar-width: 19rem; --content-max: 56rem;
         }
 
         html { font-size: 15px; scroll-behavior: smooth; }
         @media (min-width: 42em) { html { font-size: 16px; } }
-        @media (min-width: 86em) { html { font-size: 17px; } }
 
         body {
-            font-family: var(--font-body);
-            background: url('../FONDO.png') center center / cover no-repeat fixed;
-            color: var(--body-color);
-            line-height: 1.75;
-            overflow-x: hidden;
-            min-height: 100vh;
+            font-family: var(--font-body); color: var(--text); line-height: 1.7;
+            overflow-x: hidden; min-height: 100vh; background-color: var(--bg-0);
+            background-image: radial-gradient(circle at 50% 42%, #183D5D 0%, #0F2942 45%, #0A1929 100%);
+            background-attachment: fixed;
         }
-
-        a {
-            color: var(--accent);
-            text-decoration-color: var(--accent-faded);
-            text-underline-offset: 0.35rem;
-            text-decoration-thickness: 2px;
-            transition: text-decoration-color 0.25s;
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(143,184,222,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(143,184,222,0.035) 1px, transparent 1px);
+            background-size: 58px 58px;
+            mask-image: radial-gradient(circle at 35% 15%, #000 0%, transparent 72%);
+            -webkit-mask-image: radial-gradient(circle at 35% 15%, #000 0%, transparent 72%);
+            pointer-events: none; z-index: 0;
         }
-        a:hover { text-decoration-color: var(--accent); }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: var(--font-heading);
-            font-weight: 900;
-            line-height: 1.3;
-            color: #ffffff;
-        }
+        a { color: var(--link); text-decoration: none; }
+        h1, h2, h3 { font-family: var(--font-head); font-weight: 700; line-height: 1.2; color: #fff; letter-spacing: -0.01em; }
 
         /* ===== SIDEBAR ===== */
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: transparent;
-            border-right: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--sidebar-text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            z-index: 100;
-            text-align: center;
-            overflow: hidden;
+            position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100vh;
+            background: rgba(10, 25, 41, 0.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            border-right: 1px solid var(--glass-border);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 2.5rem 1.75rem; z-index: 100; text-align: center;
         }
-
         .sidebar-avatar {
-            width: 10rem;
-            height: auto;
-            margin-bottom: 1.25rem;
+            width: 8.5rem; height: 8.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 45%, rgba(24,61,93,0.95) 0%, rgba(15,41,66,0.5) 60%, transparent 100%);
+            box-shadow: 0 0 40px rgba(94, 179, 228, 0.18);
         }
-
-        .sidebar-avatar img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .sidebar-title {
-            font-family: var(--font-heading);
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: #ffffff;
-            margin-bottom: 0.25rem;
-        }
-
-        .sidebar-tagline {
-            font-size: 0.85rem;
-            color: var(--sidebar-text);
-            margin-bottom: 2rem;
-            line-height: 1.5;
-            font-style: italic;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-            width: 100%;
-            margin-bottom: 2rem;
-        }
-
-        .sidebar-nav li { margin-bottom: 0.4rem; }
-
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 10px rgba(0,0,0,0.35)); }
+        .sidebar-title { font-family: var(--font-head); font-size: 1.4rem; font-weight: 700; color: #fff; }
+        .sidebar-tagline { font-size: 0.82rem; color: var(--text-dim); margin: 0.3rem 0 2rem; line-height: 1.5; }
+        .sidebar-nav { list-style: none; width: 100%; margin-bottom: 1.75rem; }
+        .sidebar-nav li { margin-bottom: 0.3rem; }
         .sidebar-nav a {
-            display: block;
-            padding: 0.5rem 1rem;
-            color: var(--sidebar-text);
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            border-radius: 0.25rem;
-            transition: color 0.25s, background 0.25s;
+            display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.9rem; color: var(--text-2);
+            font-size: 0.92rem; font-weight: 500; border-radius: 0.55rem; transition: color 0.2s, background 0.2s;
         }
-
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.3);
-        }
+        .sidebar-nav a::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--text-faint); transition: background 0.2s, box-shadow 0.2s; }
+        .sidebar-nav a:hover { color: #fff; background: rgba(47, 122, 184, 0.14); }
+        .sidebar-nav a.active { color: #fff; background: rgba(47, 122, 184, 0.18); }
+        .sidebar-nav a.active::before { background: var(--interactive-hover); box-shadow: 0 0 10px var(--interactive-hover); }
+        .sidebar-social { display: flex; gap: 0.7rem; margin-bottom: 1.4rem; }
+        .sidebar-social a { width: 2.3rem; height: 2.3rem; border-radius: 0.55rem; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; background: rgba(24,61,93,0.25); transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; }
+        .sidebar-social a:hover { border-color: var(--glass-border-hover); transform: translateY(-2px); box-shadow: 0 0 15px var(--glow-blue); }
+        .sidebar-social img { width: 1.35rem; height: 1.35rem; object-fit: contain; }
+        .sidebar-footer { margin-top: auto; font-size: 0.68rem; color: var(--text-faint); }
 
         /* ===== MOBILE NAV ===== */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3.5rem;
-            background: linear-gradient(90deg, #060E1A, #0A1628);
-            z-index: 200;
-            align-items: center;
-            padding: 0 1rem;
-        }
-
-        .mobile-nav-title {
-            font-family: var(--font-heading);
-            font-weight: 900;
-            color: #fff;
-            font-size: 1.1rem;
-            margin-left: 0.75rem;
-        }
-
-        .hamburger {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.25rem;
-            line-height: 1;
-        }
-
-        .mobile-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 150;
-        }
-
+        .mobile-nav { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 3.5rem; background: rgba(10, 25, 41, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 200; align-items: center; padding: 0 0.7rem; border-bottom: 1px solid var(--glass-border); }
+        .mobile-nav img { height: 2rem; width: auto; }
+        .mobile-nav-title { font-family: var(--font-head); font-weight: 700; color: #fff; font-size: 1.05rem; margin-left: 0.5rem; }
+        .hamburger { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 0.25rem; margin-left: auto; }
+        .mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 150; }
         .mobile-overlay.open { display: block; }
 
-        /* ===== MAIN CONTENT ===== */
-        .main {
-            margin-left: calc(var(--sidebar-width) + 3rem);
-            margin-right: 3rem;
-            padding-top: 4rem;
-            padding-bottom: 8rem;
-            max-width: var(--content-max);
-            position: relative;
-            z-index: 1;
-        }
+        /* ===== MAIN ===== */
+        .main { margin-left: var(--sidebar-width); padding: 5rem 3rem 7rem; position: relative; z-index: 1; }
+        .inner { max-width: var(--content-max); margin: 0 auto; }
 
-        @media (max-width: 64em) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                z-index: 300;
-            }
-            .sidebar.open { transform: translateX(0); }
-            .mobile-nav { display: flex; }
-            .main {
-                margin-left: 1.5rem;
-                margin-right: 1.5rem;
-                padding-top: 5.5rem;
-                max-width: none;
-            }
-        }
+        .breadcrumb { font-size: 0.85rem; color: var(--text-faint); margin-bottom: 2rem; }
+        .breadcrumb a { color: var(--text-2); }
+        .breadcrumb a:hover { color: #fff; }
+        .breadcrumb span { margin: 0 0.4rem; }
 
-        /* ===== BREADCRUMB ===== */
-        .breadcrumb {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-bottom: 2rem;
-        }
-        .breadcrumb a {
-            color: #ffffff;
-            text-decoration: none;
-        }
-        .breadcrumb a:hover { text-decoration: underline; }
-        .breadcrumb span { margin: 0 0.3rem; color: #ffffff; }
+        .project-hero { margin-bottom: 2.5rem; }
+        .project-hero h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 0.7rem; }
+        .project-status { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--interactive-hover); margin-bottom: 1.3rem; }
+        .project-status .s-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor; }
+        .project-desc { font-size: 1.05rem; color: var(--text-dim); line-height: 1.8; max-width: 44rem; }
 
-        /* ===== PROJECT HEADER ===== */
-        .project-hero {
-            margin-bottom: 3rem;
-        }
-        .project-hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .project-hero h1 .icon { margin-right: 0.5rem; }
-
-        .project-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #ffffff;
-            margin-bottom: 1.5rem;
-        }
-        .project-status .s-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: currentColor;
-        }
-
-        .project-desc {
-            font-size: 1.05rem;
-            color: var(--gray-text);
-            margin-bottom: 2rem;
-            line-height: 1.8;
-        }
+        .glass { background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); }
 
         /* ===== ACTION CARDS ===== */
-        .project-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 3rem;
-        }
-
-        .action-card {
-            flex: 1;
-            min-width: 200px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            text-decoration: none;
-            color: var(--body-color);
-            transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 0.75rem;
-        }
-
-        .action-card:hover {
-            transform: translateY(-0.25rem);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 135, 46, 0.08);
-            border-color: rgba(212, 135, 46, 0.3);
-        }
-
-        .action-icon { font-size: 2.5rem; }
-        .action-title {
-            font-family: var(--font-heading);
-            font-size: 1.08rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-        .action-desc {
-            font-size: 0.85rem;
-            color: var(--gray-text);
-            line-height: 1.5;
-        }
-
-        .action-link {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            margin-top: auto;
-        }
+        .project-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.1rem; margin-bottom: 3.5rem; }
+        .action-card { border-radius: 0.9rem; padding: 1.6rem; text-decoration: none; color: var(--text); transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; display: flex; flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+        .action-card:hover { transform: translateY(-4px); border-color: var(--glass-border-hover); box-shadow: 0 0 26px var(--glow-blue), 0 14px 40px var(--shadow); }
+        .action-icon { width: 2.8rem; height: 2.8rem; border-radius: 0.6rem; display: flex; align-items: center; justify-content: center; background: rgba(47,122,184,0.16); border: 1px solid rgba(79,156,240,0.3); color: var(--link); margin-bottom: 0.3rem; }
+        .action-icon svg { width: 1.5rem; height: 1.5rem; }
+        .action-title { font-family: var(--font-head); font-size: 1.15rem; font-weight: 700; color: #fff; }
+        .action-desc { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; }
+        .action-link { font-family: var(--font-head); font-size: 0.85rem; font-weight: 600; color: var(--link); display: flex; align-items: center; gap: 0.4rem; margin-top: 0.4rem; }
         .action-link .arrow { transition: transform 0.25s; }
-        .action-card:hover .action-link .arrow { transform: translateX(3px); }
+        .action-card:hover .action-link .arrow { transform: translateX(4px); }
 
-        /* ===== TECH SECTION ===== */
-        .tech-section { margin-bottom: 3rem; }
-        .tech-section h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
+        /* ===== SECTIONS ===== */
+        .block { margin-bottom: 3rem; }
+        .block h2 { font-size: 1.4rem; margin-bottom: 1.1rem; }
+        .tech-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .tech-tag { border: 1px solid var(--glass-border); padding: 0.28rem 0.65rem; font-size: 0.82rem; color: var(--text-dim); border-radius: 0.4rem; background: rgba(143,184,222,0.06); transition: all 0.2s; }
+        .tech-tag:hover { border-color: var(--interactive-hover); color: #fff; background: rgba(47,122,184,0.14); }
 
-        .tech-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        .tech-tag {
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 0.25rem 0.6rem;
-            font-size: 0.82rem;
-            color: rgba(255, 255, 255, 0.6);
-            border-radius: 0.25rem;
-            background: rgba(255, 255, 255, 0.03);
-            transition: all 0.25s;
-        }
-        .tech-tag:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: rgba(212, 135, 46, 0.08);
-        }
+        .feature-list { list-style: none; display: grid; gap: 0.2rem; }
+        .feature-list li { padding: 0.6rem 0; border-bottom: 1px solid rgba(143,184,222,0.10); font-size: 0.95rem; color: var(--text-dim); display: flex; gap: 0.7rem; align-items: flex-start; }
+        .feature-list li::before { content: '\2713'; color: var(--interactive-hover); font-weight: 700; flex-shrink: 0; }
 
-        /* ===== FEATURES ===== */
-        .features-section { margin-bottom: 3rem; }
-        .features-section h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        .feature-list { list-style: none; }
-        .feature-list li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            font-size: 0.95rem;
-            color: var(--gray-text);
-        }
-        .feature-list li::before {
-            content: '\2713';
-            color: #ffffff;
-            font-weight: 700;
-            margin-right: 0.75rem;
-        }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-head); font-weight: 600; font-size: 0.9rem; color: var(--link); margin-top: 1rem; }
 
-        /* ===== ANIMATIONS ===== */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+        /* ===== REVEAL ===== */
+        .reveal { opacity: 1; transform: none; }
+        .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .js .reveal.visible { opacity: 1; transform: none; }
+        @media (prefers-reduced-motion: reduce) { .js .reveal { opacity: 1; transform: none; transition: none; } }
+
+        @media (max-width: 64em) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; z-index: 300; }
+            .sidebar.open { transform: translateX(0); }
+            .mobile-nav { display: flex; }
+            .main { margin-left: 0; padding: 5rem 1.3rem 5rem; }
         }
-        .fade-up.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
 
-    <!-- Mobile nav -->
     <div class="mobile-nav">
-        <button class="hamburger" onclick="toggleSidebar()" aria-label="Menú">&#9776;</button>
+        <img src="../logo-gianni.png" alt="">
         <span class="mobile-nav-title">Gianni Data Lab</span>
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Menú">&#9776;</button>
     </div>
     <div class="mobile-overlay" id="mobile-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-avatar"><img src="../ICONO.png" alt="Gianni Data Lab"></div>
+        <div class="sidebar-avatar"><img src="../logo-gianni.png" alt="Gianni Data Lab"></div>
         <div class="sidebar-title">Gianni Data Lab</div>
         <div class="sidebar-tagline">Datos claros. Decisiones inteligentes.</div>
 
         <ul class="sidebar-nav">
-            <li><a href="../index.html#inicio">Inicio</a></li>
-            <li><a href="../index.html#sobre-mi">Sobre Mí</a></li>
-            <li><a href="../index.html#capacidades">Capacidades</a></li>
-            <li><a href="../index.html#proyectos" class="active">Proyectos</a></li>
-            <li><a href="../index.html#contacto">Contacto</a></li>
+            <li><a href="https://giannidatalab.ar/#inicio">Inicio</a></li>
+            <li><a href="https://giannidatalab.ar/#sobre-mi">Sobre Mí</a></li>
+            <li><a href="https://giannidatalab.ar/#capacidades">Capacidades</a></li>
+            <li><a href="https://giannidatalab.ar/#proyectos" class="active">Proyectos</a></li>
+            <li><a href="https://giannidatalab.ar/#contacto">Contacto</a></li>
         </ul>
+
+        <div class="sidebar-social">
+            <a href="mailto:giannitrapanigaspar@gmail.com" title="Email"><img src="../ic-email.webp" alt="Email"></a>
+            <a href="https://wa.me/5492984704091" target="_blank" rel="noopener" title="WhatsApp"><img src="../ic-whatsapp.webp" alt="WhatsApp"></a>
+            <a href="https://linkedin.com/in/giannitrapanigaspar" target="_blank" rel="noopener" title="LinkedIn"><img src="../ic-linkedin.webp" alt="LinkedIn"></a>
+        </div>
 
         <div class="sidebar-footer">&copy; 2026 Gianni Data Lab</div>
     </aside>
 
-    <!-- Main -->
     <main class="main">
+      <div class="inner">
 
-        <div class="breadcrumb fade-up">
-            <a href="../index.html">Inicio</a>
+        <div class="breadcrumb reveal">
+            <a href="https://giannidatalab.ar/">Inicio</a>
             <span>/</span>
-            <a href="../index.html#proyectos">Proyectos</a>
+            <a href="https://giannidatalab.ar/#proyectos">Proyectos</a>
             <span>/</span>
             JUGOS S.A.
         </div>
 
-        <div class="project-hero fade-up">
+        <div class="project-hero reveal">
             <h1>JUGOS S.A.</h1>
-            <div class="project-status">
-                <span class="s-dot"></span> En producción
-            </div>
+            <div class="project-status"><span class="s-dot"></span> En producción</div>
             <p class="project-desc">
-                Sistema integral de gestión y análisis de envases (bins) para empresa
-                de producción de jugos. Incluye dashboard interactivo con KPIs en tiempo real,
-                sistema semáforo de proveedores, análisis logístico y presentación ejecutiva
-                para gerencia. Desarrollado completamente con Python, Plotly y HTML.
+                Sistema integral de gestión y análisis de envases (bins) para una empresa de producción
+                de jugos. Incluye dashboard interactivo con KPIs en tiempo real, sistema semáforo de
+                proveedores, análisis logístico y presentación ejecutiva para gerencia. Desarrollado
+                completamente con Python, Plotly y HTML.
             </p>
         </div>
 
-        <!-- ACTION BUTTONS -->
-        <div class="project-actions fade-up">
-            <a href="dashboard_completo.html" class="action-card" target="_blank">
-                <span class="action-icon">&#128202;</span>
+        <!-- ACCIONES -->
+        <div class="project-actions reveal">
+            <a href="dashboard_completo.html" target="_blank" rel="noopener" class="action-card glass">
+                <div class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 17v-4"/><path d="M12 17V7"/><path d="M16 17v-7"/></svg></div>
                 <span class="action-title">Dashboard Completo</span>
-                <span class="action-desc">
-                    KPIs en tiempo real, stock de bins, semáforo de proveedores
-                    y análisis logístico en 3 pestañas interactivas.
-                </span>
+                <span class="action-desc">KPIs en tiempo real, stock de bins, semáforo de proveedores y análisis logístico en pestañas interactivas.</span>
                 <span class="action-link">Abrir dashboard <span class="arrow">&rarr;</span></span>
             </a>
 
-            <a href="PRESENTACION/presentacion_gerencia.html" class="action-card" target="_blank">
-                <span class="action-icon">&#127916;</span>
+            <a href="PRESENTACION/presentacion_gerencia.html" target="_blank" rel="noopener" class="action-card glass">
+                <div class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div>
                 <span class="action-title">Presentación Gerencial</span>
-                <span class="action-desc">
-                    Presentación interactiva de 19 slides con navegación estilo Prezi.
-                    Pensada para reuniones de directorio.
-                </span>
+                <span class="action-desc">Presentación interactiva de 19 slides con navegación estilo Prezi, pensada para reuniones de directorio.</span>
                 <span class="action-link">Ver presentación <span class="arrow">&rarr;</span></span>
             </a>
         </div>
 
-        <!-- TECH STACK -->
-        <div class="tech-section fade-up">
+        <!-- STACK -->
+        <div class="block reveal">
             <h2>Stack Tecnológico</h2>
             <div class="tech-tags">
-                <span class="tech-tag">Python 3.x</span>
-                <span class="tech-tag">Pandas</span>
-                <span class="tech-tag">NumPy</span>
-                <span class="tech-tag">Plotly</span>
-                <span class="tech-tag">pyodbc</span>
-                <span class="tech-tag">Microsoft Access</span>
-                <span class="tech-tag">ODBC</span>
-                <span class="tech-tag">HTML / CSS / JS</span>
-                <span class="tech-tag">Windows Batch</span>
+                <span class="tech-tag">Python 3.x</span><span class="tech-tag">Pandas</span><span class="tech-tag">NumPy</span>
+                <span class="tech-tag">Plotly</span><span class="tech-tag">pyodbc</span><span class="tech-tag">Microsoft Access</span>
+                <span class="tech-tag">ODBC</span><span class="tech-tag">HTML / CSS / JS</span><span class="tech-tag">Windows Batch</span>
                 <span class="tech-tag">Jupyter Notebooks</span>
             </div>
         </div>
 
-        <!-- FEATURES -->
-        <div class="features-section fade-up">
+        <!-- CARACTERISTICAS -->
+        <div class="block reveal">
             <h2>Características del Sistema</h2>
             <ul class="feature-list">
                 <li>Dashboard interactivo con 3 módulos: Stock Global, Proveedores, Logística</li>
                 <li>KPIs con umbrales de alerta: crítico (5.000 bins), advertencia (8.000 bins)</li>
-                <li>Sistema semáforo de proveedores (verde/amarillo/rojo)</li>
+                <li>Sistema semáforo de proveedores (verde / amarillo / rojo)</li>
                 <li>Análisis logístico: temporal, por distancia, por especie y por productor</li>
                 <li>Actualización automática cada hora desde base de datos Access</li>
                 <li>Funciona sin instalación, sin admin, sin internet (portable)</li>
@@ -473,22 +248,21 @@
                 <li>Detección automática de drivers ODBC (32 y 64 bits)</li>
                 <li>Sistema de diagnóstico y verificación integrado</li>
             </ul>
+            <a href="https://giannidatalab.ar/#proyectos" class="back-link">&larr; Volver a proyectos</a>
         </div>
 
+      </div>
     </main>
 
     <script>
-        // Mobile sidebar
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('mobile-overlay').classList.toggle('open');
         }
-
-        // Scroll animations
-        const obs = new IntersectionObserver(entries => {
-            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+        var obs = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el); });
     </script>
 
 </body>
